@@ -15,7 +15,8 @@ import {
   Checkbox,
   Text,
   Breadcrumb,
-  BreadcrumbItem
+  BreadcrumbItem,
+  MenuButton
 } from '@fluentui/react-components';
 import {
   ArrowUploadRegular,
@@ -24,7 +25,21 @@ import {
   EditRegular,
   FolderRegular,
   DocumentRegular,
-  TableRegular
+  TableRegular,
+  DocumentArrowUpRegular,
+  DocumentArrowDownRegular,
+  BuildingRegular,
+  StorageRegular,
+  PeopleRegular,
+  PersonRegular,
+  PeopleTeamRegular,
+  CheckmarkCircleRegular,
+  NewRegular,
+  OpenRegular,
+  ShareAndroid16Regular,
+  ShareAndroid20Regular,
+  Table16Regular,
+  Table20Regular
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
@@ -72,45 +87,53 @@ const navLinks = [
     name: 'DMS',
     url: '#',
     key: 'dms',
+    icon: 'Document',
     links: [
-      { name: 'To End User', url: '#', key: 'toenduser' },
-      { name: 'From End User', url: '#', key: 'fromenduser' },
+      { name: 'To End User', url: '#', key: 'toenduser', icon: 'DocumentArrowUp' },
+      { name: 'From End User', url: '#', key: 'fromenduser', icon: 'DocumentArrowDown' },
     ],
   },
   {
     name: 'Portal',
     url: '#',
     key: 'portal',
+    icon: 'Table'
   },
   {
     name: 'Organization',
     url: '#',
     key: 'org',
+    icon: 'Building'
   },
   {
     name: 'Storage',
     url: '#',
     key: 'storage',
+    icon: 'Storage'
   },
   {
     name: 'Users',
     url: '#',
     key: 'users',
+    icon: 'People'
   },
   {
     name: 'Employees',
     url: '#',
     key: 'employees',
+    icon: 'Person'
   },
   {
     name: 'Clients',
     url: '#',
     key: 'clients',
+    icon: 'PeopleTeam'
   },
   {
     name: 'Validation',
     url: '#',
     key: 'validation',
+    icon: 'CheckmarkCircle'
   },
 ];
 
@@ -189,13 +212,20 @@ export default function DmsMainScreen() {
           </Breadcrumb>
         </div>
         <div className={styles.toolbar}>
-          <TabList>
-            {commandBarItems.map(item => (
-              <Tab key={item.key} value={item.key} icon={item.iconProps?.iconName}>
-                {item.text}
-              </Tab>
-            ))}
-          </TabList>
+          <div style={{ display: 'flex', gap: '8px' }}>
+          <MenuButton 
+            icon={<AddRegular />} 
+            appearance="outline" 
+            shape="rounded"
+            style={{ backgroundColor: tokens.colorBrandBackground }}
+          >
+            New
+          </MenuButton>
+            <Button icon={<ArrowUploadRegular />} iconPosition="before" appearance="outline" shape="rounded">Upload</Button>
+            <Button icon={<Table20Regular />} iconPosition="before" appearance="outline" shape="rounded">Edit in grid view</Button>
+            <MenuButton appearance="outline" shape="rounded">Open</MenuButton>           
+            <Button icon={<ShareAndroid20Regular />} iconPosition="before" appearance="outline" shape="rounded">Share</Button>
+          </div>
         </div>
         <div className={styles.table}>
           <Table>
