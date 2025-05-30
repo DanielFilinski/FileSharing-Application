@@ -1,21 +1,71 @@
 import React from 'react';
 import { Nav } from '@fluentui/react/lib/Nav';
-import { 
-  PrimaryButton as FluentUIPrimaryButton,
-  DefaultButton as FluentUIDefaultButton,
-  IconButton as FluentUIconButton,
-  Text as FluentUIText,
-  Stack,
-  CommandBar,
-  DetailsList,
-  DetailsListLayoutMode,
-  SelectionMode,
+import {
+  makeStyles,
+  tokens,
+  TabList,
+  Tab,
+  Button,
+  Table,
+  TableHeader,
+  TableRow,
+  TableHeaderCell,
+  TableBody,
+  TableCell,
   Checkbox,
-  Breadcrumb
-} from '@fluentui/react';
+  Text,
+  Breadcrumb,
+  BreadcrumbItem
+} from '@fluentui/react-components';
+import {
+  ArrowUploadRegular,
+  AddRegular,
+  ShareRegular,
+  EditRegular,
+  FolderRegular,
+  DocumentRegular,
+  TableRegular
+} from '@fluentui/react-icons';
 
-
-const navStyles = { root: { width: 220, height: '100vh', boxSizing: 'border-box', borderRight: '1px solid #eee', padding: 0 } };
+const useStyles = makeStyles({
+  root: {
+    height: '100vh',
+    display: 'flex'
+  },
+  nav: {
+    width: '220px',
+    height: '100vh',
+    boxSizing: 'border-box',
+    borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
+    padding: 0
+  },
+  content: {
+    flex: 1,
+    background: tokens.colorNeutralBackground1
+  },
+  header: {
+    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
+    padding: '0 24px',
+    height: '48px',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  title: {
+    fontWeight: 600,
+    color: tokens.colorBrandForeground1,
+    fontSize: '20px'
+  },
+  breadcrumb: {
+    padding: '16px 24px 0 24px'
+  },
+  toolbar: {
+    padding: '8px 24px 0 24px'
+  },
+  table: {
+    padding: '8px 24px 0 24px',
+    flex: 1
+  }
+});
 
 const navLinks = [
   {
@@ -122,31 +172,54 @@ const commandBarItems = [
 ];
 
 export default function DmsMainScreen() {
+  const styles = useStyles();
+  
   return (
-    <Stack horizontal styles={{ root: { height: '100vh' } }}>
-      <Nav groups={[{ links: navLinks }]} styles={navStyles} />
-      <Stack grow styles={{ root: { background: '#fff' } }}>
-        <Stack horizontal verticalAlign="center" styles={{ root: { borderBottom: '1px solid #eee', padding: '0 24px', height: 48 } }}>
-          <FluentUIText variant="xLarge" styles={{ root: { fontWeight: 600, color: '#0078d4' } }}>DMS</FluentUIText>
-        </Stack>
-        <Stack horizontalAlign="start" styles={{ root: { padding: '16px 24px 0 24px' } }}>
-          <Breadcrumb items={breadcrumbItems} maxDisplayedItems={4} />
-        </Stack>
-        <Stack horizontalAlign="start" styles={{ root: { padding: '8px 24px 0 24px' } }}>
-          <CommandBar items={commandBarItems} />
-        </Stack>
-        <Stack grow styles={{ root: { padding: '8px 24px 0 24px' } }}>
-          <DetailsList
-            items={items}
-            columns={columns}
-            setKey="set"
-            layoutMode={DetailsListLayoutMode.justified}
-            selectionMode={SelectionMode.multiple}
-            checkboxVisibility={2}
-            styles={{ root: { background: '#fff' } }}
-          />
-        </Stack>
-      </Stack>
-    </Stack>
+    <div className={styles.root}>
+      <Nav groups={[{ links: navLinks }]} className={styles.nav} />
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <Text className={styles.title}>DMS</Text>
+        </div>
+        <div className={styles.breadcrumb}>
+          <Breadcrumb>
+            {breadcrumbItems.map(item => (
+              <BreadcrumbItem key={item.key}>{item.text}</BreadcrumbItem>
+            ))}
+          </Breadcrumb>
+        </div>
+        <div className={styles.toolbar}>
+          <TabList>
+            {commandBarItems.map(item => (
+              <Tab key={item.key} value={item.key} icon={item.iconProps?.iconName}>
+                {item.text}
+              </Tab>
+            ))}
+          </TabList>
+        </div>
+        <div className={styles.table}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell><Checkbox /></TableHeaderCell>
+                {columns.slice(1).map(column => (
+                  <TableHeaderCell key={column.key}>{column.name}</TableHeaderCell>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {items.map(item => (
+                <TableRow key={item.key}>
+                  <TableCell><Checkbox /></TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.modified}</TableCell>
+                  <TableCell>{item.createdBy}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
   );
 } 

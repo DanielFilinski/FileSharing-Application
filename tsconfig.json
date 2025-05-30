@@ -23,7 +23,8 @@
       "@features/*": ["features/*"],
       "@widgets/*": ["widgets/*"],
       "@pages/*": ["pages/*"]
-    }
+    },
+    "typeRoots": ["./node_modules/@types", "./node_modules/@fluentui"]
   },
   "include": ["src"]
 } 
