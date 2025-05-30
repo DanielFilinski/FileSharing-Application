@@ -41,7 +41,18 @@ const useStyles = makeStyles({
     height: '100vh',
     boxSizing: 'border-box',
     borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
-    padding: 0
+    padding: 0,
+    '& .fui-Nav-group': {
+      '& .fui-Nav-link': {
+        paddingLeft: '16px',
+        '& .fui-Nav-link': {
+          paddingLeft: '32px',
+          '& .fui-Nav-link': {
+            paddingLeft: '48px'
+          }
+        }
+      }
+    }
   },
   content: {
     flex: 1,
@@ -60,13 +71,13 @@ const useStyles = makeStyles({
     fontSize: '20px'
   },
   breadcrumb: {
-    padding: '16px 24px 0 24px'
+    padding: '8px 24px 8px 24px'
   },
   toolbar: {
     padding: '8px 24px 8px 24px'
   },
   table: {
-    padding: '8px 24px 0 24px',
+    padding: '0px 0px 10px 0px',
     flex: 1,
     '& .fui-TableHeader': {
       backgroundColor: tokens.colorNeutralBackground1,
@@ -75,7 +86,11 @@ const useStyles = makeStyles({
       }
     },
     '& .fui-TableRow': {
-      borderBottom: 'none'
+      borderBottom: 'none',
+      height: '46px'
+    },
+    '& .fui-TableCell': {
+      // padding: '8px 8px'
     }
   }
 });
@@ -87,10 +102,26 @@ const navLinks = [
     key: 'dms',
     icon: 'Document',
     links: [
-      { name: 'To End User', url: '#', key: 'toenduser', icon: 'DocumentArrowUp', links: [
-        { name: 'Tax', url: '#', key: 'tax', icon: 'DocumentArrowUp' },
-      ] },
-      { name: 'From End User', url: '#', key: 'fromenduser', icon: 'DocumentArrowDown' },
+      { 
+        name: 'To End User', 
+        url: '#', 
+        key: 'toenduser', 
+        icon: 'DocumentArrowUp', 
+        links: [
+          { 
+            name: 'Tax', 
+            url: '#', 
+            key: 'tax', 
+            icon: 'DocumentArrowUp' 
+          },
+        ] 
+      },
+      { 
+        name: 'From End User', 
+        url: '#', 
+        key: 'fromenduser', 
+        icon: 'DocumentArrowDown' 
+      },
     ],
   },
   {
