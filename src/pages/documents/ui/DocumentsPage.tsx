@@ -28,7 +28,8 @@ import {
   ChevronRightRegular,
   DocumentBulletList16Filled,
   DocumentBulletList20Regular,
-  Document20Regular
+  Document20Regular,
+  SearchRegular
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
@@ -41,7 +42,7 @@ const useStyles = makeStyles({
     height: '100vh',
     boxSizing: 'border-box',
     borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
-    padding: 0,
+    padding: '0px 8px 0px 8px',
     '& .fui-Nav-group': {
       '& .fui-Nav-link': {
         paddingLeft: '16px',
@@ -94,6 +95,14 @@ const useStyles = makeStyles({
     }
   }
 });
+
+type NavLink = {
+  name: string;
+  url: string;
+  key: string;
+  icon?: string;
+  links?: NavLink[];
+};
 
 const navLinks = [
   {
@@ -226,12 +235,61 @@ const commandBarItems = [
   },
 ];
 
+const navGroups = [
+  {
+    title: 'Storage',
+    links: [
+      navLinks[0], // DMS
+      navLinks[1], // Portal
+    ]
+  },
+  {
+    title: 'Settings',
+    links: [
+      navLinks[2], // Organization
+      navLinks[3], // Storage
+      navLinks[4], // Users
+      navLinks[5], // Employees
+      navLinks[6], // Clients
+    ]
+  }
+];
+
+function renderNavLink(link: NavLink, level = 0): JSX.Element {
+  return (
+    <div key={link.key} style={{ paddingLeft: 16 + level * 20, display: 'flex', alignItems: 'center', margin: '4px 0' }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: 6, background: '#E5E7EB',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 8, fontWeight: 600, color: '#374151'
+      }}>
+        {link.name[0]}
+      </div>
+      <span style={{ fontWeight: level === 0 ? 600 : 400 }}>{link.name}</span>
+      {link.links && link.links.map(child => renderNavLink(child, level + 1))}
+    </div>
+  );
+}
+
 export default function DmsMainScreen() {
   const styles = useStyles();
   
   return (
     <div className={styles.root}>
-      <Nav groups={[{ links: navLinks }]} className={styles.nav} />
+      <div className={styles.nav}>
+        <div style={{ fontWeight: 600, fontSize: 18, margin: '16px 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>Select End User <SearchRegular /></div>
+        {/* <input placeholder="Search" style={{ width: '90%', margin: '0 5% 16px 5%', padding: 6, borderRadius: 4, border: '1px solid #E5E7EB' }} /> */}
+        <div style={{ }}>
+          <Divider />
+        </div>
+        
+        {navGroups.map(group => (
+          <div key={group.title} style={{ marginBottom: 16 }}>
+            <div style={{ fontWeight: 700, margin: '16px 0 0px 0px', color: '#111827' }}>{group.title}</div>
+            {group.links.map(link => renderNavLink(link))}
+            <div style={{ borderBottom: '1px solid #E5E7EB', margin: '12px 0' }} />
+          </div>
+        ))}
+      </div>
       <div className={styles.content}>
         <div className={styles.header}>
           <Text className={styles.title}>DMS</Text>
