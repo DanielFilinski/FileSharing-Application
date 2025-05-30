@@ -34,6 +34,7 @@ import {
 
 const useStyles = makeStyles({
   root: {
+    padding: '0px 0px 0px 0px',
     height: '100vh',
     display: 'flex'
   },
@@ -116,14 +117,7 @@ const navLinks = [
         url: '#', 
         key: 'toenduser', 
         icon: 'DocumentArrowUp', 
-        links: [
-          { 
-            name: 'Tax', 
-            url: '#', 
-            key: 'tax', 
-            icon: 'DocumentArrowUp' 
-          },
-        ] 
+        
       },
       { 
         name: 'From End User', 
@@ -257,15 +251,23 @@ const navGroups = [
 
 function renderNavLink(link: NavLink, level = 0): JSX.Element {
   return (
-    <div key={link.key} style={{ paddingLeft: 16 + level * 20, display: 'flex', alignItems: 'center', margin: '4px 0' }}>
-      <div style={{
-        width: 32, height: 32, borderRadius: 6, background: '#E5E7EB',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 8, fontWeight: 600, color: '#374151'
-      }}>
-        {link.name[0]}
+    <div key={link.key}>
+      <div style={{ display: 'flex', alignItems: 'center', margin: '4px 0' }}>
+        {level === 0 && (
+          <div style={{
+            width: 32, height: 32, borderRadius: 6, background: '#E5E7EB',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 8, fontWeight: 600, color: '#374151'
+          }}>
+            {link.name[0]}
+          </div>
+        )}
+        <span style={{ fontWeight: level === 0 ? 600 : 400, paddingLeft: level > 0 ? 40 : 0 }}>{link.name}</span>
       </div>
-      <span style={{ fontWeight: level === 0 ? 600 : 400 }}>{link.name}</span>
-      {link.links && link.links.map(child => renderNavLink(child, level + 1))}
+      {link.links && (
+        <div style={{ marginLeft: 0 }}>
+          {link.links.map(child => renderNavLink(child, level + 1))}
+        </div>
+      )}
     </div>
   );
 }
@@ -284,7 +286,7 @@ export default function DmsMainScreen() {
         
         {navGroups.map(group => (
           <div key={group.title} style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, margin: '16px 0 0px 0px', color: '#111827' }}>{group.title}</div>
+            <div style={{ fontWeight: 700, margin: '16px 0 10px 0px', color: '#111827' }}>{group.title}</div>
             {group.links.map(link => renderNavLink(link))}
             <div style={{ borderBottom: '1px solid #E5E7EB', margin: '12px 0' }} />
           </div>
