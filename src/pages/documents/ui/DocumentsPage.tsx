@@ -16,30 +16,19 @@ import {
   Text,
   Breadcrumb,
   BreadcrumbItem,
-  MenuButton
+  MenuButton,
+  CompoundButton,
+  Divider
 } from '@fluentui/react-components';
 import {
   ArrowUploadRegular,
   AddRegular,
-  ShareRegular,
-  EditRegular,
-  FolderRegular,
-  DocumentRegular,
-  TableRegular,
-  DocumentArrowUpRegular,
-  DocumentArrowDownRegular,
-  BuildingRegular,
-  StorageRegular,
-  PeopleRegular,
-  PersonRegular,
-  PeopleTeamRegular,
-  CheckmarkCircleRegular,
-  NewRegular,
-  OpenRegular,
-  ShareAndroid16Regular,
   ShareAndroid20Regular,
-  Table16Regular,
-  Table20Regular
+  Table20Regular,
+  ChevronRightRegular,
+  DocumentBulletList16Filled,
+  DocumentBulletList20Regular,
+  Document20Regular
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
@@ -56,10 +45,10 @@ const useStyles = makeStyles({
   },
   content: {
     flex: 1,
-    background: tokens.colorNeutralBackground1
+    background: tokens.colorNeutralBackground2
   },
   header: {
-    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
+    // borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
     padding: '0 24px',
     height: '48px',
     display: 'flex',
@@ -74,11 +63,20 @@ const useStyles = makeStyles({
     padding: '16px 24px 0 24px'
   },
   toolbar: {
-    padding: '8px 24px 0 24px'
+    padding: '8px 24px 8px 24px'
   },
   table: {
     padding: '8px 24px 0 24px',
-    flex: 1
+    flex: 1,
+    '& .fui-TableHeader': {
+      backgroundColor: tokens.colorNeutralBackground1,
+      '& .fui-TableHeaderCell': {
+        color: tokens.colorNeutralForeground1
+      }
+    },
+    '& .fui-TableRow': {
+      borderBottom: 'none'
+    }
   }
 });
 
@@ -89,7 +87,9 @@ const navLinks = [
     key: 'dms',
     icon: 'Document',
     links: [
-      { name: 'To End User', url: '#', key: 'toenduser', icon: 'DocumentArrowUp' },
+      { name: 'To End User', url: '#', key: 'toenduser', icon: 'DocumentArrowUp', links: [
+        { name: 'Tax', url: '#', key: 'tax', icon: 'DocumentArrowUp' },
+      ] },
       { name: 'From End User', url: '#', key: 'fromenduser', icon: 'DocumentArrowDown' },
     ],
   },
@@ -149,13 +149,14 @@ const columns = [
   { key: 'column2', name: 'Name', fieldName: 'name', minWidth: 200, isResizable: true },
   { key: 'column3', name: 'Modified', fieldName: 'modified', minWidth: 120, isResizable: true },
   { key: 'column4', name: 'Created By', fieldName: 'createdBy', minWidth: 150, isResizable: true },
+  { key: 'column5', name: 'Modified By', fieldName: 'modifiedBy', minWidth: 150, isResizable: true },
 ];
 
 const items = [
-  { key: 1, name: 'Book.xlsx', modified: 'April 11', createdBy: 'AZMAT HUSSAIN', icon: 'ExcelDocument' },
-  { key: 2, name: 'Contract.docx', modified: 'April 4', createdBy: 'AZMAT HUSSAIN', icon: 'WordDocument' },
-  { key: 3, name: 'Trial Balance.xlsx', modified: 'April 21', createdBy: 'AZMAT HUSSAIN', icon: 'ExcelDocument' },
-  { key: 4, name: 'Trial Balance1.xlsx', modified: 'April 4', createdBy: 'AZMAT HUSSAIN', icon: 'ExcelDocument' },
+  { key: 1, name: 'Book.xlsx', modified: 'April 11', createdBy: 'AZMAT HUSSAIN', icon: 'ExcelDocument', modifiedBy: 'AZMAT HUSSAIN' },
+  { key: 2, name: 'Contract.docx', modified: 'April 4', createdBy: 'AZMAT HUSSAIN', icon: 'WordDocument', modifiedBy: 'AZMAT HUSSAIN' },
+  { key: 3, name: 'Trial Balance.xlsx', modified: 'April 21', createdBy: 'AZMAT HUSSAIN', icon: 'ExcelDocument', modifiedBy: 'AZMAT HUSSAIN' },
+  { key: 4, name: 'Trial Balance1.xlsx', modified: 'April 4', createdBy: 'AZMAT HUSSAIN', icon: 'ExcelDocument', modifiedBy: 'AZMAT HUSSAIN' },
 ];
 
 const commandBarItems = [
@@ -204,46 +205,116 @@ export default function DmsMainScreen() {
         <div className={styles.header}>
           <Text className={styles.title}>DMS</Text>
         </div>
-        <div className={styles.breadcrumb}>
-          <Breadcrumb>
-            {breadcrumbItems.map(item => (
-              <BreadcrumbItem key={item.key}>{item.text}</BreadcrumbItem>
-            ))}
-          </Breadcrumb>
-        </div>
+       <Divider />
         <div className={styles.toolbar}>
           <div style={{ display: 'flex', gap: '8px' }}>
-          <MenuButton 
-            icon={<AddRegular />} 
-            appearance="outline" 
+          <MenuButton
+            icon={<AddRegular />}
+            appearance="primary"
             shape="rounded"
-            style={{ backgroundColor: tokens.colorBrandBackground }}
+            style={{
+              backgroundColor: '#0069E4',
+              color: '#fff',
+              border: 'none'
+            }}
           >
             New
           </MenuButton>
-            <Button icon={<ArrowUploadRegular />} iconPosition="before" appearance="outline" shape="rounded">Upload</Button>
-            <Button icon={<Table20Regular />} iconPosition="before" appearance="outline" shape="rounded">Edit in grid view</Button>
-            <MenuButton appearance="outline" shape="rounded">Open</MenuButton>           
-            <Button icon={<ShareAndroid20Regular />} iconPosition="before" appearance="outline" shape="rounded">Share</Button>
+            <Button
+              icon={<ArrowUploadRegular />}
+              iconPosition="before"
+              appearance="primary"
+              shape="rounded"
+              style={{
+                backgroundColor: '#00A254',
+                color: '#fff',
+                border: 'none'
+              }}
+            >
+              Upload
+            </Button>
+            <Button
+              icon={<Table20Regular />}
+              iconPosition="before"
+              appearance="secondary"
+              shape="rounded"
+              // style={{
+              //   backgroundColor: '#f3f4f6',
+              //   color: '#111827',
+              //   border: 'none'
+              // }}
+            >
+              Edit in grid view
+            </Button>
+            <MenuButton
+              appearance="secondary"
+              shape="rounded"
+              // style={{
+              //   backgroundColor: '#f3f4f6',
+              //   color: '#111827',
+              //   border: 'none'
+              // }}
+            >
+              Open
+            </MenuButton>
+            <Button
+              icon={<ShareAndroid20Regular />}
+              iconPosition="before"
+              appearance="secondary"
+              shape="rounded"
+              // style={{
+              //   backgroundColor: '#f3f4f6',
+              //   color: '#111827',
+              //   border: 'none'
+              // }}
+            >
+              Share
+            </Button>
+            {/* <CompoundButton
+
+              appearance="transparent"
+              icon={<ReOrderDotsVerticalRegular />}
+            /> */}
           </div>
         </div>
+        <Divider />
+        <div className={styles.breadcrumb}>
+          <Breadcrumb>
+            {breadcrumbItems.map((item, index) => (
+              <React.Fragment key={item.key}>
+                <BreadcrumbItem>{item.text}</BreadcrumbItem>
+                {index < breadcrumbItems.length - 1 && <ChevronRightRegular />}
+              </React.Fragment>
+            ))}
+          </Breadcrumb>
+        </div>
+        
         <div className={styles.table}>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHeaderCell><Checkbox /></TableHeaderCell>
+               
                 {columns.slice(1).map(column => (
-                  <TableHeaderCell key={column.key}>{column.name}</TableHeaderCell>
+                  <TableHeaderCell key={column.key}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {column.key === 'column2' ? 
+                      <><Checkbox />  <Document20Regular/> </> : <></>}
+                    
+                        {column.name}
+                      
+                    </div>
+                    </TableHeaderCell>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map(item => (
                 <TableRow key={item.key}>
-                  <TableCell><Checkbox /></TableCell>
-                  <TableCell>{item.name}</TableCell>
+                  
+                  <TableCell><div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Checkbox /> <DocumentBulletList20Regular/> {item.name}</div></TableCell>
                   <TableCell>{item.modified}</TableCell>
                   <TableCell>{item.createdBy}</TableCell>
+                  <TableCell>{item.modifiedBy}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
