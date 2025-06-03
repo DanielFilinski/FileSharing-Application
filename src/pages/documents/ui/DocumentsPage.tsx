@@ -4,7 +4,7 @@ import { Navigation } from './components/Navigation';
 import { Toolbar } from './components/Toolbar';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { DocumentsTable } from './components/DocumentsTable';
-import ApprovalSettingsForm from '@/pages/settings/Approval';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles({
   root: {
@@ -31,21 +31,32 @@ const useStyles = makeStyles({
 
 export default function DmsMainScreen() {
   const styles = useStyles();
+  const location = useLocation();
+  
+  const renderContent = () => {
+    if (location.pathname === '/client-side' || location.pathname === '/') {
+      return (
+        <>
+          <Toolbar />
+          <Divider />
+          <Breadcrumbs />
+          <DocumentsTable />
+        </>
+      );
+    }
+    return <Outlet />;
+  };
   
   return (
     <div className={styles.root}>
       <Navigation />
-      {/* <div className={styles.content}>
+      <div className={styles.content}>
         <div className={styles.header}>
           <Text className={styles.title}>DMS</Text>
         </div>
         <Divider />
-        <Toolbar />
-        <Divider />
-        <Breadcrumbs />
-        <DocumentsTable />
-      </div> */}
-      <ApprovalSettingsForm />
+        {renderContent()}
+      </div>
     </div>
   );
 } 
