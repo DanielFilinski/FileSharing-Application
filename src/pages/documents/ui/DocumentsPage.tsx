@@ -50,11 +50,7 @@ export default function DmsMainScreen() {
   return (
     <div className={styles.root}>
       <Navigation />
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <Text className={styles.title}>DMS</Text>
-        </div>
-        <Divider />
+      <div className={styles.content}>        
         {renderContent()}
       </div>
     </div>
