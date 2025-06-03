@@ -3,6 +3,7 @@ export const NAV_LINKS = [
     name: 'Client Side',
     url: '#',
     key: 'dms',
+    linkName: '/client-side',
     icon: 'Document',
     links: [
       { 
@@ -23,18 +24,21 @@ export const NAV_LINKS = [
     name: 'Firm Side',
     url: '#',
     key: 'portal',
+    linkName: '/firm-side',
     icon: 'Table'
   },
   {
     name: 'Organization',
     url: '#',
     key: 'org',
+    linkName: '/settings/organization',
     icon: 'Building'
   },
   {
     name: 'Storage',
     url: '#',
     key: 'storage',
+    linkName: '/settings/storage',
     icon: 'Storage',
     links: [
       { 
@@ -55,6 +59,7 @@ export const NAV_LINKS = [
     name: 'Validation',
     url: '#',
     key: 'validation',
+    linkName: '/settings/validation',
     icon: 'CheckmarkCircle'
   },
   {

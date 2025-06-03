@@ -29,6 +29,7 @@ type NavLink = {
   key: string;
   icon?: string;
   links?: NavLink[];
+  linkName?: string;
 };
 
 interface NavigationProps {
@@ -42,7 +43,7 @@ const Navigation: React.FC = () => {
   const location = useLocation();
 
   const renderNavLink = (link: NavLink, level = 0): JSX.Element => {
-    const isSelected = location.pathname.includes(link.key);
+    const isSelected = location.pathname.includes(link.linkName || link.key);
     
     const handleClick = () => {
       switch (link.key) {

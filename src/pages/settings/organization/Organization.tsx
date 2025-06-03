@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
 import { Plus, X, Settings, Building2, MapPin, Save, Check } from 'lucide-react';
 import './Organization.css';
-import { makeStyles, Text } from '@fluentui/react-components';
 
-const useStyles = makeStyles({
-  container: {
-    padding: '24px',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 600,
-    marginBottom: '24px',
-  }
-});
+
 
 const OrganizationSettings: React.FC = () => {
-  const styles = useStyles();
+  
   const [companyName, setCompanyName] = useState('');
   const [companyContact, setCompanyContact] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
@@ -44,8 +34,7 @@ const OrganizationSettings: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <Text className={styles.title}>Organization Settings</Text>
+    <div>
       <div className="organization-container">
         {/* Header */}
         <div className="header">
