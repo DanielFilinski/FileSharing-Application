@@ -1,6 +1,6 @@
 export const NAV_LINKS = [
   {
-    name: 'DMS',
+    name: 'Client Side',
     url: '#',
     key: 'dms',
     icon: 'Document',
@@ -20,7 +20,7 @@ export const NAV_LINKS = [
     ],
   },
   {
-    name: 'Portal',
+    name: 'Firm Side',
     url: '#',
     key: 'portal',
     icon: 'Table'
@@ -35,25 +35,21 @@ export const NAV_LINKS = [
     name: 'Storage',
     url: '#',
     key: 'storage',
-    icon: 'Storage'
-  },
-  {
-    name: 'Users',
-    url: '#',
-    key: 'users',
-    icon: 'People'
-  },
-  {
-    name: 'Employees',
-    url: '#',
-    key: 'employees',
-    icon: 'Person'
-  },
-  {
-    name: 'Clients',
-    url: '#',
-    key: 'clients',
-    icon: 'PeopleTeam'
+    icon: 'Storage',
+    links: [
+      { 
+        name: 'Users', 
+        url: '#', 
+        key: 'users', 
+        icon: 'People', 
+      },
+      { 
+        name: 'Employees', 
+        url: '#', 
+        key: 'employees', 
+        icon: 'Person' 
+      },
+    ],
   },
   {
     name: 'Validation',
@@ -61,6 +57,12 @@ export const NAV_LINKS = [
     key: 'validation',
     icon: 'CheckmarkCircle'
   },
+  {
+    name: 'Approval',
+    url: '#',
+    key: 'approval',
+    icon: 'CheckmarkCircle'
+  }
 ];
 
 export const NAV_GROUPS = [
@@ -76,9 +78,8 @@ export const NAV_GROUPS = [
     links: [
       NAV_LINKS[2], // Organization
       NAV_LINKS[3], // Storage
-      NAV_LINKS[4], // Users
-      NAV_LINKS[5], // Employees
-      NAV_LINKS[6], // Clients
+      NAV_LINKS[4], // Validation
+      NAV_LINKS[5], // Approval
     ]
   }
 ];

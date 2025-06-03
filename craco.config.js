@@ -10,5 +10,13 @@ module.exports = {
       '@widgets': path.resolve(__dirname, 'src/widgets'),
       '@pages': path.resolve(__dirname, 'src/pages')
     }
-  }
+  },
+  style: {
+    postcss: {
+      plugins: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+      ],
+    },
+  },
 }; 

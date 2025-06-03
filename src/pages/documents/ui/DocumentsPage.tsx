@@ -4,6 +4,8 @@ import { Navigation } from './components/Navigation';
 import { Toolbar } from './components/Toolbar';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { DocumentsTable } from './components/DocumentsTable';
+import ValidationSettingsForm from '@/pages/settings/Validation';
+import OrganizationSettingsForm from '@/pages/settings/Organization';
 
 const useStyles = makeStyles({
   root: {
@@ -34,7 +36,7 @@ export default function DmsMainScreen() {
   return (
     <div className={styles.root}>
       <Navigation />
-      <div className={styles.content}>
+      {/* <div className={styles.content}>
         <div className={styles.header}>
           <Text className={styles.title}>DMS</Text>
         </div>
@@ -43,7 +45,8 @@ export default function DmsMainScreen() {
         <Divider />
         <Breadcrumbs />
         <DocumentsTable />
-      </div>
+      </div> */}
+      <OrganizationSettingsForm />
     </div>
   );
 } 
