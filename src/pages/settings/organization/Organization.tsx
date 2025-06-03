@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Settings, Building2, MapPin, Save, Check } from 'lucide-react';
+import { Plus, X, Settings, Building2, MapPin, Save, Check, User } from 'lucide-react';
 import './Organization.css';
 
 
@@ -117,12 +117,7 @@ const OrganizationSettings: React.FC = () => {
                 <div className="section">
                   <h2 className="section-header">
                     <span className="section-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                      </svg>
+                      <User size={18} />
                     </span>
                     Owner Information
                   </h2>

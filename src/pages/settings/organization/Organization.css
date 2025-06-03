@@ -1,7 +1,7 @@
 .organization-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   background-color: #f9fafb;
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -87,6 +87,8 @@
   flex: 1;
   overflow: auto;
   padding: 1.5rem;
+  min-height: calc(100vh - 140px); /* Высота минус header и tab navigation */
+  background-color: #f9fafb;
 }
 
 .content-container {
@@ -95,6 +97,7 @@
 }
 
 .section {
+  
   margin-bottom: 2rem;
   background-color: white;
   border-radius: 0.5rem;
@@ -126,9 +129,9 @@
   gap: 1.25rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .form-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 
