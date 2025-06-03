@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Breadcrumb, BreadcrumbItem } from '@fluentui/react-components';
 import { ChevronRightRegular } from '@fluentui/react-icons';
-import { BREADCRUMB_ITEMS } from '../../constants';
+import { BREADCRUMB_ITEMS } from '../../../../entities/document/model/constants';
 
 const useStyles = makeStyles({
   breadcrumb: {

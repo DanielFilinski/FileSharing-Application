@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, tokens, Divider } from '@fluentui/react-components';
 import { SearchRegular } from '@fluentui/react-icons';
-import { NAV_GROUPS } from '../../constants';
+import { NAV_GROUPS } from '../../../../entities/document/model/constants';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles({

@@ -1,10 +1,8 @@
 import React from 'react';
-import { makeStyles, tokens, Text, Divider } from '@fluentui/react-components';
-import { Navigation } from './components/Navigation';
+import { makeStyles, tokens, Divider } from '@fluentui/react-components';
 import { Toolbar } from './components/Toolbar';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { DocumentsTable } from './components/DocumentsTable';
-import { Outlet, useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles({
   root: {
@@ -30,28 +28,15 @@ const useStyles = makeStyles({
 });
 
 export default function DmsMainScreen() {
-  const styles = useStyles();
-  const location = useLocation();
-  
-  const renderContent = () => {
-    if (location.pathname === '/client-side' || location.pathname === '/') {
-      return (
-        <>
-          <Toolbar />
-          <Divider />
-          <Breadcrumbs />
-          <DocumentsTable />
-        </>
-      );
-    }
-    return <Outlet />;
-  };
+  const styles = useStyles();  
   
   return (
-    <div className={styles.root}>
-      
+    <div className={styles.root}>      
       <div className={styles.content}>        
-        {renderContent()}
+        <Toolbar />
+        <Divider />
+        <Breadcrumbs />
+        <DocumentsTable />
       </div>
     </div>
   );

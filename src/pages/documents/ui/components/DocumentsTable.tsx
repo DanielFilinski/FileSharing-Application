@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, tokens, Table, TableHeader, TableRow, TableHeaderCell, TableBody, TableCell, Checkbox } from '@fluentui/react-components';
 import { Document20Regular, DocumentBulletList20Regular } from '@fluentui/react-icons';
-import { TABLE_COLUMNS, TABLE_ITEMS } from '../../constants';
+import { TABLE_COLUMNS, TABLE_ITEMS } from '../../../../entities/document/model/constants';
 
 const useStyles = makeStyles({
   table: {
