@@ -49,7 +49,7 @@ export default function DmsMainScreen() {
   
   return (
     <div className={styles.root}>
-      <Navigation />
+      
       <div className={styles.content}>        
         {renderContent()}
       </div>

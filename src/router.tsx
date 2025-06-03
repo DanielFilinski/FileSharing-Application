@@ -6,12 +6,17 @@ import ApprovalSettingsForm from './pages/settings/Approval';
 import OrganizationSettings from './pages/settings/Organization';
 import StorageSettings from './pages/settings/Storage';
 import ValidationSettings from './pages/settings/Validation';
+import { Layout } from './components/Layout';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <DmsMainScreen />,
+    element: <Layout />,
     children: [
+      {
+        path: '/',
+        element: <DmsMainScreen />,
+      },
       {
         path: 'client-side',
         element: <DmsMainScreen />,
