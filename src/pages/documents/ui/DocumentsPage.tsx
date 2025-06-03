@@ -4,8 +4,7 @@ import { Navigation } from './components/Navigation';
 import { Toolbar } from './components/Toolbar';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { DocumentsTable } from './components/DocumentsTable';
-import ValidationSettingsForm from '@/pages/settings/Validation';
-import OrganizationSettingsForm from '@/pages/settings/Organization';
+import ApprovalSettingsForm from '@/pages/settings/Approval';
 
 const useStyles = makeStyles({
   root: {
@@ -46,7 +45,7 @@ export default function DmsMainScreen() {
         <Breadcrumbs />
         <DocumentsTable />
       </div> */}
-      <OrganizationSettingsForm />
+      <ApprovalSettingsForm />
     </div>
   );
 } 
