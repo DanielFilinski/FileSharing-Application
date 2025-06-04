@@ -134,22 +134,17 @@ const SectionIcon = styled.span`
 `;
 
 const FormGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
   
   @media (max-width: 640px) {
-    grid-template-columns: 1fr;
     gap: 1rem;
   }
 `;
 
 const FormGroup = styled.div<{ fullWidth?: boolean }>`
-  ${(props: { fullWidth?: boolean }) => props.fullWidth && 'grid-column: span 2;'}
-  
-  @media (max-width: 640px) {
-    grid-column: span 1;
-  }
+  width: 100%;
 `;
 
 const FormLabel = styled.label`
