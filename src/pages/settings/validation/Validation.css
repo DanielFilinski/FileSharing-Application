@@ -73,7 +73,7 @@
 
 .section-header {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
 }
 
@@ -149,6 +149,7 @@ input:checked + .toggle-slider:before {
 }
 
 .validation-type-grid {
+  margin-top: 0.5rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
@@ -186,18 +187,24 @@ input:checked + .toggle-slider:before {
 
 .employee-tag-avatar {
   margin-right: 0.375rem;
+  font-size: 1.25rem;
 }
 
 .employee-tag-name {
   margin-right: 0.25rem;
+  color: #1f2937;
 }
 
 .employee-tag-remove {
   color: #6b7280;
+  padding: 0.125rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
 }
 
 .employee-tag-remove:hover {
   color: #ef4444;
+  background-color: #fee2e2;
 }
 
 .add-button {
@@ -293,6 +300,7 @@ input:checked + .toggle-slider:before {
 .employee-info {
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
 .employee-avatar {
@@ -303,16 +311,19 @@ input:checked + .toggle-slider:before {
 .employee-details {
   display: flex;
   flex-direction: column;
+  margin-left: 0.5rem;
 }
 
 .employee-name {
   font-weight: 500;
   color: #1f2937;
+  font-size: 0.875rem;
 }
 
 .employee-department {
   font-size: 0.75rem;
   color: #6b7280;
+  margin-top: 0.125rem;
 }
 
 .modal-footer {
@@ -411,4 +422,31 @@ input:checked + .toggle-slider:before {
   justify-content: center;
   width: fit-content;
   height: fit-content;
+}
+
+.selected-employees-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.no-employees-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.add-button-icon {
+  margin-right: 0.375rem;
+}
+
+.selected-icon {
+  color: #9333ea;
+}
+
+.no-results-text {
+  text-align: center;
+  padding: 1rem 0;
+  color: #6b7280;
 } 

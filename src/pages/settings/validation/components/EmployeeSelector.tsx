@@ -36,25 +36,23 @@ export const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       <h2 className="title-text">Employees Responsible for Validation</h2>
       
       {/* Selected Employees List */}
-      <div className="mb-3">
-        <div className="flex flex-wrap gap-2">
-          {selectedEmployees.length > 0 ? (
-            selectedEmployees.map(employee => (
-              <div key={employee.id} className="employee-tag">
-                <span className="employee-tag-avatar">{employee.avatar}</span>
-                <span className="employee-tag-name">{employee.name}</span>
-                <button 
-                  onClick={() => onEmployeeRemove(employee.id)}
-                  className="employee-tag-remove"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm italic">No employees selected</p>
-          )}
-        </div>
+      <div className="selected-employees-list">
+        {selectedEmployees.length > 0 ? (
+          selectedEmployees.map(employee => (
+            <div key={employee.id} className="employee-tag">
+              <span className="employee-tag-avatar">{employee.avatar}</span>
+              <span className="employee-tag-name">{employee.name}</span>
+              <button 
+                onClick={() => onEmployeeRemove(employee.id)}
+                className="employee-tag-remove"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="no-employees-text">No employees selected</p>
+        )}
       </div>
 
       {/* Add Employee Button */}
@@ -62,7 +60,7 @@ export const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
         onClick={() => setShowSelector(true)}
         className="add-button"
       >
-        <Plus size={16} className="mr-1.5" />
+        <Plus size={16} className="add-button-icon" />
         Add Validator
       </button>
 
@@ -110,13 +108,13 @@ export const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                         </div>
                       </div>
                       {isSelected && (
-                        <Check size={16} className="text-purple-600" />
+                        <Check size={16} className="selected-icon" />
                       )}
                     </div>
                   );
                 })
               ) : (
-                <p className="text-center py-4 text-gray-500">No employees found</p>
+                <p className="no-results-text">No employees found</p>
               )}
             </div>
             

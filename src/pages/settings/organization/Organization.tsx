@@ -1,275 +1,194 @@
 import React, { useState } from 'react';
-import { Plus, X, Settings, Building2, MapPin, Save, Check, User } from 'lucide-react';
-import './Organization.css';
-
-
+import { Plus, X, Settings, Building2, MapPin, Save, Check, User, Users } from 'lucide-react';
+import styled from 'styled-components';
+import { GeneralTab } from './components/GeneralTab';
+import { OfficesTab } from './components/OfficesTab';
 
 const OrganizationSettings: React.FC = () => {
-  
-  const [companyName, setCompanyName] = useState('');
-  const [companyContact, setCompanyContact] = useState('');
-  const [companyEmail, setCompanyEmail] = useState('');
-  const [ownerName, setOwnerName] = useState('');
-  const [ownerContact, setOwnerContact] = useState('');
-  const [ownerEmail, setOwnerEmail] = useState('');
-  const [offices, setOffices] = useState<Array<{ name: string; address: string }>>([]);
-  const [newOfficeName, setNewOfficeName] = useState('');
-  const [newOfficeAddress, setNewOfficeAddress] = useState('');
-  const [showAddOffice, setShowAddOffice] = useState(false);
   const [activeTabId, setActiveTabId] = useState('general');
 
-  const handleAddOffice = () => {
-    if (newOfficeName.trim() && newOfficeAddress.trim()) {
-      setOffices([...offices, { name: newOfficeName, address: newOfficeAddress }]);
-      setNewOfficeName('');
-      setNewOfficeAddress('');
-      setShowAddOffice(false);
-    }
-  };
-
-  const handleRemoveOffice = (index: number) => {
-    const updatedOffices = [...offices];
-    updatedOffices.splice(index, 1);
-    setOffices(updatedOffices);
-  };
-
   return (
-    <div>
-      <div className="organization-container">
-        {/* Header */}
-        <div className="header">
-          <div className="header-title">
-            <Settings className="header-icon" size={20} />
-            <h1 className="header-heading">Organization Settings</h1>
-          </div>
-          <button className="save-button">
-            <Save size={16} className="mr-1.5" />
+    <Container>
+      <OrganizationContainer>
+        <Header>
+          <HeaderTitle>
+            <HeaderIcon size={20} />
+            <HeaderHeading>Organization Settings</HeaderHeading>
+          </HeaderTitle>
+          <SaveButton>
+            <Save size={16} />
             Save changes
-          </button>
-        </div>
+          </SaveButton>
+        </Header>
 
-        {/* Tab Navigation */}
-        <div className="tab-navigation">
-          <div className="tab-list">
-            <button 
+        <TabNavigation>
+          <TabList>
+            <TabButton 
               onClick={() => setActiveTabId('general')}
-              className={`tab-button ${activeTabId === 'general' ? 'active' : ''}`}
+              active={activeTabId === 'general'}
             >
               General
-            </button>
-            <button 
+            </TabButton>
+            <TabButton 
               onClick={() => setActiveTabId('offices')}
-              className={`tab-button ${activeTabId === 'offices' ? 'active' : ''}`}
+              active={activeTabId === 'offices'}
             >
               Offices
-            </button>
-          </div>
-        </div>
+            </TabButton>
+          </TabList>
+        </TabNavigation>
 
-        {/* Content */}
-        <div className="content">
-          <div className="content-container">
-            {activeTabId === 'general' && (
-              <>
-                {/* Company Information Section */}
-                <div className="section">
-                  <h2 className="section-header">
-                    <span className="section-icon">
-                      <Building2 size={18} />
-                    </span>
-                    Company Information
-                  </h2>
-                  <div className="form-grid">
-                    <div className="form-group">
-                      <label className="form-label">Company Name</label>
-                      <input
-                        type="text"
-                        value={companyName}
-                        onChange={(e) => setCompanyName(e.target.value)}
-                        className="form-input"
-                        placeholder="Enter company name"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Company Contact</label>
-                      <input
-                        type="text"
-                        value={companyContact}
-                        onChange={(e) => setCompanyContact(e.target.value)}
-                        className="form-input"
-                        placeholder="Enter company contact number"
-                      />
-                    </div>
-                    <div className="form-group md:col-span-2">
-                      <label className="form-label">Company Email</label>
-                      <input
-                        type="email"
-                        value={companyEmail}
-                        onChange={(e) => setCompanyEmail(e.target.value)}
-                        className="form-input"
-                        placeholder="Enter company email"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Owner Information Section */}
-                <div className="section">
-                  <h2 className="section-header">
-                    <span className="section-icon">
-                      <User size={18} />
-                    </span>
-                    Owner Information
-                  </h2>
-                  <div className="form-grid">
-                    <div className="form-group">
-                      <label className="form-label">Owner Full Name</label>
-                      <input
-                        type="text"
-                        value={ownerName}
-                        onChange={(e) => setOwnerName(e.target.value)}
-                        className="form-input"
-                        placeholder="Enter owner's full name"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Owner Contact</label>
-                      <input
-                        type="text"
-                        value={ownerContact}
-                        onChange={(e) => setOwnerContact(e.target.value)}
-                        className="form-input"
-                        placeholder="Enter owner's contact number"
-                      />
-                    </div>
-                    <div className="form-group md:col-span-2">
-                      <label className="form-label">Owner Email</label>
-                      <input
-                        type="email"
-                        value={ownerEmail}
-                        onChange={(e) => setOwnerEmail(e.target.value)}
-                        className="form-input"
-                        placeholder="Enter owner's email"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-            
-            {activeTabId === 'offices' && (
-              <div className="section">
-                <div className="form-header">
-                  <h2 className="section-header">
-                    <span className="section-icon">
-                      <Building2 size={18} />
-                    </span>
-                    Offices
-                  </h2>
-                  <button 
-                    onClick={() => setShowAddOffice(true)}
-                    className="add-button"
-                  >
-                    <Plus size={16} className="mr-1.5" />
-                    Add Office
-                  </button>
-                </div>
-                
-                {/* Office List */}
-                <div className="office-list">
-                  {offices.length > 0 ? (
-                    offices.map((office, index) => (
-                      <div key={index} className="office-item">
-                        <button 
-                          onClick={() => handleRemoveOffice(index)}
-                          className="office-remove"
-                        >
-                          <X size={16} />
-                        </button>
-                        <div className="office-content">
-                          <div className="office-icon">
-                            <Building2 size={16} />
-                          </div>
-                          <div className="office-details">
-                            <h3 className="office-name">{office.name}</h3>
-                            <div className="office-address">
-                              <MapPin size={14} className="office-address-icon" />
-                              <p className="office-address-text">{office.address}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="empty-state">
-                      <div className="empty-icon">
-                        <Building2 size={24} />
-                      </div>
-                      <p className="empty-title">No offices added yet</p>
-                      <p className="empty-description">Click "Add Office" to add your first office location</p>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Add Office Form */}
-                {showAddOffice && (
-                  <div className="add-office-form">
-                    <div className="form-header">
-                      <h3 className="form-title">
-                        <Plus size={16} className="mr-1.5" />
-                        Add New Office
-                      </h3>
-                      <button onClick={() => setShowAddOffice(false)} className="form-close">
-                        <X size={16} />
-                      </button>
-                    </div>
-                    <div className="form-grid">
-                      <div className="form-group">
-                        <label className="form-label">Office Name</label>
-                        <input
-                          type="text"
-                          value={newOfficeName}
-                          onChange={(e) => setNewOfficeName(e.target.value)}
-                          className="form-input"
-                          placeholder="Enter office name"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Office Address</label>
-                        <textarea
-                          value={newOfficeAddress}
-                          onChange={(e) => setNewOfficeAddress(e.target.value)}
-                          className="form-input"
-                          placeholder="Enter office address"
-                          rows={2}
-                        ></textarea>
-                      </div>
-                      <div className="form-actions">
-                        <button 
-                          onClick={() => setShowAddOffice(false)}
-                          className="cancel-button"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={handleAddOffice}
-                          className="add-button"
-                          disabled={!newOfficeName.trim() || !newOfficeAddress.trim()}
-                        >
-                          <Check size={16} className="mr-1.5" />
-                          Add Office
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+        <Content>
+          <ContentContainer>
+            {activeTabId === 'general' && <GeneralTab />}
+            {activeTabId === 'offices' && <OfficesTab />}
+          </ContentContainer>
+        </Content>
+      </OrganizationContainer>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F9FAFB;
+`;
+
+const OrganizationContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+`;
+
+const HeaderTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const HeaderIcon = styled(Settings)`
+  color: #7C3AED;
+`;
+
+const HeaderHeading = styled.h1`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  
+  @media (max-width: 640px) {
+    font-size: 1.25rem;
+  }
+`;
+
+const SaveButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  background-color: #7C3AED;
+  color: white;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #6D28D9;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const TabNavigation = styled.div`
+  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 2rem;
+  background-color: white;
+  border-radius: 0.5rem 0.5rem 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+const TabList = styled.div`
+  display: flex;
+  gap: 1rem;
+  padding: 0 1rem;
+  
+  @media (max-width: 640px) {
+    gap: 0.5rem;
+  }
+`;
+
+const TabButton = styled.button<{ active: boolean }>`
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  color: ${props => props.active ? '#7C3AED' : '#6B7280'};
+  border-bottom: 2px solid ${props => props.active ? '#7C3AED' : 'transparent'};
+  transition: all 0.2s ease-in-out;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    color: #7C3AED;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #7C3AED;
+    transform: scaleX(${props => props.active ? 1 : 0});
+    transition: transform 0.2s ease-in-out;
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+`;
+
+const Content = styled.div`
+  background-color: white;
+  border-radius: 0 0 0.5rem 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+const ContentContainer = styled.div`
+  padding: 2rem;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+`;
 
 export default OrganizationSettings;

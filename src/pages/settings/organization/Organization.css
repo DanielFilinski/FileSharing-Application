@@ -314,10 +314,9 @@
   color: #111827;
 }
 
-.add-button {
-  background-color: #9333ea;
-  color: white;
-  padding: 0.5rem 1rem;
+.organization-add-button {
+  color: #9333ea;
+  padding: 0.375rem 0.75rem;
   border-radius: 0.375rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -326,11 +325,12 @@
   transition: background-color 0.2s;
 }
 
-.add-button:hover {
-  background-color: #7e22ce;
+.organization-add-button:hover {
+  background-color: #e9d5ff;
+  border-color: #d8b4fe;
 }
 
-.add-button:disabled {
+.organization-add-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 } 

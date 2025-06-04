@@ -12,13 +12,20 @@ export const ValidationTypeSelector: React.FC<ValidationTypeSelectorProps> = ({
 }) => {
   return (
     <div className="section">
-      <h2 className="title-text">Validation Assignment</h2>
+
+      <div style={{ display: 'flex', alignItems: 'center' }}>  
+      <span className="section-icon">
+                      <Users size={18} />
+                    </span>
+        <h2 className="title-text">Validation Assignment</h2>
+      </div>
+
       <div className="validation-type-grid">
         <div 
           className={`validation-type-option ${selectedType === 'employee' ? 'active' : ''}`}
           onClick={() => onTypeChange('employee')}
         >
-          <Users size={14} className="mr-1.5" />
+          <Users size={14} style={{ marginRight: '0.5rem' }} />
           <span>Employees</span>
         </div>
         <div 
