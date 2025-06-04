@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { Plus, X, Building2, MapPin, Check } from 'lucide-react';
+import { ButtonHover } from '@/components/button-hover';
 
 export const OfficesTab: React.FC = () => {
   const [offices, setOffices] = useState<Array<{ name: string; address: string }>>([]);
@@ -37,10 +38,8 @@ export const OfficesTab: React.FC = () => {
           </SectionIcon>
           Offices
         </SectionHeader>
-        <AddButton onClick={() => setShowAddOffice(true)}>
-          <Plus size={16} />
-          Add Office
-        </AddButton>
+
+        <ButtonHover text="Add Office" onClick={() => setShowAddOffice(true)}/>
       </FormHeader>
 
       <OfficeList>
@@ -109,6 +108,7 @@ export const OfficesTab: React.FC = () => {
               <CancelButton onClick={() => setShowAddOffice(false)}>
                 Cancel
               </CancelButton>
+              
               <AddOfficeButton
                 onClick={handleAddOffice}
                 disabled={!newOfficeName.trim() || !newOfficeAddress.trim()}

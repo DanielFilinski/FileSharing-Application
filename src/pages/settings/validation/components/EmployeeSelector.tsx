@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { Stack, Text } from '@fluentui/react';
 import { COLORS } from '@/app/theme/color-pallete';
 import { Card } from '@fluentui/react-components';
+import { ButtonHover } from '@/components/button-hover';
+import { ButtonAccent } from '@/components/button-accent';
 
 interface Employee {
   id: string;
@@ -36,12 +38,10 @@ export const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   );
 
   return (
-    <Card>
+    <Section>
       <TitleText>
         <Text variant="xLarge">Employees Responsible for Validation</Text>
       </TitleText>
-
-      <Text color="brand">Брендовый цвет</Text>
       
       <SelectedEmployeesList>
         {selectedEmployees.length > 0 ? (
@@ -65,10 +65,7 @@ export const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
         )}
       </SelectedEmployeesList>
 
-      <AddButton onClick={() => setShowSelector(true)}>
-        <Plus size={16} />
-        <Text>Add Validator</Text>
-      </AddButton>
+      <ButtonHover text="Add Validator" onClick={() => setShowSelector(true)}/>
 
       {showSelector && (
         <ModalOverlay>
@@ -127,14 +124,12 @@ export const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
             </EmployeeList>
             
             <ModalFooter>
-              <DoneButton onClick={() => setShowSelector(false)}>
-                <Text>Done</Text>
-              </DoneButton>
+              <ButtonAccent text="Done" onClick={() => setShowSelector(false)}/>
             </ModalFooter>
           </Modal>
         </ModalOverlay>
       )}
-    </Card>
+    </Section>
   );
 }; 
 
@@ -257,8 +252,7 @@ const ModalClose = styled.button`
   }
 `;
 
-const SearchInput = styled.input`
-  width: 100%;
+const SearchInput = styled.input`  
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
