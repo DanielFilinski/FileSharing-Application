@@ -7,14 +7,14 @@ type SwitchProps = {
 
 const Switch = ({ checked, onChange }: SwitchProps) => {  
     return (
-        <ToggleSwitch>
-            <input 
-              type="checkbox" 
-              checked={checked} 
-              onChange={onChange} 
-            />
-            <ToggleSlider />
-        </ToggleSwitch>
+      <ToggleSwitch>
+          <input 
+            type="checkbox" 
+            checked={checked} 
+            onChange={onChange} 
+          />
+          <ToggleSlider />
+      </ToggleSwitch>
     )
 }
 

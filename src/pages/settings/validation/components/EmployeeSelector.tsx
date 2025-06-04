@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { X, Plus, Check } from 'lucide-react';
+import styled from 'styled-components';
+import { Stack, Text } from '@fluentui/react';
+import { COLORS } from '@/app/theme/color-pallete';
+import { Card } from '@fluentui/react-components';
 
 interface Employee {
   id: string;
@@ -32,103 +36,309 @@ export const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   );
 
   return (
-    <div className="section">
-      <h2 className="title-text">Employees Responsible for Validation</h2>
+    <Card>
+      <TitleText>
+        <Text variant="xLarge">Employees Responsible for Validation</Text>
+      </TitleText>
+
+      <Text color="brand">Брендовый цвет</Text>
       
-      {/* Selected Employees List */}
-      <div className="selected-employees-list">
+      <SelectedEmployeesList>
         {selectedEmployees.length > 0 ? (
           selectedEmployees.map(employee => (
-            <div key={employee.id} className="employee-tag">
-              <span className="employee-tag-avatar">{employee.avatar}</span>
-              <span className="employee-tag-name">{employee.name}</span>
-              <button 
-                onClick={() => onEmployeeRemove(employee.id)}
-                className="employee-tag-remove"
-              >
+            <EmployeeTag key={employee.id}>
+              <EmployeeTagAvatar>
+                <Text>{employee.avatar}</Text>
+              </EmployeeTagAvatar>
+              <EmployeeTagName>
+                <Text>{employee.name}</Text>
+              </EmployeeTagName>
+              <EmployeeTagRemove onClick={() => onEmployeeRemove(employee.id)}>
                 <X size={14} />
-              </button>
-            </div>
+              </EmployeeTagRemove>
+            </EmployeeTag>
           ))
         ) : (
-          <p className="no-employees-text">No employees selected</p>
+          <NoEmployeesText>
+            <Text>No employees selected</Text>
+          </NoEmployeesText>
         )}
-      </div>
+      </SelectedEmployeesList>
 
-      {/* Add Employee Button */}
-      <button 
-        onClick={() => setShowSelector(true)}
-        className="add-button"
-      >
-        <Plus size={16} className="add-button-icon" />
-        Add Validator
-      </button>
+      <AddButton onClick={() => setShowSelector(true)}>
+        <Plus size={16} />
+        <Text>Add Validator</Text>
+      </AddButton>
 
-      {/* Employee Selector Popup */}
       {showSelector && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3 className="modal-title">Select Validators</h3>
-              <button onClick={() => setShowSelector(false)} className="modal-close">
+        <ModalOverlay>
+          <Modal>
+            <ModalHeader>
+              <ModalTitle>
+                <Text variant="large">Select Validators</Text>
+              </ModalTitle>
+              <ModalClose onClick={() => setShowSelector(false)}>
                 <X size={18} />
-              </button>
-            </div>
+              </ModalClose>
+            </ModalHeader>
             
-            {/* Search */}
-            <div>
-              <input
-                type="text"
-                placeholder="Search employees..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-            </div>
+            <SearchInput
+              type="text"
+              placeholder="Search employees..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             
-            {/* Employee List */}
-            <div className="employee-list">
+            <EmployeeList>
               {filteredEmployees.length > 0 ? (
                 filteredEmployees.map(employee => {
                   const isSelected = selectedEmployees.some(emp => emp.id === employee.id);
                   return (
-                    <div 
-                      key={employee.id} 
-                      className={`employee-item ${isSelected ? 'selected' : ''}`}
+                    <EmployeeItem 
+                      key={employee.id}
+                      isSelected={isSelected}
                       onClick={() => {
                         onEmployeeSelect(employee);
                         setShowSelector(false);
                       }}
                     >
-                      <div className="employee-info">
-                        <span className="employee-avatar">{employee.avatar}</span>
-                        <div className="employee-details">
-                          <p className="employee-name">{employee.name}</p>
-                          <p className="employee-department">{getDepartmentName(employee.department)}</p>
-                        </div>
-                      </div>
-                      {isSelected && (
-                        <Check size={16} className="selected-icon" />
-                      )}
-                    </div>
+                      <EmployeeInfo>
+                        <EmployeeAvatar>
+                          <Text>{employee.avatar}</Text>
+                        </EmployeeAvatar>
+                        <EmployeeDetails>
+                          <EmployeeName>
+                            <Text variant="medium">{employee.name}</Text>
+                          </EmployeeName>
+                          <EmployeeDepartment>
+                            <Text variant="small">{getDepartmentName(employee.department)}</Text>
+                          </EmployeeDepartment>
+                        </EmployeeDetails>
+                      </EmployeeInfo>
+                      {isSelected && <SelectedIcon size={16} />}
+                    </EmployeeItem>
                   );
                 })
               ) : (
-                <p className="no-results-text">No employees found</p>
+                <NoResultsText>
+                  <Text>No employees found</Text>
+                </NoResultsText>
               )}
-            </div>
+            </EmployeeList>
             
-            <div className="modal-footer">
-              <button 
-                onClick={() => setShowSelector(false)}
-                className="done-button"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
+            <ModalFooter>
+              <DoneButton onClick={() => setShowSelector(false)}>
+                <Text>Done</Text>
+              </DoneButton>
+            </ModalFooter>
+          </Modal>
+        </ModalOverlay>
       )}
-    </div>
+    </Card>
   );
 }; 
+
+const Section = styled.div`
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+`;
+
+const TitleText = styled.h2`  
+  margin-bottom: 1rem;
+  color: ${COLORS.purple1};
+`;
+
+const SelectedEmployeesList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+`;
+
+const EmployeeTag = styled.div`
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  gap: 8px;
+`;
+
+const EmployeeTagAvatar = styled.span`
+  font-size: 14px;
+`;
+
+const EmployeeTagName = styled.span`
+  font-size: 14px;
+`;
+
+const EmployeeTagRemove = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  color: #666;
+  
+  &:hover {
+    color: #333;
+  }
+`;
+
+const NoEmployeesText = styled.p`
+  color: #666;
+  font-style: italic;
+`;
+
+const AddButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  
+  &:hover {
+    background: #0056b3;
+  }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const Modal = styled.div`
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+`;
+
+const ModalTitle = styled.h3`
+  margin: 0;
+  font-size: 1.2rem;
+`;
+
+const ModalClose = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #666;
+  
+  &:hover {
+    color: #333;
+  }
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 16px;
+  font-size: 14px;
+  
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+`;
+
+const EmployeeList = styled.div`
+  overflow-y: auto;
+  padding: 0 16px;
+`;
+
+const EmployeeItem = styled.div<{ isSelected?: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: ${props => props.isSelected ? '#f0f7ff' : 'transparent'};
+  
+  &:hover {
+    background: ${props => props.isSelected ? '#f0f7ff' : '#f5f5f5'};
+  }
+`;
+
+const EmployeeInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const EmployeeAvatar = styled.span`
+  font-size: 16px;
+`;
+
+const EmployeeDetails = styled.div``;
+
+const EmployeeName = styled.p`
+  margin: 0;
+  font-weight: 500;
+`;
+
+const EmployeeDepartment = styled.p`
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #666;
+`;
+
+const SelectedIcon = styled(Check)`
+  color: #007bff;
+`;
+
+const NoResultsText = styled.p`
+  text-align: center;
+  color: #666;
+  padding: 16px;
+`;
+
+const ModalFooter = styled.div`
+  padding: 16px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const DoneButton = styled.button`
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  
+  &:hover {
+    background: #0056b3;
+  }
+`;

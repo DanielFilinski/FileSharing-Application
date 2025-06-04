@@ -9,11 +9,15 @@ type AccentIconProps = {
 }
 
 const AccentIcon = ({ icon, colorIcon, colorBackground, style }: AccentIconProps) => {
-    return (
-        <IconWrapper color={colorIcon} background={colorBackground} style={style}>
-            {icon}
-        </IconWrapper>
-    )
+  return (
+    <IconWrapper 
+      color={colorIcon} 
+      background={colorBackground} 
+      style={style}
+    >
+      {icon}
+    </IconWrapper>
+  )
 }
 
 export default AccentIcon;

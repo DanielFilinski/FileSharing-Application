@@ -39,7 +39,6 @@ export const Toggle: React.FC<ToggleProps> = ({
 
 
 const Section = styled.div`
-  margin-bottom: 1rem;
 `;
 
 const SectionHeader = styled.div`
