@@ -127,8 +127,8 @@ const SectionIcon = styled.span`
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background-color: #F5F3FF;
-  color: #8B5CF6;
+  background-color: #f3e8ff;
+  color: #9333ea;
   border-radius: 0.375rem;
   padding: 0.5rem;
 `;
@@ -171,17 +171,17 @@ const FormInput = styled.input`
   background-color: white;
 
   &:hover {
-    border-color: #8B5CF6;
+    border-color: #9333ea;
   }
 
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+    border-color: #9333ea;
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.1);
   }
 
   &::placeholder {
-    color: #9CA3AF;
+    color: #6B7280;
   }
   
   &:disabled {

@@ -10,7 +10,8 @@ const OrganizationSettings: React.FC = () => {
   return (
     <Container>
       <OrganizationContainer>
-        <Header>
+        <div>
+<Header>
           <HeaderTitle>
             <HeaderIcon size={20} />
             <HeaderHeading>Organization Settings</HeaderHeading>
@@ -37,6 +38,9 @@ const OrganizationSettings: React.FC = () => {
             </TabButton>
           </TabList>
         </TabNavigation>
+        </div>
+
+        
 
         <Content>
           <ContentContainer>
@@ -49,16 +53,15 @@ const OrganizationSettings: React.FC = () => {
   );
 };
 
-const Container = styled.div`
-  width: 100%;
+const Container = styled.div` 
   min-height: 100vh;
   background-color: #F9FAFB;
 `;
 
 const OrganizationContainer = styled.div`
-  max-width: 1200px;
+  // max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  // padding: 2rem;
   
   @media (max-width: 768px) {
     padding: 1rem;
@@ -69,11 +72,12 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  // margin-bottom: 2rem;
   padding: 1rem;
   background-color: white;
-  border-radius: 0.5rem;
+  // border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #E5E7EB;
   
   @media (max-width: 640px) {
     flex-direction: column;
@@ -89,7 +93,7 @@ const HeaderTitle = styled.div`
 `;
 
 const HeaderIcon = styled(Settings)`
-  color: #7C3AED;
+  color: #9333ea;
 `;
 
 const HeaderHeading = styled.h1`
@@ -107,7 +111,7 @@ const SaveButton = styled.button`
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 1rem;
-  background-color: #7C3AED;
+  background-color: #9333ea;
   color: white;
   border-radius: 0.375rem;
   font-weight: 500;
@@ -116,7 +120,7 @@ const SaveButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #6D28D9;
+    background-color: #7e22ce;
     transform: translateY(-1px);
   }
 
@@ -129,7 +133,7 @@ const TabNavigation = styled.div`
   border-bottom: 1px solid #E5E7EB;
   margin-bottom: 2rem;
   background-color: white;
-  border-radius: 0.5rem 0.5rem 0 0;
+  // border-radius: 0.5rem 0.5rem 0 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
@@ -146,8 +150,8 @@ const TabList = styled.div`
 const TabButton = styled.button<{ active: boolean }>`
   padding: 0.75rem 1rem;
   font-weight: 500;
-  color: ${props => props.active ? '#7C3AED' : '#6B7280'};
-  border-bottom: 2px solid ${props => props.active ? '#7C3AED' : 'transparent'};
+  color: ${props => props.active ? '#9333ea' : '#6B7280'};
+  border-bottom: 2px solid ${props => props.active ? '#9333ea' : 'transparent'};
   transition: all 0.2s ease-in-out;
   background: none;
   border-top: none;
@@ -157,7 +161,7 @@ const TabButton = styled.button<{ active: boolean }>`
   position: relative;
 
   &:hover {
-    color: #7C3AED;
+    color: #9333ea;
   }
 
   &::after {
@@ -167,7 +171,7 @@ const TabButton = styled.button<{ active: boolean }>`
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #7C3AED;
+    background-color: #9333ea;
     transform: scaleX(${props => props.active ? 1 : 0});
     transition: transform 0.2s ease-in-out;
   }
@@ -178,16 +182,18 @@ const TabButton = styled.button<{ active: boolean }>`
 `;
 
 const Content = styled.div`
-  background-color: white;
-  border-radius: 0 0 0.5rem 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+  // background-color: white;
+  // border-radius: 0 0 0.5rem 0.5rem;
+  // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
 const ContentContainer = styled.div`
-  padding: 2rem;
+  // padding: 2rem;
   
   @media (max-width: 768px) {
-    padding: 1rem;
+    // padding: 1rem;
   }
 `;
 
