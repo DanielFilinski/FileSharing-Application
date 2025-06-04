@@ -11,7 +11,7 @@ const OrganizationSettings: React.FC = () => {
     <Container>
       <OrganizationContainer>
         <div>
-<Header>
+        <Header>
           <HeaderTitle>
             <HeaderIcon size={20} />
             <HeaderHeading>Organization Settings</HeaderHeading>
@@ -182,7 +182,7 @@ const TabButton = styled.button<{ active: boolean }>`
 `;
 
 const Content = styled.div`
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   // background-color: white;
   // border-radius: 0 0 0.5rem 0.5rem;

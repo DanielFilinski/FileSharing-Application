@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Check, Shield } from 'lucide-react';
-import './Validation.css';
+import styled from 'styled-components';
 
 import { Header } from './components/Header';
 import { Toggle } from './components/Toggle';
@@ -8,6 +8,8 @@ import { ValidationTypeSelector } from './components/ValidationTypeSelector';
 import { EmployeeSelector } from './components/EmployeeSelector';
 import { OfficeValidator } from './components/OfficeValidator';
 import { Alert } from './components/Alert';
+
+
 
 interface Employee {
   id: string;
@@ -114,11 +116,11 @@ const ValidationSettingsForm = () => {
   };
 
   return (
-    <div className="validation-container">
+    <Container>
       <Header onSave={handleSave} />
 
-      <div className="content">
-        <div className="content-wrapper">
+      <Content>
+        <ContentWrapper>
           <Toggle
             title="Manual Validation Needed"
             description="Enable this option if documents require manual validation before processing"
@@ -146,11 +148,11 @@ const ValidationSettingsForm = () => {
               )}
 
               {validationType === 'office' && (
-                <div className="section">
-                  <h2 className="title-text">Office-Specific Validators</h2>
-                  <p className="subtitle">Assign validators to specific office locations</p>
+                <Section>
+                  <TitleText>Office-Specific Validators</TitleText>
+                  <Subtitle>Assign validators to specific office locations</Subtitle>
                   
-                  <div className="space-y-4">
+                  <SpaceY>
                     {offices.map(office => (
                       <OfficeValidator
                         key={office.id}
@@ -160,8 +162,8 @@ const ValidationSettingsForm = () => {
                         onRemoveValidator={removeEmployeeFromOffice}
                       />
                     ))}
-                  </div>
-                </div>
+                  </SpaceY>
+                </Section>
               )}
 
               <Toggle
@@ -195,10 +197,61 @@ const ValidationSettingsForm = () => {
               message="Documents will be automatically validated and processed without manual intervention."
             />
           )}
-        </div>
-      </div>
-    </div>
+        </ContentWrapper>
+      </Content>
+    </Container>
   );
 };
 
 export default ValidationSettingsForm;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+ 
+  height: 100%;
+  width: 100%;
+  background-color: #f9fafb;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.01em;
+`;
+
+const Content = styled.div`
+  flex: 1;
+  overflow: auto;
+  width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem 0;
+`;
+
+const ContentWrapper = styled.div`
+  max-width: 48rem;
+  margin: 0 auto;
+`;
+
+const Section = styled.div`
+  margin-bottom: 1.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+`;
+
+const TitleText = styled.h2`
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+`;
+
+const Subtitle = styled.p`
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+`;
+
+const SpaceY = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
