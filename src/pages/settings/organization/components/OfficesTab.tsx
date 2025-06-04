@@ -28,7 +28,8 @@ export const OfficesTab: React.FC = () => {
   };
 
   return (
-    <Section>
+    <ContentContainer>
+       <Section>
       <FormHeader>
         <SectionHeader>
           <SectionIcon>
@@ -108,25 +109,38 @@ export const OfficesTab: React.FC = () => {
               <CancelButton onClick={() => setShowAddOffice(false)}>
                 Cancel
               </CancelButton>
-              <AddButton
+              <AddOfficeButton
                 onClick={handleAddOffice}
                 disabled={!newOfficeName.trim() || !newOfficeAddress.trim()}
               >
                 <Check size={16} />
                 Add Office
-              </AddButton>
+              </AddOfficeButton>
             </FormActions>
           </FormGrid>
         </AddOfficeForm>
       )}
     </Section>
+    </ContentContainer>
+    
+   
   );
 }; 
 
 
+const ContentContainer = styled.div`
+  padding: 2rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  @media (max-width: 768px) {
+   
+  }
+    
+`;
 
 const Section = styled.div`
-  margin-bottom: 2rem;
+  // margin-bottom: 2rem;
 `;
 
 const FormHeader = styled.div`
@@ -172,25 +186,45 @@ const AddButton = styled.button`
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 1rem;
+  background-color: white;
+  color: #9333ea;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f3e8ff;
+    transform: translateY(-1px);
+  }
+`;
+
+const AddOfficeButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
   background-color: #9333ea;
   color: white;
   border-radius: 0.375rem;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
-  border: none;
   cursor: pointer;
 
   &:hover {
-    background-color: #7e22ce;
+    background-color: #9333EA;
     transform: translateY(-1px);
   }
 
   &:active {
+    background-color: #9333EA;
+    color: white;
     transform: translateY(0);
   }
 
   &:disabled {
     background-color: #f3e8ff;
+    color: gray;
     cursor: not-allowed;
     transform: none;
   }
@@ -228,6 +262,11 @@ const OfficeRemove = styled.button`
   padding: 0.25rem;
   border-radius: 0.25rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
 
   &:hover {
     color: #EF4444;
@@ -314,7 +353,7 @@ const EmptyDescription = styled.p`
 const AddOfficeForm = styled.div`
   margin-top: 2rem;
   padding: 1.5rem;
-  background-color: white;
+  background-color: #FAF5FF;
   border: 1px solid #E5E7EB;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -330,7 +369,7 @@ const FormTitle = styled.h3`
   gap: 0.375rem;
   font-size: 1rem;
   font-weight: 500;
-  color: #111827;
+  color: #581C87;
 `;
 
 const FormClose = styled.button`
@@ -347,23 +386,14 @@ const FormClose = styled.button`
 `;
 
 const FormGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
   margin-top: 1.5rem;
-  
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
 `;
 
 const FormGroup = styled.div<{ fullWidth?: boolean }>`
-  ${(props: { fullWidth?: boolean }) => props.fullWidth && 'grid-column: span 2;'}
-  
-  @media (max-width: 640px) {
-    grid-column: span 1;
-  }
+  width: 100%;
 `;
 
 const FormLabel = styled.label`
