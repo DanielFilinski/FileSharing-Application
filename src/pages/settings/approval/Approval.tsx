@@ -88,27 +88,28 @@ function ApprovalSettingsForm() {
           <h1 className="title">Approval Settings</h1>
         </div>
         
-        <div className="toggle-section">
-          <div className="toggle-header">
-            <div className="toggle-content">
-              <div className="icon-container">
-                <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+        <div className="content-container">
+          <div className="toggle-section">
+            <div className="toggle-header">
+              <div className="toggle-content">
+                <div className="icon-container">
+                  <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div className="toggle-text">
+                  <h2 className="toggle-title">Manual Approval Needed</h2>
+                  <p className="toggle-description">Enable this to require manual approval for documents</p>
+                </div>
               </div>
-              <div className="toggle-text">
-                <h2 className="toggle-title">Manual Approval Needed</h2>
-                <p className="toggle-description">Enable this to require manual approval for documents</p>
+              <div 
+                className={`toggle-switch ${manualApprovalNeeded ? 'active' : 'inactive'}`}
+                onClick={toggleManualApproval}
+              >
+                <div className={`toggle-button ${manualApprovalNeeded ? 'active' : ''}`} />
               </div>
-            </div>
-            <div 
-              className={`toggle-switch ${manualApprovalNeeded ? 'active' : 'inactive'}`}
-              onClick={toggleManualApproval}
-            >
-              <div className={`toggle-button ${manualApprovalNeeded ? 'active' : ''}`} />
             </div>
           </div>
-        </div>
         
         {manualApprovalNeeded && (
           <div className="space-y-8">
@@ -363,6 +364,9 @@ function ApprovalSettingsForm() {
             Save Settings
           </button>
         </div>
+
+        </div>
+       
       </div>
     </div>
   );
