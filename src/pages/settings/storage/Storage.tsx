@@ -1,26 +1,30 @@
 import React from 'react';
-import { makeStyles, Text } from '@fluentui/react-components';
+import { Card, CardHeader, makeStyles, Title1 } from '@fluentui/react-components';
+import { ScreenContainer, HeaderContainer, ContentContainer } from '@/app/styles/layouts';
+
+const StorageSettings: React.FC = () => {
+  const styles = useStyles();
+
+  
+  return (
+    <ScreenContainer> 
+     
+     <HeaderContainer>
+        <Title1>Storage Settings</Title1>     
+     </HeaderContainer>
+      
+      
+    </ScreenContainer>
+  );
+};
+
+
 
 const useStyles = makeStyles({
   container: {
     padding: '24px',
   },
-  title: {
-    fontSize: '24px',
-    fontWeight: 600,
-    marginBottom: '24px',
-  }
+  
 });
-
-const StorageSettings: React.FC = () => {
-  const styles = useStyles();
-
-  return (
-    <div className={styles.container}>
-      <Text className={styles.title}>Storage Settings</Text>
-      {/* Add your storage settings form here */}
-    </div>
-  );
-};
 
 export default StorageSettings; 

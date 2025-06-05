@@ -3,6 +3,7 @@ import { makeStyles, tokens, Divider } from '@fluentui/react-components';
 import { SearchRegular } from '@fluentui/react-icons';
 import { NAV_GROUPS } from '../../../../entities/document/model/constants';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { styled } from 'styled-components';
 
 const useStyles = makeStyles({
   nav: {
@@ -115,5 +116,12 @@ const Navigation: React.FC = () => {
     </div>
   );
 };
+
+const Nav = styled.div`
+  width: '220px',
+  height: '100vh',
+  boxSizing: 'border-box',
+  padding: '0px 8px 0px 8px',
+`
 
 export { Navigation }; 

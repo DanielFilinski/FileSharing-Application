@@ -3,8 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
-import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import { TeamsProvider } from '@/shared/lib/teams';
+import { ThemeProvider } from './app/theme/ThemeProvider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,11 +12,11 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <FluentProvider theme={webLightTheme}>
+    <ThemeProvider>
       <TeamsProvider>
         <RouterProvider router={router} />
       </TeamsProvider>
-    </FluentProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
 

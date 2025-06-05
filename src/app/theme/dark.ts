@@ -1,4 +1,4 @@
-const dark = {
+export const dark = {
     "borderRadiusNone": "0",
     "borderRadiusSmall": "2px",
     "borderRadiusMedium": "4px",
@@ -435,4 +435,4 @@ const dark = {
     "shadow16Brand": "0 0 2px rgba(0,0,0,0.30), 0 8px 16px rgba(0,0,0,0.25)",
     "shadow28Brand": "0 0 8px rgba(0,0,0,0.30), 0 14px 28px rgba(0,0,0,0.25)",
     "shadow64Brand": "0 0 8px rgba(0,0,0,0.30), 0 32px 64px rgba(0,0,0,0.25)"
-    }
+};

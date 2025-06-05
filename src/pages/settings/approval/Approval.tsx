@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import './Approval.css';
+import { useTheme } from '@/app/theme/ThemeProvider';
+import { Switch } from '@fluentui/react-components';
 
 interface Employee {
   name: string;
@@ -28,6 +30,8 @@ function ApprovalSettingsForm() {
     "Berlin": ["Leon Müller", "Sophie Weber", "Felix Fischer"],
     "Sydney": ["Charlotte Wilson", "Oliver Taylor", "Sophia Martin"]
   };
+
+  const { isDark, toggleTheme } = useTheme();
 
   const toggleManualApproval = () => {
     setManualApprovalNeeded(!manualApprovalNeeded);
@@ -87,6 +91,8 @@ function ApprovalSettingsForm() {
           </div>
           <h1 className="title">Approval Settings</h1>
         </div>
+
+        <Switch checked={isDark} onChange={toggleTheme} />
         
         <div className="content-container">
           <div className="toggle-section">
