@@ -17,7 +17,9 @@ import {
   Title2,
   Title3,
   Subtitle1,
-  Body1
+  Body1,
+  Caption1,
+  Subtitle2
 } from '@fluentui/react-components';
 import { 
   BuildingRegular,
@@ -29,9 +31,12 @@ import {
   ArrowRight20Regular,
   Building20Regular
 } from '@fluentui/react-icons';
-import { ContentContainer, HeaderContainer, IconTitleContainer, IconTitleHeaderContainer, RowItemContainer, RowSpaceBetween, ScreenContainer, TextRowsContainer } from '@/app/styles/layouts';
+import { ContentContainer, HeaderContainer, IconTitleContainer, IconTitleHeaderContainer, RadioTitleContainer, RowItemContainer, RowSpaceBetween, ScreenContainer, TextRowsContainer } from '@/app/styles/layouts';
 import AccentIcon from '@/components/accent-icon';
 import { Zap, ZapIcon, ZapOff } from 'lucide-react';
+import { SelectedSection } from './components/selected-section';
+import { TextAccent } from '@/components/text-accent';
+import { COLORS } from '@/app/theme/color-pallete';
 
 interface Employee {
   name: string;
@@ -183,31 +188,50 @@ function ApprovalSettingsForm() {
                   <RadioGroup
                     value={approvalFlow}
                     onChange={(_, data) => setApprovalFlow(data.value)}
-                  >
-                    <Radio value="consecutive" label="Consecutive" />
-                    <Text size={200}>One department approves after another</Text>
-                    <Radio value="parallel" label="Parallel" />
-                    <Text size={200}>All departments approve at once</Text>
+                    style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px'}}
+                  >     
+
+                  <SelectedSection 
+                    isSelected={approvalFlow === 'consecutive'} 
+                    title="Consecutive" 
+                    value="consecutive" 
+                    description="One department approves after another" 
+                  />
+                  <SelectedSection 
+                    isSelected={approvalFlow === 'parallel'} 
+                    title="Parallel" 
+                    value="parallel" 
+                    description="All departments approve at once" 
+                  />
                   </RadioGroup>
                   
                   {approvalFlow === 'consecutive' && (
                     <div className={styles.section}>
-                      <Text size={300} weight="semibold" color="brand">
+                      <TextAccent>
+                        <Text size={300} weight="semibold" color="brand">
                         Sequential approval order:
                       </Text>
+
+                      </TextAccent>
+                      
                       <ol>
                         {selectedDepartments.map((dept, index) => (
                           <li key={index}>
-                            <Text size={200}>{index + 1}. {dept}</Text>
+                            <div className={styles.sequentialApprovalItem}>
+                              <Text size={200} style={{padding: '4px', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: COLORS.purple3, color: tokens.colorBrandForeground1, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{index + 1}</Text>
+                              <Text size={200}>{dept}</Text>
+                            </div>
+                            
                           </li>
                         ))}
                       </ol>
-                      <Text size={100} color="neutralForeground3">
+                      <Caption1>
                         💡 Drag departments to reorder
-                      </Text>
+                      </Caption1>
                     </div>
-                  )}
+                  )}                  
                 </Card>
+
               )}
 
 
@@ -380,5 +404,10 @@ const useStyles = makeStyles({
     display: 'flex',
     alignSelf: 'flex-end',
     gap: '12px',
+  },
+  sequentialApprovalItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
   }
 });

@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 const PADDING = 16;
 const CONTENT_MAX_WIDTH = 1000;
 const ICON_TITLE_GAP = 16;
+const RADIO_TITLE_GAP = 8;
 const ICON_TITLE_HEADER_GAP = 8;
 const TEXT_ROWS_GAP = 8;
 const ROW_ITEM_GAP = 24;
@@ -35,6 +36,12 @@ const IconTitleContainer = styled.div`
   display: flex;
   align-items: center;
   gap: ${ICON_TITLE_GAP}px;
+`;
+
+const RadioTitleContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: ${RADIO_TITLE_GAP}px;
 `;
 
 const IconTitleHeaderContainer = styled.div`
@@ -70,5 +77,6 @@ export {
     IconTitleHeaderContainer,
     TextRowsContainer,
     RowSpaceBetween,
-    RowItemContainer
+    RowItemContainer,
+    RadioTitleContainer
 };
