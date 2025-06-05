@@ -2,14 +2,14 @@ import { COLORS } from '@/app/theme/color-pallete';
 import { tokens } from '@fluentui/react-components';
 import styled from 'styled-components';
 
-type AccentIconProps = {
+type HeaderIconProps = {
   icon: React.ReactNode;
   colorIcon?: string;
   colorBackground?: string;
   style?: React.CSSProperties;
 }
 
-const AccentIcon = ({ icon, colorIcon, colorBackground, style }: AccentIconProps) => {
+const HeaderIcon = ({ icon, colorIcon, colorBackground, style }: HeaderIconProps) => {
   return (
     <IconWrapper 
       color={colorIcon} 
@@ -21,7 +21,7 @@ const AccentIcon = ({ icon, colorIcon, colorBackground, style }: AccentIconProps
   )
 }
 
-export default AccentIcon;
+export default HeaderIcon;
 
 interface IconWrapperProps {
   color?: string;
@@ -32,8 +32,5 @@ const IconWrapper = styled.span<IconWrapperProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.3rem;
-  background: ${props => props.background || COLORS.purple3};
-  border-radius: 8px;
-  color: ${props => props.color || tokens.colorBrandForeground2};
+  color: ${props => props.color ||  tokens.colorBrandForeground2};
 `;
