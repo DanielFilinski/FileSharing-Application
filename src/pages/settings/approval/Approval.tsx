@@ -31,6 +31,7 @@ import {
 } from '@fluentui/react-icons';
 import { ContentContainer, HeaderContainer, IconTitleContainer, IconTitleHeaderContainer, RowItemContainer, RowSpaceBetween, ScreenContainer, TextRowsContainer } from '@/app/styles/layouts';
 import AccentIcon from '@/components/accent-icon';
+import { Zap, ZapIcon, ZapOff } from 'lucide-react';
 
 interface Employee {
   name: string;
@@ -172,7 +173,7 @@ function ApprovalSettingsForm() {
                 <Card style={{ width: '100%'}}>
                   
                   <IconTitleContainer>
-                    <AccentIcon icon={<ArrowRight20Regular />}/>
+                    <AccentIcon icon={<Zap/>}/>
                     <TextRowsContainer>
                       <Subtitle1>Approval Flow</Subtitle1>
                       <Body1>Choose how approvals flow between departments</Body1>

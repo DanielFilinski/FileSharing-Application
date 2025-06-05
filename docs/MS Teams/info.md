@@ -10,3 +10,9 @@ https://fluentuipr.z22.web.core.windows.net/heads/master/theming-designer/index.
 
 
 https://github.com/OfficeDev/Microsoft-Teams-Samples/blob/main/samples/tab-ui-templates/ts/src/app/static_tabs/dashboard.tsx
+
+fluentui/react-icons
+https://react.fluentui.dev/?path=/docs/icons-catalog--docs
+
+iframe зоны приложения
+https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/design/app-structure
