@@ -214,7 +214,7 @@ function ApprovalSettingsForm() {
 
                       </TextAccent>
                       
-                      <ol>
+                      <ol style={{display: 'flex', flexDirection: 'column', gap: '7px'}}>
                         {selectedDepartments.map((dept, index) => (
                           <li key={index}>
                             <div className={styles.sequentialApprovalItem}>
@@ -348,7 +348,9 @@ const useStyles = makeStyles({
     marginBottom: '24px'
   },
   section: {
-    marginBottom: '24px'
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px'
   },
   toggleHeader: {
     display: 'flex',
