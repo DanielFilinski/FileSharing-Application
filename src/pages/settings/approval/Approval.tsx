@@ -19,7 +19,9 @@ import {
   Subtitle1,
   Body1,
   Caption1,
-  Subtitle2
+  Subtitle2,
+  Avatar,
+  Caption1Strong
 } from '@fluentui/react-components';
 import { 
   BuildingRegular,
@@ -37,6 +39,7 @@ import { Zap, ZapIcon, ZapOff } from 'lucide-react';
 import { SelectedSection } from './components/selected-section';
 import { TextAccent } from '@/components/text-accent';
 import { COLORS } from '@/app/theme/color-pallete';
+import { TextRoundAccent } from '@/components/text-round-accent';
 
 interface Employee {
   name: string;
@@ -273,11 +276,13 @@ function ApprovalSettingsForm() {
                         >
                           <div className={styles.toggleContent}>
                             <BuildingRegular />
-                            <Text size={300} weight="semibold">{office}</Text>
+                            <Subtitle2>{office}</Subtitle2>
                             {(employeesBySelectedOffice[office]?.length || 0) > 0 && (
-                              <Text size={200} color="neutralForeground3">
-                                {employeesBySelectedOffice[office]?.length || 0} selected
-                              </Text>
+                              <TextRoundAccent>
+                                <Caption1Strong>
+                                  {employeesBySelectedOffice[office]?.length || 0} selected
+                                </Caption1Strong>
+                              </TextRoundAccent>
                             )}
                           </div>
                           <ChevronDownRegular 
@@ -300,7 +305,7 @@ function ApprovalSettingsForm() {
                                   checked={employeesBySelectedOffice[office]?.includes(employee)}
                                 />
                                 <div className={styles.avatar}>
-                                  {employee.split(' ').map(n => n[0]).join('')}
+                                  <Avatar initials={employee.split(' ').map(n => n[0]).join('')} />
                                 </div>
                                 <Text size={200}>{employee}</Text>
                               </div>
