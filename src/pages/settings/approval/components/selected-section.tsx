@@ -1,10 +1,12 @@
-import { Body1, Card, Radio, Subtitle2 } from "@fluentui/react-components";
-
-import { IconTitleContainer, TextRowsContainer } from "@/app/styles/layouts";
-import AccentIcon from "@/components/accent-icon";
-import { Zap } from "lucide-react";
-import styled from "styled-components";
-import { COLORS } from "@/app/theme/color-pallete";
+import React from 'react';
+import { 
+  Body1, 
+  Radio, 
+  Subtitle2, 
+  makeStyles, 
+  tokens,
+  shorthands
+} from "@fluentui/react-components";
 
 type SelectedSectionProps = {
     title: string;
@@ -14,25 +16,99 @@ type SelectedSectionProps = {
 }
 
 export const SelectedSection = ({ title, value, description, isSelected }: SelectedSectionProps) => { 
+    const styles = useStyles();
+    
     return (
-        <SelectedSectionContainer isSelected={isSelected}>            
-            <Radio value={value} checked={isSelected}/>
-            <TextRowsContainer>
-                <Subtitle2>{title}</Subtitle2>
-                <Body1>{description}</Body1>
-            </TextRowsContainer>     
-        </SelectedSectionContainer>
+        <div className={`${styles.container} ${isSelected ? styles.selected : ''}`}>            
+            <Radio 
+              value={value} 
+              checked={isSelected}
+              className={styles.radio}
+            />
+            <div className={styles.textContainer}>
+                <Subtitle2 className={styles.title}>{title}</Subtitle2>
+                <Body1 className={styles.description}>{description}</Body1>
+            </div>     
+        </div>
     )
 }
 
-const SelectedSectionContainer = styled.div<{isSelected: boolean}>`
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    gap: 16px;
-    background-color: ${props => props.isSelected ? COLORS.purple3 : COLORS.gray1};
-    border-radius: 20px;
-    padding: 16px;
-    border: 2px solid ${props => props.isSelected ? COLORS.purple2 : COLORS.gray4};
+// @ts-ignore
+const useStyles = makeStyles({
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    width: '100%',
+    ...shorthands.gap('12px'),
+    ...shorthands.padding('16px'),
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: tokens.borderRadiusMedium,
+    border: `2px solid ${tokens.colorNeutralStroke2}`,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease-in-out',
+    boxSizing: 'border-box',
+    
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground1Hover,
+      // @ts-ignore
+      borderColor: tokens.colorNeutralStroke1Hover
+    },
+    
+    '@media (max-width: 549px)': {
+      ...shorthands.padding('12px'),
+      ...shorthands.gap('8px')
+    }
+  },
 
-`;
+  selected: {
+    // @ts-ignore
+    borderColor: tokens.colorBrandStroke1,
+    backgroundColor: tokens.colorBrandBackground2,
+    
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackground2Hover,
+      // @ts-ignore
+      borderColor: tokens.colorBrandStroke1
+    }
+  },
+
+  radio: {
+    marginTop: '2px',
+    flexShrink: 0
+  },
+
+  textContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('4px'),
+    flex: 1,
+    minWidth: 0,
+    wordWrap: 'break-word'
+  },
+
+  title: {
+    color: tokens.colorNeutralForeground1,
+    fontWeight: tokens.fontWeightSemibold,
+    lineHeight: tokens.lineHeightBase300,
+    
+    '@media (min-resolution: 2dppx)': {
+      fontSize: tokens.fontSizeBase300
+    }
+  },
+
+  description: {
+    color: tokens.colorNeutralForeground2,
+    lineHeight: tokens.lineHeightBase300,
+    
+    '@media (max-width: 549px)': {
+      fontSize: tokens.fontSizeBase200
+    },
+    
+    '@media (min-resolution: 2dppx)': {
+      fontSize: tokens.fontSizeBase300
+    }
+  }
+});
+
+export default SelectedSection;
