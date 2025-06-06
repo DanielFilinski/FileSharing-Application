@@ -1,11 +1,12 @@
+import { Layout } from '@/components/Layout';
+import DmsMainScreen from '@/pages/documents/ui/DocumentsPage';
+import ApprovalSettingsForm from '@/pages/settings/approval/Approval';
+import OrganizationSettings from '@/pages/settings/organization/Organization';
+import StorageSettings from '@/pages/settings/storage/Storage';
+import ValidationSettingsForm from '@/pages/settings/validation/Validation';
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import DmsMainScreen from './pages/documents/ui/DocumentsPage';
-import ApprovalSettingsForm from './pages/settings/approval/Approval';
-import OrganizationSettings from './pages/settings/organization/Organization';
-import StorageSettings from './pages/settings/storage/Storage';
-import ValidationSettings from './pages/settings/validation/Validation';
-import { Layout } from './components/Layout';
+
 
 export const router = createBrowserRouter([
   {
@@ -34,7 +35,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'settings/validation',
-        element: <ValidationSettings />,
+        element: <ValidationSettingsForm />,
       },
       {
         path: 'settings/approval',
