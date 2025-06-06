@@ -1,6 +1,6 @@
-import React from 'react';
-import { makeStyles, tokens, Divider } from '@fluentui/react-components';
-import { SearchRegular } from '@fluentui/react-icons';
+import React, { useState } from 'react';
+import { makeStyles, tokens, Divider, Button, Drawer } from '@fluentui/react-components';
+import { NavigationRegular, SearchRegular } from '@fluentui/react-icons';
 import { NAV_GROUPS } from '../../../../entities/document/model/constants';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from 'styled-components';
@@ -12,6 +12,10 @@ const useStyles = makeStyles({
     boxSizing: 'border-box',
     borderRight: `1px solid ${tokens.colorNeutralStroke1}`,
     padding: '0px 8px 0px 8px',
+    '@media (max-width: 768px)': {
+      width: '100%',
+      borderRight: 'none',
+    }
   },
   navItem: {
     cursor: 'pointer',
@@ -21,6 +25,21 @@ const useStyles = makeStyles({
   },
   selected: {
     backgroundColor: tokens.colorNeutralBackground3,
+  },
+  mobileMenuButton: {
+    display: 'none',
+    position: 'fixed',
+    top: '16px',
+    left: '16px',
+    zIndex: 1000,
+    '@media (max-width: 768px)': {
+      display: 'block'
+    }
+  },
+  mobileNav: {
+    '@media (min-width: 769px)': {
+      display: 'none'
+    }
   }
 });
 
@@ -39,6 +58,7 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const styles = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,22 +118,57 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <div className={styles.nav}>
-      <div style={{ fontWeight: 600, fontSize: 18, margin: '16px 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        Select End User <SearchRegular />
-      </div>
-      <div>
-        <Divider />
-      </div>
-      
-      {NAV_GROUPS.map(group => (
-        <div key={group.title} style={{ marginBottom: 16 }}>
-          <div style={{ fontWeight: 700, margin: '16px 0 10px 0px', color: '#111827' }}>{group.title}</div>
-          {group.links.map(link => renderNavLink(link))}
-          <div style={{ borderBottom: '1px solid #E5E7EB', margin: '12px 0' }} />
+    <>
+      {/* Мобильная кнопка меню */}
+      <Button 
+        className={styles.mobileMenuButton}
+        icon={<NavigationRegular />}
+        onClick={() => setIsMobileMenuOpen(true)}
+      />
+
+      {/* Десктопная навигация */}
+      <div className={styles.nav}>
+        <div style={{ fontWeight: 600, fontSize: 18, margin: '16px 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          Select End User <SearchRegular />
         </div>
-      ))}
-    </div>
+        <div>
+          <Divider />
+        </div>
+        
+        {NAV_GROUPS.map(group => (
+          <div key={group.title} style={{ marginBottom: 16 }}>
+            <div style={{ fontWeight: 700, margin: '16px 0 10px 0px', color: '#111827' }}>{group.title}</div>
+            {group.links.map(link => renderNavLink(link))}
+            <div style={{ borderBottom: '1px solid #E5E7EB', margin: '12px 0' }} />
+          </div>
+        ))}
+      </div>
+
+      {/* Мобильная навигация */}
+      <Drawer
+        type="overlay"
+        open={isMobileMenuOpen}
+        onOpenChange={(_, data) => setIsMobileMenuOpen(data.open)}
+        className={styles.mobileNav}
+      >
+        <div className={styles.nav}>
+          <div style={{ fontWeight: 600, fontSize: 18, margin: '16px 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            Select End User <SearchRegular />
+          </div>
+          <div>
+            <Divider />
+          </div>
+          
+          {NAV_GROUPS.map(group => (
+            <div key={group.title} style={{ marginBottom: 16 }}>
+              <div style={{ fontWeight: 700, margin: '16px 0 10px 0px', color: '#111827' }}>{group.title}</div>
+              {group.links.map(link => renderNavLink(link))}
+              <div style={{ borderBottom: '1px solid #E5E7EB', margin: '12px 0' }} />
+            </div>
+          ))}
+        </div>
+      </Drawer>
+    </>
   );
 };
 

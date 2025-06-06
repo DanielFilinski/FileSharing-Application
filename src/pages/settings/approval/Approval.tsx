@@ -116,6 +116,7 @@ function ApprovalSettingsForm() {
     });
   };
 
+  console.log("departments",departments);
   return (
     <ScreenContainer>
 
@@ -161,16 +162,19 @@ function ApprovalSettingsForm() {
                   className={styles.dropdown}
                   placeholder="Select departments"
                   multiselect
-                  value={selectedDepartments.join(',')}
+                  value={selectedDepartments.join(', ')}
                   onOpenChange={(_, data) => setIsDepartmentDropdownOpen(data.open)}
                 >
-                  {departments.map((dept) => (
+                  {departments.map((dept) => {
+                    console.log("dept",dept);
+                    return (
                     <Option
                       key={dept}
                       text={dept}
+                      children={<Text>{dept}</Text>}
                       onClick={() => toggleDepartment(dept)}
                     />
-                  ))}
+                  )})}
                 </Dropdown>
 
               </Card>
@@ -254,13 +258,14 @@ function ApprovalSettingsForm() {
                   className={styles.dropdown}
                   placeholder="Select offices"
                   multiselect
-                  value={selectedOffices.join(',')}
+                  value={selectedOffices.join(', ')}
                   onOpenChange={(_, data) => setIsOfficesDropdownOpen(data.open)}
                 >
                   {offices.map((office) => (
                     <Option
                       key={office}
                       text={office}
+                      children={<Text>{office}</Text>}
                       onClick={() => toggleOffice(office)}
                     />
                   ))}
