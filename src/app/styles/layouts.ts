@@ -5,12 +5,15 @@ const CONTENT_MAX_WIDTH = 1000;
 const CONTENT_PADDING_TOP = 24;
 const CONTENT_PADDING_BOTTOM = 24;
 
+// Padding
 const PADDING = 16;
+const CARD_ITEM_PADDING = 8;
+
+// Gaps
 const ICON_TITLE_GAP = 16;
 const RADIO_TITLE_GAP = 8;
 const ICON_TITLE_HEADER_GAP = 8;
 const TEXT_ROWS_GAP = 8;
-
 const ROW_ITEM_GAP = 24;
 const ROW_CARD_ITEM_GAP = 16;
 
@@ -37,6 +40,17 @@ const CardContainer = styled(Card)`
     padding: ${tokens.spacingVerticalM};
   }
 `;
+
+const CardItemContainer = styled(Card)`
+  padding: ${CARD_ITEM_PADDING}px;
+  border: 1px solid ${tokens.colorNeutralStroke1};
+  @media (max-width: 768px) {
+    padding: ${8}px;
+  }
+`;
+
+
+
 
 const FooterContainer = styled.footer`
   padding: ${PADDING}px;
@@ -111,7 +125,8 @@ export {
     RowCardContainer,
     RowCardItemContainer,
     CardContainer,
+    CardItemContainer,
     FooterContainer,
     MarginBottom,
-    MarginTop
+    MarginTop,
 };

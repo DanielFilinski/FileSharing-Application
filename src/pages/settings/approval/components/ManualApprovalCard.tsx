@@ -1,9 +1,9 @@
 import React from 'react';
 import { Switch } from '@fluentui/react-components';
 import { CheckmarkCircle20Regular } from '@fluentui/react-icons';
-import { CardHeader } from './CardHeader';
 import { CardContainer } from '../../../../app/styles/layouts';
 import styled from 'styled-components';
+import { CardHeader } from '@/components/card/card-header';
 
 
 interface ManualApprovalCardProps {
@@ -19,8 +19,8 @@ export const ManualApprovalCard: React.FC<ManualApprovalCardProps> = ({
       <Container>
         <CardHeader
           icon={<CheckmarkCircle20Regular />}
-          title="Manual Approval Needed"
-          description="Enable this to require manual approval for documents"
+          text="Manual Approval Needed"
+          subtitle="Enable this to require manual approval for documents"
         />
         <Switch 
           checked={manualApprovalNeeded} 

@@ -28,11 +28,11 @@ export const ManualValidationToggle = ({ manualValidation, onToggle }: ManualVal
 const Container = styled(CardContainer)`
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
   gap: ${tokens.spacingHorizontalL};
   @media (max-width: 768px) {
-    // flex-direction: column;
     gap: ${tokens.spacingVerticalM};
-    align-items: stretch;
+    align-items: center;
   }
 `;

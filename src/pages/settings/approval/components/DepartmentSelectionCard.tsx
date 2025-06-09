@@ -1,10 +1,10 @@
 import React from 'react';
 import { Dropdown, Option, Text } from '@fluentui/react-components';
 import { People20Regular } from '@fluentui/react-icons';
-import { CardHeader } from './CardHeader';
-import { CardContainer } from '../../../../app/styles/layouts';
+
 import styled from 'styled-components';
-import { tokens } from '@fluentui/react-components';
+import { CardContainer } from '@/app/styles/layouts';
+import { CardHeader } from '@/components/card/card-header';
 
 interface DepartmentSelectionCardProps {
   departments: string[];
@@ -22,8 +22,8 @@ export const DepartmentSelectionCard: React.FC<DepartmentSelectionCardProps> = (
     <Container>
       <CardHeader
         icon={<People20Regular />}
-        title="Department Selection"
-        description="Choose which departments need to approve documents"
+        text="Department Selection"
+        subtitle="Choose which departments need to approve documents"
       />
       
       <DropdownWrapper>
@@ -53,13 +53,11 @@ export const DepartmentSelectionCard: React.FC<DepartmentSelectionCardProps> = (
 const Container = styled(CardContainer)`
   display: flex;
   flex-direction: column;
-  gap: ${tokens.spacingVerticalM};
 `;
 
 const DropdownWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${tokens.spacingVerticalM};
 `;
 
 const StyledDropdown = styled(Dropdown)`
@@ -70,7 +68,6 @@ const StyledDropdown = styled(Dropdown)`
 const OptionContent = styled.div`
   display: flex;
   align-items: center;
-  gap: ${tokens.spacingHorizontalS};
   width: 100%;
 `;
 

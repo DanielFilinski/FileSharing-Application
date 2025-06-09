@@ -1,6 +1,8 @@
 import React from 'react';
-import { Button, Title2, makeStyles, tokens } from '@fluentui/react-components';
+import { Button, Title2, tokens } from '@fluentui/react-components';
 import { SaveRegular } from '@fluentui/react-icons';
+import { HeaderContainer } from '@/app/styles/layouts';
+import styled from 'styled-components';
 
 interface SettingsHeaderProps {
   title: string;
@@ -17,72 +19,71 @@ export const SettingsHeader: React.FC<SettingsHeaderProps> = ({
   onButtonClick = () => {},
   buttonIcon = <SaveRegular />,
 }) => {
-  const styles = useStyles();
-
   return (
-    <div className={styles.header}>
-      <div className={styles.menu}></div>
-      <div className={styles.headerLeft}>
-        <div className={styles.brandIcon}>{icon}</div>
+    <Header>
+      <Menu />
+      <HeaderLeft>
+        <BrandIcon>{icon}</BrandIcon>
         <Title2>{title}</Title2>
-      </div>
+      </HeaderLeft>
       {buttonText && onButtonClick && (
-        <Button 
+        <PrimaryButton 
           appearance="primary" 
           icon={buttonIcon}
           onClick={onButtonClick}
-          className={styles.primaryButton}
         >
           {buttonText}
-        </Button>
+        </PrimaryButton>
       )}
-    </div>
+    </Header>
   );
-}; 
+};
 
-const useStyles = makeStyles({
-  header: {
-    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalXL}`,
-    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground1,
-    boxShadow: tokens.shadow2,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    '@media (max-width: 768px)': {
-      // padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-      gap: tokens.spacingVerticalM,
-    },
-  },
-  menu: {
-    display: 'none',
-    width: '32px',
-    height: '32px',
-    '@media (max-width: 768px)': {
-      display: 'flex',
-    },
-  },
-  headerLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalM,
-  },
-  brandIcon: {
-    color: tokens.colorBrandForeground1,
-  },
-  sequentialNumber: {
-    color: tokens.colorNeutralForeground2,
-  },
-  primaryButton: {
-    backgroundColor: tokens.colorBrandBackground,
-    borderRadius: tokens.borderRadiusMedium,
-    transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: tokens.colorBrandBackgroundHover,
-      transform: 'translateY(-1px)',
-    },
-    '&:active': {
-      transform: 'translateY(0)',
-    },
-  },
-});
+
+const Header = styled(HeaderContainer)`
+  border-bottom: 1px solid ${tokens.colorNeutralStroke2};
+  background-color: ${tokens.colorNeutralBackground1};
+  box-shadow: ${tokens.shadow2};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  @media (max-width: 768px) {
+    gap: ${tokens.spacingVerticalM};
+  }
+`;
+
+const Menu = styled.div`
+  display: none;
+  width: 32px;
+  height: 32px;
+  
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
+
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${tokens.spacingHorizontalM};
+`;
+
+const BrandIcon = styled.div`
+  color: ${tokens.colorBrandForeground1};
+`;
+
+const PrimaryButton = styled(Button)`
+  background-color: ${tokens.colorBrandBackground};
+  border-radius: ${tokens.borderRadiusMedium};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: ${tokens.colorBrandBackgroundHover};
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;

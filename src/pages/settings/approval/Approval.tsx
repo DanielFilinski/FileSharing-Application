@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { Divider } from '@fluentui/react-components';
 import { CheckmarkCircle20Regular } from '@fluentui/react-icons';
 import { SettingsHeader } from '@/components/SettingsHeader';
-import { useStyles } from './styles';
 import {
   ManualApprovalCard,
   DepartmentSelectionCard,
   ApprovalFlowCard,
   EmployeeSelectionCard
 } from './components';
+import { ContentContainer, RowCardContainer, ScreenContainer } from '@/app/styles/layouts';
+import styled from 'styled-components';
+import { tokens } from '@fluentui/react-components';
+
 
 function ApprovalSettingsForm() {
   const [manualApprovalNeeded, setManualApprovalNeeded] = useState(false);
@@ -26,8 +29,6 @@ function ApprovalSettingsForm() {
     "Berlin": ["Leon Müller", "Sophie Weber", "Felix Fischer"],
     "Sydney": ["Charlotte Wilson", "Oliver Taylor", "Sophia Martin"]
   };
-
-  const styles = useStyles();
 
   const toggleManualApproval = () => {
     setManualApprovalNeeded(!manualApprovalNeeded);
@@ -79,7 +80,8 @@ function ApprovalSettingsForm() {
   };
 
   return (
-    <div className={styles.container}>
+    <ScreenContainer>
+
       <SettingsHeader
         title="Approval Settings"
         icon={<CheckmarkCircle20Regular />}
@@ -87,41 +89,42 @@ function ApprovalSettingsForm() {
         onButtonClick={handleSave}
       />
 
-      <Divider className={styles.headerDivider} />
-
-      <div className={styles.content}>
-        <ManualApprovalCard
+      <ContentContainer>
+        <RowCardContainer>
+          <ManualApprovalCard
           manualApprovalNeeded={manualApprovalNeeded}
           onToggle={toggleManualApproval}
         />
+          {manualApprovalNeeded && (
+            <>
+              <DepartmentSelectionCard
+                departments={departments}
+                selectedDepartments={selectedDepartments}
+                onDepartmentToggle={toggleDepartment}
+              />
 
-        {manualApprovalNeeded && (
-          <>
-            <DepartmentSelectionCard
-              departments={departments}
-              selectedDepartments={selectedDepartments}
-              onDepartmentToggle={toggleDepartment}
-            />
+              <ApprovalFlowCard
+                approvalFlow={approvalFlow}
+                selectedDepartments={selectedDepartments}
+                onApprovalFlowChange={setApprovalFlow}
+              />
 
-            <ApprovalFlowCard
-              approvalFlow={approvalFlow}
-              selectedDepartments={selectedDepartments}
-              onApprovalFlowChange={setApprovalFlow}
-            />
-
-            <EmployeeSelectionCard
-              offices={offices}
-              employeesByOffice={employeesByOffice}
-              selectedOffices={selectedOffices}
-              employeesBySelectedOffice={employeesBySelectedOffice}
-              onOfficeToggle={toggleOffice}
-              onEmployeeToggle={toggleEmployee}
-            />
-          </>
-        )}
-      </div>
-    </div>
+              <EmployeeSelectionCard
+                offices={offices}
+                employeesByOffice={employeesByOffice}
+                selectedOffices={selectedOffices}
+                employeesBySelectedOffice={employeesBySelectedOffice}
+                onOfficeToggle={toggleOffice}
+                onEmployeeToggle={toggleEmployee}
+              />
+            </>
+          )}
+        </RowCardContainer>
+        
+      </ContentContainer>
+    </ScreenContainer>
   );
 }
 
 export default ApprovalSettingsForm;
+
