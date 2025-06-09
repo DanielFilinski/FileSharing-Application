@@ -1,6 +1,5 @@
 import { Switch } from '@fluentui/react-components';
 import { CheckmarkCircleIcon } from '../icons';
-import { tokens } from '@fluentui/react-components';
 import styled from 'styled-components';
 import { CardContainer } from '@/app/styles/layouts';
 import { CardHeader } from '@/components/card/card-header';
@@ -31,5 +30,4 @@ const Container = styled(CardContainer)`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: ${tokens.spacingHorizontalL};
 `;

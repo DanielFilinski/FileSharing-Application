@@ -3,7 +3,7 @@ import { Card, tokens } from "@fluentui/react-components";
 
 const CONTENT_MAX_WIDTH = 1000;
 const CONTENT_PADDING_TOP = 24;
-
+const CONTENT_PADDING_BOTTOM = 24;
 
 const PADDING = 16;
 const ICON_TITLE_GAP = 16;
@@ -25,12 +25,14 @@ const HeaderContainer = styled.header`
 
 const ContentContainer = styled.main`
   padding-top: ${CONTENT_PADDING_TOP}px;
+  padding-bottom: ${CONTENT_PADDING_BOTTOM}px;
   max-width: ${CONTENT_MAX_WIDTH}px;
   margin: 0 auto;
 `;
 
 const CardContainer = styled(Card)`
   padding: ${PADDING}px;
+  border: 1px solid ${tokens.colorNeutralStroke1};
   @media (max-width: 768px) {
     padding: ${tokens.spacingVerticalM};
   }

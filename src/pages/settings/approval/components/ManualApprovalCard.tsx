@@ -1,8 +1,10 @@
 import React from 'react';
-import { Card, Switch } from '@fluentui/react-components';
+import { Switch } from '@fluentui/react-components';
 import { CheckmarkCircle20Regular } from '@fluentui/react-icons';
-import { useStyles } from '../styles';
 import { CardHeader } from './CardHeader';
+import { CardContainer } from '../../../../app/styles/layouts';
+import styled from 'styled-components';
+
 
 interface ManualApprovalCardProps {
   manualApprovalNeeded: boolean;
@@ -13,11 +15,8 @@ export const ManualApprovalCard: React.FC<ManualApprovalCardProps> = ({
   manualApprovalNeeded,
   onToggle,
 }) => {
-  const styles = useStyles();
-
-  return (
-    <Card className={styles.card}>
-      <div className={styles.cardContent} style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+  return (    
+      <Container>
         <CardHeader
           icon={<CheckmarkCircle20Regular />}
           title="Manual Approval Needed"
@@ -28,7 +27,14 @@ export const ManualApprovalCard: React.FC<ManualApprovalCardProps> = ({
           onChange={onToggle}
           aria-label="Toggle manual approval"
         />
-      </div>
-    </Card>
+      </Container>
   );
 }; 
+
+
+const Container = styled(CardContainer)`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
