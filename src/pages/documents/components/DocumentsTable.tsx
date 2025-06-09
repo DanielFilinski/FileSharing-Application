@@ -24,7 +24,28 @@ const TABLE_ITEMS = [
   { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson' },
   { key: '3', name: 'Budget Report.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis' },
   { key: '4', name: 'Team Guidelines.pdf', modified: '5 days ago', createdBy: 'Emma Wilson', modifiedBy: 'Tom Clark' },
-  { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' }
+  { key: '5', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  { key: '6', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  { key: '7', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '8', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '9', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '10', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '11', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '12', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '13', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '14', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '15', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '16', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '17', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '18', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '19', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '20', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '21', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '22', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '23', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '24', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '25', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
+  // { key: '26', name: 'Design Mockups.pptx', modified: '1 day ago', createdBy: 'Lisa Anderson', modifiedBy: 'David Lee' },
 ];
 
 
@@ -55,7 +76,8 @@ export const DocumentsTable: React.FC = () => {
   const isIndeterminate = selectedItems.size > 0 && selectedItems.size < TABLE_ITEMS.length;
 
   return (
-    <div className={styles.tableContainer}>
+    <div style={{position: 'relative', height: '100%'}}>
+ <div className={styles.tableContainer}>
       <Table className={styles.table}>
         <TableHeader>
           <TableRow>
@@ -110,18 +132,37 @@ export const DocumentsTable: React.FC = () => {
         </TableBody>
       </Table>
     </div>
+
+    </div>
+   
   );
 }; 
 
 const useStyles = makeStyles({
     tableContainer: {
       flex: 1,
-      overflow: 'auto',
-      backgroundColor: tokens.colorNeutralBackground1
+      overflowX: 'auto', // <-- Здесь
+      overflowY: 'hidden',
+      backgroundColor: tokens.colorNeutralBackground1,
+      position: 'absolute',
+      top: '0px',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      // width: '100%',     
+      '&::-webkit-scrollbar': {
+        height: '4px',
+        width: '4px'
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: tokens.colorNeutralStroke2,
+        borderRadius: '4px'
+      }
     },
     table: {
       width: '100%',
       minWidth: '550px',
+      tableLayout: 'fixed',
       '& .fui-TableHeader': {
         backgroundColor: tokens.colorNeutralBackground2,
         position: 'sticky',
@@ -133,7 +174,10 @@ const useStyles = makeStyles({
         fontWeight: tokens.fontWeightSemibold,
         fontSize: tokens.fontSizeBase200,
         padding: '12px 16px',
-        height: '44px'
+        height: '44px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
       },
       '& .fui-TableRow': {
         borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
@@ -145,7 +189,10 @@ const useStyles = makeStyles({
       '& .fui-TableCell': {
         padding: '12px 16px',
         fontSize: tokens.fontSizeBase300,
-        color: tokens.colorNeutralForeground1
+        color: tokens.colorNeutralForeground1,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
       }
     },
     cellContent: {

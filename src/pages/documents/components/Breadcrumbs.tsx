@@ -33,6 +33,8 @@ export const Breadcrumbs: React.FC = () => {
 const useStyles = makeStyles({
   breadcrumbContainer: {
     padding: '4px 24px',
+    position: 'static',
+    // zIndex: 1,
     backgroundColor: tokens.colorNeutralBackground1,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
     '@media (max-width: 768px)': {

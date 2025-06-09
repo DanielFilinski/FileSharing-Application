@@ -120,6 +120,7 @@ export const Toolbar: React.FC = () => {
 const useStyles = makeStyles({
     toolbar: {
       display: 'flex',
+      position: 'static',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
