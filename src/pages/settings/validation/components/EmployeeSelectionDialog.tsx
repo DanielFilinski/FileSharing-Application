@@ -49,6 +49,7 @@ export const EmployeeSelectionDialog = ({
                 placeholder="Search employees..."
                 value={searchTerm}
                 onChange={(_, data) => onSearchChange(data.value)}
+                style={{width: '100%'}}
               />
             </SearchContainer>
             

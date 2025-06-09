@@ -17,8 +17,7 @@ export const ValidationTypeSelector = ({ validationType, onTypeChange }: Validat
       <CardHeader 
         text="Validation Assignment" 
         icon={<PersonIcon />} 
-      />
-     
+      />     
       
       <TypeSelector>
         <TypeButton
@@ -44,7 +43,6 @@ const TypeSelector = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: ${tokens.spacingHorizontalM};
-  // margin-top: ${tokens.spacingVerticalM};
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -52,7 +50,6 @@ const TypeSelector = styled.div`
 `;
 
 const TypeButton = styled(ToggleButton)`
-  min-height: 50px;
   justify-content: center;
-  // padding: ${tokens.spacingVerticalM} ${tokens.spacingHorizontalL};
+  
 `;

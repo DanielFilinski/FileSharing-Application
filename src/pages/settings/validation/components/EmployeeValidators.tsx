@@ -35,6 +35,7 @@ export const EmployeeValidators = ({
                 icon={<DismissIcon />}
                 onClick={() => onRemoveEmployee(employee.id)}
                 appearance="subtle"
+                style={{ backgroundColor: 'transparent' }}
               />
             </Badge>
           ))
@@ -58,7 +59,6 @@ const SelectedEmployeesContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: ${tokens.spacingHorizontalS};
-  margin-bottom: ${tokens.spacingVerticalM};
 `;
 
 const AddValidatorButton = styled(Button)`
@@ -66,7 +66,6 @@ const AddValidatorButton = styled(Button)`
 `;
 
 const RemoveButton = styled(Button)`
-  padding: 0px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -3,7 +3,7 @@ import { BuildingIcon, AddIcon, DismissIcon } from '../icons';
 import { tokens } from '@fluentui/react-components';
 import { Office, OfficeValidators as OfficeValidatorsType } from '../types';
 import styled from 'styled-components';
-import { CardContainer, RowSpaceBetween, RowCardContainer, RowCardItemContainer } from '@/app/styles/layouts';
+import { CardContainer, RowSpaceBetween, RowCardItemContainer } from '@/app/styles/layouts';
 import { CardHeader } from '@/components/card/card-header';
 
 interface OfficeValidatorsProps {
@@ -50,12 +50,20 @@ export const OfficeValidators = ({
             <SelectedEmployees>
               {officeValidators[office.id]?.length > 0 ? (
                 officeValidators[office.id].map(validator => (
-                  <Badge key={validator.id} color="brand">
+                  <Badge 
+                    key={validator.id} 
+                    color="brand"
+                    onClick={() => onAddClick(office.id)}
+                  >
                     {validator.avatar} {validator.name}
                     <RemoveButton                                
                       size="small"
                       icon={<DismissIcon />}
-                      onClick={() => onRemoveEmployee(validator.id, office.id)}
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        onRemoveEmployee(validator.id, office.id);
+                      }}
+                      style={{ backgroundColor: 'transparent' }}
                     />
                   </Badge>
                 ))
@@ -72,7 +80,6 @@ export const OfficeValidators = ({
 
 
 const OfficeCard = styled.div`
-  // margin-bottom: ${tokens.spacingVerticalM};
   border: 1px solid ${tokens.colorNeutralStroke2};
   border-radius: ${tokens.borderRadiusMedium};
   padding: ${tokens.spacingVerticalM};
@@ -101,6 +108,6 @@ const RemoveButton = styled(Button)`
   z-index: 1000;
   &:hover {
     color: white;
-    background-color: transparent;
+    background-color: transparent !important;
   }
 `;

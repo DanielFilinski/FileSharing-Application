@@ -1,8 +1,8 @@
-import { Switch, Title3, Body1 } from '@fluentui/react-components';
+import { Switch } from '@fluentui/react-components';
 import { CheckmarkCircleIcon } from '../icons';
 import { tokens } from '@fluentui/react-components';
 import styled from 'styled-components';
-import { CardContainer, RowSpaceBetween, IconTitleContainer } from '@/app/styles/layouts';
+import { CardContainer } from '@/app/styles/layouts';
 import { CardHeader } from '@/components/card/card-header';
 
 interface ApprovalToggleProps {
@@ -17,14 +17,12 @@ export const ApprovalToggle = ({ approvalNeeded, onToggle }: ApprovalToggleProps
         text="Approval Needed"
         icon={<CheckmarkCircleIcon />}
         subtitle="Enable this option if documents require approval after validation"
-      />
-      
+      />     
         
-        <Switch 
-          checked={approvalNeeded}
-          onChange={(ev) => onToggle(ev.currentTarget.checked)}
-        />
-      
+      <Switch 
+        checked={approvalNeeded}
+        onChange={(ev) => onToggle(ev.currentTarget.checked)}
+      />      
     </Container>
   );
 };
