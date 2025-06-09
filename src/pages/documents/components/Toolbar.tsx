@@ -27,14 +27,26 @@ export const Toolbar: React.FC = () => {
   return (
     <div className={styles.toolbar}>
       <div className={styles.toolbarLeft}>
-        <MenuButton
-          icon={<AddRegular />}
-          appearance="primary"
-          shape="rounded"
-          className={styles.primaryButton}
-        >
-          New
-        </MenuButton>
+        <Menu>
+          <MenuTrigger>
+            <MenuButton
+              icon={<AddRegular />}
+              appearance="primary"
+              shape="rounded"
+              className={styles.primaryButton}
+            >
+              New
+            </MenuButton>
+          </MenuTrigger>
+          <MenuPopover>
+            <MenuList>
+              <MenuItem onClick={() => { console.log('Document') }}>Document</MenuItem>
+              <MenuItem onClick={() => { console.log('Spreadsheet') }}>Spreadsheet</MenuItem>
+              <MenuItem onClick={() => { console.log('Presentation') }}>Presentation</MenuItem>
+              <MenuItem onClick={() => { console.log('Form') }}>Form</MenuItem>
+            </MenuList>
+          </MenuPopover>
+        </Menu>
         <Button
           icon={<ArrowUploadRegular />}
           iconPosition="before"

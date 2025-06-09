@@ -31,6 +31,11 @@ const ContentContainer = styled.main`
   padding-bottom: ${CONTENT_PADDING_BOTTOM}px;
   max-width: ${CONTENT_MAX_WIDTH}px;
   margin: 0 auto;
+  height: 100vh;
+  @media (max-width: 768px) {
+    padding-left: ${tokens.spacingHorizontalM};
+    padding-right: ${tokens.spacingHorizontalM};
+  }
 `;
 
 const CardContainer = styled(Card)`
