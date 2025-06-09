@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/design/design
 
 
 Брендовый цвет на примерах
-https://fluentuipr.z22.web.core.windows.net/heads/master/theming-designer/index.html
+https://fluentuipr.z22.web.core.windows.net/heads/master/theming-designer/index.html 
 
 Пример кода
 https://github.com/OfficeDev/Microsoft-Teams-Samples/blob/main/samples/tab-ui-templates/ts/src/app/static_tabs/dashboard.tsx
