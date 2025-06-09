@@ -1,17 +1,23 @@
 import styled from "styled-components";
 import AccentIcon from "../icon/accent-icon";
 import { CardTitle } from "./card-title";
+import { Body1 } from "@fluentui/react-components";
 
 type CardHeaderProps = {
     text: string;
-    icon: React.ReactNode;
+    subtitle?: string;
+    icon?: React.ReactNode;
 }
 
-export const CardHeader = ({ text, icon }: CardHeaderProps) => {
+export const CardHeader = ({ text, subtitle, icon }: CardHeaderProps) => {
     return (
         <Container>
-            <AccentIcon icon={icon} />
-            <CardTitle text={text} />
+            {icon && <AccentIcon icon={icon} />}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <CardTitle text={text} />
+                {subtitle && <Body1>{subtitle}</Body1>}
+            </div>
+            
         </Container>
     )
 }
@@ -19,6 +25,6 @@ export const CardHeader = ({ text, icon }: CardHeaderProps) => {
 
 const Container = styled.div`
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
 `;

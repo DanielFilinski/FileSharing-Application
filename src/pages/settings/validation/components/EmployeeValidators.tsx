@@ -1,7 +1,12 @@
-import { Card, Title3, Body1, Badge, Button } from '@fluentui/react-components';
+import { Body1, Badge, Button } from '@fluentui/react-components';
 import { AddIcon, DismissIcon } from '../icons';
-import { makeStyles, tokens } from '@fluentui/react-components';
 import { Employee } from '../types';
+import styled from 'styled-components';
+import { CardContainer } from '@/app/styles/layouts';
+import { tokens } from '@fluentui/react-components';
+import { CardHeader } from '@/components/card/card-header';
+
+
 
 interface EmployeeValidatorsProps {
   selectedEmployees: Employee[];
@@ -9,70 +14,68 @@ interface EmployeeValidatorsProps {
   onRemoveEmployee: (empId: string) => void;
 }
 
-const useStyles = makeStyles({
-  selectedEmployees: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: tokens.spacingHorizontalS,
-    marginBottom: tokens.spacingVerticalM,
-  },
-  addValidatorButton: {
-    justifyContent: 'flex-start',
-  },
-  removeButton: {
-    padding: '0px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: 'none',
-    color: 'white',
-    backgroundColor: 'transparent',
-    zIndex: 1000,
-    '&:hover': {
-      color: 'white',
-      backgroundColor: 'transparent',
-    },
-  },
-});
-
 export const EmployeeValidators = ({ 
   selectedEmployees, 
   onAddClick, 
   onRemoveEmployee 
 }: EmployeeValidatorsProps) => {
-  const styles = useStyles();
-
   return (
-    <Card>
-      <Title3>Employees Responsible for Validation</Title3>
+    <CardContainer>
+      <CardHeader 
+        text="Employees Responsible for Validation"
+      />
       
-      <div className={styles.selectedEmployees}>
+      <SelectedEmployeesContainer>
         {selectedEmployees.length > 0 ? (
           selectedEmployees.map(employee => (
             <Badge key={employee.id} color="brand">
               {employee.avatar} {employee.name}
-              <Button
+              <RemoveButton
                 size="small"
                 icon={<DismissIcon />}
                 onClick={() => onRemoveEmployee(employee.id)}
                 appearance="subtle"
-                className={styles.removeButton}
               />
             </Badge>
           ))
         ) : (
           <Body1>No employees selected</Body1>
         )}
-      </div>
+      </SelectedEmployeesContainer>
 
-      <Button
+      <AddValidatorButton
         appearance="subtle"
         icon={<AddIcon />}
         onClick={onAddClick}
-        className={styles.addValidatorButton}
       >
         Add Validator
-      </Button>
-    </Card>
+      </AddValidatorButton>
+    </CardContainer>
   );
 }; 
+
+const SelectedEmployeesContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${tokens.spacingHorizontalS};
+  margin-bottom: ${tokens.spacingVerticalM};
+`;
+
+const AddValidatorButton = styled(Button)`
+  justify-content: flex-start;
+`;
+
+const RemoveButton = styled(Button)`
+  padding: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: white;
+  background-color: transparent;
+  z-index: 1000;
+  &:hover {
+    color: white;
+    background-color: transparent;
+  }
+`;

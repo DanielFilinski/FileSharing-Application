@@ -3,19 +3,19 @@ import {
   DialogSurface,
   DialogBody,
   DialogTitle,
-  DialogContent,
+  DialogContent as FluentDialogContent,
   DialogActions,
   SearchBox,
   Button,
   Avatar,
   Body1,
   Caption1,
-  makeStyles,
   tokens,
-  mergeClasses,
 } from '@fluentui/react-components';
 import { CheckmarkCircleIcon } from '../icons';
 import { Employee } from '../types';
+import styled from 'styled-components';
+import { IconTitleContainer } from '@/app/styles/layouts';
 
 interface EmployeeSelectionDialogProps {
   open: boolean;
@@ -28,74 +28,6 @@ interface EmployeeSelectionDialogProps {
   getDepartmentName: (deptId: string) => string;
 }
 
-const useStyles = makeStyles({
-  dialogContent: {
-    width: '100%',
-    maxWidth: '500px',
-    borderRadius: tokens.borderRadiusLarge,
-    boxShadow: tokens.shadow16,
-    '@media (max-width: 768px)': {
-      maxWidth: '90vw',
-      margin: tokens.spacingVerticalM,
-    },
-  },
-  searchContainer: {
-    width: '100%',
-    marginBottom: tokens.spacingVerticalM,
-    padding: `0 ${tokens.spacingHorizontalM}`,
-  },
-  employeeList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
-    maxHeight: '300px',
-    overflowY: 'auto',
-    padding: tokens.spacingVerticalS,
-  },
-  employeeItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-    borderRadius: tokens.borderRadiusMedium,
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: tokens.colorNeutralBackground1Hover,
-      transform: 'translateX(4px)',
-    },
-  },
-  employeeSelected: {
-    backgroundColor: tokens.colorBrandBackground2,
-    '&:hover': {
-      backgroundColor: tokens.colorBrandBackground2Hover,
-    },
-  },
-  employeeInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalM,
-    flex: '1',
-  },
-  employeeDetails: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalXXS,
-  },
-  primaryButton: {
-    backgroundColor: tokens.colorBrandBackground,
-    borderRadius: tokens.borderRadiusMedium,
-    transition: 'all 0.2s ease',
-    '&:hover': {
-      backgroundColor: tokens.colorBrandBackgroundHover,
-      transform: 'translateY(-1px)',
-    },
-    '&:active': {
-      transform: 'translateY(0)',
-    },
-  },
-});
-
 export const EmployeeSelectionDialog = ({
   open,
   onOpenChange,
@@ -106,59 +38,121 @@ export const EmployeeSelectionDialog = ({
   onEmployeeSelect,
   getDepartmentName,
 }: EmployeeSelectionDialogProps) => {
-  const styles = useStyles();
-
   return (
     <Dialog open={open} onOpenChange={(event, data) => onOpenChange(data.open)}>
-      <DialogSurface className={styles.dialogContent}>
+      <StyledDialogSurface>
         <DialogBody>
           <DialogTitle>Select Validators</DialogTitle>
-          <DialogContent>
-            <div className={styles.searchContainer}>
+          <FluentDialogContent>
+            <SearchContainer>
               <SearchBox
                 placeholder="Search employees..."
                 value={searchTerm}
                 onChange={(_, data) => onSearchChange(data.value)}
               />
-            </div>
+            </SearchContainer>
             
-            <div className={styles.employeeList}>
+            <EmployeeList>
               {employees.map(employee => {
                 const isSelected = selectedEmployees.some(emp => emp.id === employee.id);
                 
                 return (
-                  <div
+                  <EmployeeItem
                     key={employee.id}
-                    className={mergeClasses(
-                      styles.employeeItem,
-                      isSelected && styles.employeeSelected
-                    )}
+                    $isSelected={isSelected}
                     onClick={() => onEmployeeSelect(employee)}
                   >
-                    <div className={styles.employeeInfo}>
+                    <IconTitleContainer>
                       <Avatar>{employee.avatar}</Avatar>
-                      <div className={styles.employeeDetails}>
+                      <EmployeeDetails>
                         <Body1>{employee.name}</Body1>
                         <Caption1>{getDepartmentName(employee.department)}</Caption1>
-                      </div>
-                    </div>
+                      </EmployeeDetails>
+                    </IconTitleContainer>
                     {isSelected && <CheckmarkCircleIcon color={tokens.colorBrandForeground1} />}
-                  </div>
+                  </EmployeeItem>
                 );
               })}
-            </div>
-          </DialogContent>
+            </EmployeeList>
+          </FluentDialogContent>
           <DialogActions>
-            <Button
+            <PrimaryButton
               appearance="primary"
               onClick={() => onOpenChange(false)}
-              className={styles.primaryButton}
             >
               Done
-            </Button>
+            </PrimaryButton>
           </DialogActions>
         </DialogBody>
-      </DialogSurface>
+      </StyledDialogSurface>
     </Dialog>
   );
-}; 
+};
+
+const StyledDialogSurface = styled(DialogSurface)`
+  width: 100%;
+  max-width: 500px;
+  border-radius: ${tokens.borderRadiusLarge};
+  box-shadow: ${tokens.shadow16};
+  
+  @media (max-width: 768px) {
+    max-width: 90vw;
+    margin: ${tokens.spacingVerticalM};
+  }
+`;
+
+const SearchContainer = styled.div`
+  width: 100%;
+  margin-bottom: ${tokens.spacingVerticalM};
+  padding: 0;
+`;
+
+const EmployeeList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${tokens.spacingVerticalS};
+  max-height: 300px;
+  overflow-y: auto;
+  padding: ${tokens.spacingVerticalS};
+`;
+
+const EmployeeItem = styled.div<{ $isSelected: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${tokens.spacingVerticalS} ${tokens.spacingHorizontalM};
+  border-radius: ${tokens.borderRadiusMedium};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: ${props => props.$isSelected ? tokens.colorBrandBackground2 : 'transparent'};
+  
+  &:hover {
+    background-color: ${props => 
+      props.$isSelected 
+        ? tokens.colorBrandBackground2Hover 
+        : tokens.colorNeutralBackground1Hover
+    };
+    transform: translateX(4px);
+  }
+`;
+
+const EmployeeDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${tokens.spacingVerticalXXS};
+`;
+
+const PrimaryButton = styled(Button)`
+  background-color: ${tokens.colorBrandBackground};
+  border-radius: ${tokens.borderRadiusMedium};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: ${tokens.colorBrandBackgroundHover};
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`; 

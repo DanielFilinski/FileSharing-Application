@@ -1,77 +1,58 @@
-import { Card, ToggleButton, Title3 } from '@fluentui/react-components';
+import { ToggleButton } from '@fluentui/react-components';
 import { PersonIcon, BuildingIcon } from '../icons';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { tokens } from '@fluentui/react-components';
+import styled from 'styled-components';
+import { CardHeader } from '@/components/card/card-header';
+import { CardContainer } from '@/app/styles/layouts';
 
 interface ValidationTypeSelectorProps {
   validationType: 'employee' | 'office';
   onTypeChange: (type: 'employee' | 'office') => void;
 }
 
-const useStyles = makeStyles({
-  switchInfo: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: tokens.spacingHorizontalM,
-    marginBottom: tokens.spacingVerticalM,
-  },
-  iconWrapper: {
-    backgroundColor: tokens.colorBrandBackground2,
-    color: tokens.colorBrandForeground1,
-    padding: tokens.spacingVerticalXS,
-    borderRadius: tokens.borderRadiusSmall,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '2px',
-  },
-  typeSelector: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: tokens.spacingHorizontalM,
-    marginTop: tokens.spacingVerticalM,
-    '@media (max-width: 768px)': {
-      gridTemplateColumns: '1fr',
-    },
-  },
-  typeButton: {
-    minHeight: '50px',
-    justifyContent: 'center',
-    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalL}`,
-  },
-});
 
 export const ValidationTypeSelector = ({ validationType, onTypeChange }: ValidationTypeSelectorProps) => {
-  const styles = useStyles();
-
   return (
-    <Card>
-      <div className={styles.switchInfo}>
-        <div className={styles.iconWrapper}>
-          <PersonIcon />
-        </div>
-        <div>
-          <Title3>Validation Assignment</Title3>
-        </div>
-      </div>
+    <CardContainer>
+      <CardHeader 
+        text="Validation Assignment" 
+        icon={<PersonIcon />} 
+      />
+     
       
-      <div className={styles.typeSelector}>
-        <ToggleButton
+      <TypeSelector>
+        <TypeButton
           checked={validationType === 'employee'}
           onClick={() => onTypeChange('employee')}
           icon={<PersonIcon />}
-          className={styles.typeButton}
         >
           Employees
-        </ToggleButton>
-        <ToggleButton
+        </TypeButton>
+        <TypeButton
           checked={validationType === 'office'}
           onClick={() => onTypeChange('office')}
           icon={<BuildingIcon />}
-          className={styles.typeButton}
         >
           By Office
-        </ToggleButton>
-      </div>
-    </Card>
+        </TypeButton>
+      </TypeSelector>
+    </CardContainer>
   );
-}; 
+};
+
+const TypeSelector = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: ${tokens.spacingHorizontalM};
+  // margin-top: ${tokens.spacingVerticalM};
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const TypeButton = styled(ToggleButton)`
+  min-height: 50px;
+  justify-content: center;
+  // padding: ${tokens.spacingVerticalM} ${tokens.spacingHorizontalL};
+`;
