@@ -2,14 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { Body1, Subtitle2, Text, tokens } from '@fluentui/react-components';
 import { Building24Regular } from '@fluentui/react-icons';
+import AccentIcon from '@/components/icon/accent-icon';
 
 
 const EmptyOfficesState: React.FC = () => {
   return (
     <EmptyStateContainer>
-      <EmptyIcon>
-        <Building24Regular />
-      </EmptyIcon>
+      <AccentIcon icon={<StyledBuildingIcon />} />
       <Subtitle2>
         No offices added yet
       </Subtitle2>
@@ -48,4 +47,9 @@ const EmptyIcon = styled.div`
   color: ${tokens.colorBrandForeground1};
   border-radius: ${tokens.borderRadiusMedium};
   margin-bottom: ${tokens.spacingVerticalM};
+`;
+
+const StyledBuildingIcon = styled(Building24Regular)`
+  width: 32px;
+  height: 32px;
 `;

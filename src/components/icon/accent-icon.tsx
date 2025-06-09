@@ -33,7 +33,7 @@ const IconWrapper = styled.span<IconWrapperProps>`
   align-items: center;
   justify-content: center;
   padding: 0.3rem;
-  background: ${props => props.background || COLORS.purple3};
+  background: ${props => props.background || tokens.colorBrandBackground2};
   border-radius: 8px;
   color: ${props => props.color || tokens.colorBrandForeground2};
 `;

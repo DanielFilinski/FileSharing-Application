@@ -8,7 +8,7 @@ import { ApprovalToggle } from './components/ApprovalToggle';
 import { ValidationMessageBars } from './components/ValidationMessageBars';
 import { EmployeeSelectionDialog } from './components/EmployeeSelectionDialog';
 import { Employee, Department, Office, OfficeValidators as OfficeValidatorsType } from './types';
-import { CardContainer, ContentContainer, RowCardContainer, ScreenContainer } from '@/app/styles/layouts';
+import { ContentContainer, RowCardContainer, ScreenContainer } from '@/app/styles/layouts';
 
 const TeamsValidationSettings = () => {
   const [manualValidation, setManualValidation] = useState(false);
