@@ -32,6 +32,7 @@ import {
   Building20Regular,
   FlashRegular
 } from '@fluentui/react-icons';
+import { SettingsHeader } from '@/components/SettingsHeader';
 
 interface Employee {
   name: string;
@@ -104,13 +105,19 @@ function ApprovalSettingsForm() {
     });
   };
 
+  const handleSave = () => {
+    console.log('Save clicked');
+  };
+
   return (
     <div className={styles.container}>
       {/* Header */}
-      <div className={styles.header}>
-        <CheckmarkCircle20Regular className={styles.headerIcon} />
-        <Title3>Approval Settings</Title3>
-      </div>
+      <SettingsHeader
+        title="Approval Settings"
+        icon={<CheckmarkCircle20Regular />}
+        buttonText="Save changes"
+        onButtonClick={handleSave}
+      />
 
       <Divider className={styles.headerDivider} />
 
@@ -119,7 +126,7 @@ function ApprovalSettingsForm() {
         
         {/* Manual Approval Toggle */}
         <Card className={styles.card}>
-          <div className={styles.cardContent}>
+          <div className={styles.cardContent} style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <div className={styles.iconTextContainer}>
               <div className={styles.iconContainer}>
                 <CheckmarkCircle20Regular />
@@ -167,17 +174,17 @@ function ApprovalSettingsForm() {
                         onClick={() => toggleDepartment(dept)}
                       >
                         <div className={styles.optionContent}>
-                          <Checkbox 
+                          {/* <Checkbox 
                             checked={selectedDepartments.includes(dept)}
                             readOnly
-                          />
+                          /> */}
                           <Text>{dept}</Text>
                         </div>
                       </Option>
                     ))}
                   </Dropdown>
                   
-                  {selectedDepartments.length > 0 && (
+                  {/* {selectedDepartments.length > 0 && (
                     <div className={styles.selectedItems}>
                       {selectedDepartments.map((dept) => (
                         <Badge 
@@ -189,7 +196,7 @@ function ApprovalSettingsForm() {
                         </Badge>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             </Card>
@@ -291,17 +298,17 @@ function ApprovalSettingsForm() {
                         onClick={() => toggleOffice(office)}
                       >
                         <div className={styles.optionContent}>
-                          <Checkbox 
+                          {/* <Checkbox 
                             checked={selectedOffices.includes(office)}
                             readOnly
-                          />
+                          /> */}
                           <Text>{office}</Text>
                         </div>
                       </Option>
                     ))}
                   </Dropdown>
                   
-                  {selectedOffices.length > 0 && (
+                  {/* {selectedOffices.length > 0 && (
                     <div className={styles.selectedItems}>
                       {selectedOffices.map((office) => (
                         <Badge 
@@ -313,7 +320,7 @@ function ApprovalSettingsForm() {
                         </Badge>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </div>
                 
                 {selectedOffices.length > 0 && (
@@ -369,17 +376,17 @@ function ApprovalSettingsForm() {
           </>
         )}
 
-        <Divider className={styles.actionsDivider} />
+        {/* <Divider className={styles.actionsDivider} /> */}
         
         {/* Action Buttons */}
-        <div className={styles.actions}>
+        {/* <div className={styles.actions}>
           <Button appearance="secondary" size="medium">
             Cancel
           </Button>
           <Button appearance="primary" size="medium">
             Save Settings
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -388,9 +395,9 @@ function ApprovalSettingsForm() {
 const useStyles = makeStyles({
   container: {
     width: '100%',
-    maxWidth: '800px',
+    // maxWidth: '800px',
     margin: '0 auto',
-    padding: '24px',
+    // padding: '24px',
     
     // Mobile responsiveness - Teams mobile requirement: 320px minimum
     '@media (max-width: 767px)': {
@@ -426,6 +433,8 @@ const useStyles = makeStyles({
   content: {
     display: 'flex',
     flexDirection: 'column',
+    maxWidth: '1000px',
+    margin: '0 auto',
     gap: '20px', // 5 * 4px
     
     '@media (max-width: 767px)': {
@@ -445,13 +454,13 @@ const useStyles = makeStyles({
   },
   
   cardContent: {
-    padding: '20px', // 5 * 4px
+    padding: tokens.spacingVerticalL, // 5 * 4px
     display: 'flex',
     flexDirection: 'column',
     gap: '16px', // 4 * 4px
     
     '@media (max-width: 767px)': {
-      padding: '16px'
+      padding: tokens.spacingVerticalL
     }
   },
   
@@ -523,7 +532,8 @@ const useStyles = makeStyles({
   
   radioOption: {
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
     gap: '12px',
     padding: '16px',
     borderRadius: tokens.borderRadiusMedium,
@@ -572,7 +582,8 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-    marginBottom: '12px'
+    marginBottom: '12px',
+    marginTop: '10px'
   },
   
   sequentialItem: {
@@ -586,7 +597,7 @@ const useStyles = makeStyles({
     height: '24px',
     borderRadius: '50%',
     backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorBrandForeground1,
+    color: 'white',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

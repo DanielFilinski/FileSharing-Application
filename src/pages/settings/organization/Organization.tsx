@@ -1,28 +1,16 @@
 import React, { useState } from 'react';
 import {
-  FluentProvider,
-  webLightTheme,
-  webDarkTheme,
   makeStyles,
-  shorthands,
   tokens,
   Button,
   Input,
-  Label,
   Text,
   Card,
-  CardHeader,
-  CardPreview,
   TabList,
   Tab,
   SelectTabEvent,
   SelectTabData,
   Textarea,
-  MessageBar,
-  MessageBarBody,
-  Divider,
-  Badge,
-  Avatar,
   Field,
   Toast,
   ToastTitle,
@@ -38,7 +26,6 @@ import {
   Save24Regular,
   Add24Regular,
   Delete24Regular,
-  Person24Regular,
   People24Regular,
   Checkmark24Regular,
   Dismiss24Regular
@@ -345,8 +332,7 @@ const OrganizationSettings: React.FC = () => {
   };
 
 
-  return (
-    
+  return (    
       <div className={styles.container}>
         <Toaster toasterId={toasterId} />
         
@@ -395,7 +381,7 @@ export default OrganizationSettings;
 const useStyles = makeStyles({
   container: {
     minHeight: '100vh',
-    backgroundColor: tokens.colorNeutralBackground3,
+    // backgroundColor: tokens.colorNeutralBackground3,
     padding: '0',
   },
   

@@ -61,6 +61,7 @@ import {
   Warning20Regular,
   bundleIcon
 } from '@fluentui/react-icons';
+import { SettingsHeader } from '../../../components/SettingsHeader';
 
 // Bundle icons for better performance
 const ShieldIcon = bundleIcon(Shield20Filled, Shield20Regular);
@@ -185,287 +186,278 @@ const TeamsValidationSettings = () => {
   const theme = isDarkMode ? webDarkTheme : webLightTheme;
 
   return (
-    
-      <div className={styles.root}>
-        {/* Header */}
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <ShieldIcon className={styles.brandIcon} />
-            <Title2>Validation Settings</Title2>
-          </div>
-          <Button 
-            appearance="primary" 
-            icon={<SaveIcon />}
-            onClick={handleSave}
-            className={styles.primaryButton}
-          >
-            Save changes
-          </Button>
-        </div>
+    <div className={styles.root}>
+      <SettingsHeader
+        title="Validation Settings"
+        icon={<ShieldIcon />}
+        buttonText="Save changes"
+        buttonIcon={<SaveIcon />}
+        onButtonClick={handleSave}
+      />
 
-        {/* Content */}
-        <div className={styles.content}>
-          <div className={styles.contentWrapper}>
-            
-            {/* Manual Validation Toggle */}
-            <div className={styles.section}>
-              <Card className={styles.card}>
-                <div className={styles.switchCard}>
-                  <div className={styles.switchContent}>
-                    <div className={styles.switchInfo}>
-                      <div className={styles.iconWrapper}>
-                        <ShieldIcon />
-                      </div>
-                      <div>
-                        <Title3>Manual Validation Needed</Title3>
-                        <br />
-                        <Body1>Enable this option if documents require manual validation before processing</Body1>
-                      </div>
+      {/* Content */}
+      <div className={styles.content}>
+        <div className={styles.contentWrapper}>
+          
+          {/* Manual Validation Toggle */}
+          <div className={styles.section}>
+            <Card className={styles.card}>
+              <div className={styles.switchCard}>
+                <div className={styles.switchContent}>
+                  <div className={styles.switchInfo}>
+                    <div className={styles.iconWrapper}>
+                      <ShieldIcon />
+                    </div>
+                    <div>
+                      <Title3>Manual Validation Needed</Title3>
+                      <br />
+                      <Body1>Enable this option if documents require manual validation before processing</Body1>
                     </div>
                   </div>
-                  <Switch 
-                    checked={manualValidation}
-                    onChange={(ev) => setManualValidation(ev.currentTarget.checked)}
-                  />
                 </div>
-              </Card>
-            </div>
+                <Switch 
+                  checked={manualValidation}
+                  onChange={(ev) => setManualValidation(ev.currentTarget.checked)}
+                />
+              </div>
+            </Card>
+          </div>
 
-            {manualValidation && (
-              <>
-                {/* Validation Type Selector */}
+          {manualValidation && (
+            <>
+              {/* Validation Type Selector */}
+              <div className={styles.section}>
+                <Card className={styles.card}>
+                  <div className={styles.switchInfo}>
+                    <div className={styles.iconWrapper}>
+                      <PersonIcon />
+                    </div>
+                    <div>
+                      <Title3>Validation Assignment</Title3>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.typeSelector}>
+                    <ToggleButton
+                      checked={validationType === 'employee'}
+                      onClick={() => setValidationType('employee')}
+                      icon={<PersonIcon />}
+                      className={styles.typeButton}
+                    >
+                      Employees
+                    </ToggleButton>
+                    <ToggleButton
+                      checked={validationType === 'office'}
+                      onClick={() => setValidationType('office')}
+                      icon={<BuildingIcon />}
+                      className={styles.typeButton}
+                    >
+                      By Office
+                    </ToggleButton>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Employee Validators */}
+              {validationType === 'employee' && (
                 <div className={styles.section}>
                   <Card className={styles.card}>
-                    <div className={styles.switchInfo}>
-                      <div className={styles.iconWrapper}>
-                        <PersonIcon />
-                      </div>
-                      <div>
-                        <Title3>Validation Assignment</Title3>
-                      </div>
-                    </div>
+                    <Title3>Employees Responsible for Validation</Title3>
                     
-                    <div className={styles.typeSelector}>
-                      <ToggleButton
-                        checked={validationType === 'employee'}
-                        onClick={() => setValidationType('employee')}
-                        icon={<PersonIcon />}
-                        className={styles.typeButton}
-                      >
-                        Employees
-                      </ToggleButton>
-                      <ToggleButton
-                        checked={validationType === 'office'}
-                        onClick={() => setValidationType('office')}
-                        icon={<BuildingIcon />}
-                        className={styles.typeButton}
-                      >
-                        By Office
-                      </ToggleButton>
+                    <div className={styles.selectedEmployees}>
+                      {selectedEmployees.length > 0 ? (
+                        selectedEmployees.map(employee => (
+                          <Badge key={employee.id} color="brand">
+                            {employee.avatar} {employee.name}
+                            <Button
+                              size="small"
+                              icon={<Dismiss20Regular />}
+                              onClick={() => removeEmployee(employee.id)}
+                              appearance="subtle"
+                            />
+                          </Badge>
+                        ))
+                      ) : (
+                        <Body1>No employees selected</Body1>
+                      )}
+                    </div>
+
+                    <Button
+                      appearance="subtle"
+                      icon={<AddIcon />}
+                      onClick={() => openEmployeeDialog()}
+                      className={styles.addValidatorButton}
+                    >
+                      Add Validator
+                    </Button>
+                  </Card>
+                </div>
+              )}
+
+              {/* Office Validators */}
+              {validationType === 'office' && (
+                <div className={styles.section}>
+                  <Card className={styles.card}>
+                    <Title3>Office-Specific Validators</Title3>
+                    <Body1>Assign validators to specific office locations</Body1>
+                    
+                    <div style={{ marginTop: tokens.spacingVerticalM }}>
+                      {offices.map(office => (
+                        <div key={office.id} className={styles.officeCard}>
+                          <div className={styles.officeHeader}>
+                            <div className={styles.officeTitle}>
+                              <BuildingIcon/>
+                              <Subtitle1>{office.name}</Subtitle1>
+                            </div>
+                            <Button
+                              appearance="subtle"
+                              icon={<AddIcon />}
+                              onClick={() => openEmployeeDialog(office.id)}
+                            >
+                              Add
+                            </Button>
+                          </div>
+
+                          <div className={styles.selectedEmployees}>
+                            {officeValidators[office.id]?.length > 0 ? (
+                              officeValidators[office.id].map(validator => (
+                                <Badge key={validator.id} color="brand">
+                                  {validator.avatar} {validator.name}
+                                  <Button
+                                    size="small"
+                                    icon={<Dismiss20Regular />}
+                                    onClick={() => removeEmployee(validator.id, office.id)}
+                                    appearance="subtle"
+                                  />
+                                </Badge>
+                              ))
+                            ) : (
+                              <Caption1>No validators assigned</Caption1>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </Card>
                 </div>
+              )}
 
-                {/* Employee Validators */}
-                {validationType === 'employee' && (
-                  <div className={styles.section}>
-                    <Card className={styles.card}>
-                      <Title3>Employees Responsible for Validation</Title3>
-                      
-                      <div className={styles.selectedEmployees}>
-                        {selectedEmployees.length > 0 ? (
-                          selectedEmployees.map(employee => (
-                            <Badge key={employee.id} color="brand">
-                              {employee.avatar} {employee.name}
-                              <Button
-                                size="small"
-                                icon={<Dismiss20Regular />}
-                                onClick={() => removeEmployee(employee.id)}
-                                appearance="subtle"
-                              />
-                            </Badge>
-                          ))
-                        ) : (
-                          <Body1>No employees selected</Body1>
-                        )}
-                      </div>
-
-                      <Button
-                        appearance="subtle"
-                        icon={<AddIcon />}
-                        onClick={() => openEmployeeDialog()}
-                        className={styles.addValidatorButton}
-                      >
-                        Add Validator
-                      </Button>
-                    </Card>
-                  </div>
-                )}
-
-                {/* Office Validators */}
-                {validationType === 'office' && (
-                  <div className={styles.section}>
-                    <Card className={styles.card}>
-                      <Title3>Office-Specific Validators</Title3>
-                      <Body1>Assign validators to specific office locations</Body1>
-                      
-                      <div style={{ marginTop: tokens.spacingVerticalM }}>
-                        {offices.map(office => (
-                          <div key={office.id} className={styles.officeCard}>
-                            <div className={styles.officeHeader}>
-                              <div className={styles.officeTitle}>
-                                <BuildingIcon/>
-                                <Subtitle1>{office.name}</Subtitle1>
-                              </div>
-                              <Button
-                                appearance="subtle"
-                                icon={<AddIcon />}
-                                onClick={() => openEmployeeDialog(office.id)}
-                              >
-                                Add
-                              </Button>
-                            </div>
-
-                            <div className={styles.selectedEmployees}>
-                              {officeValidators[office.id]?.length > 0 ? (
-                                officeValidators[office.id].map(validator => (
-                                  <Badge key={validator.id} color="brand">
-                                    {validator.avatar} {validator.name}
-                                    <Button
-                                      size="small"
-                                      icon={<Dismiss20Regular />}
-                                      onClick={() => removeEmployee(validator.id, office.id)}
-                                      appearance="subtle"
-                                    />
-                                  </Badge>
-                                ))
-                              ) : (
-                                <Caption1>No validators assigned</Caption1>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </Card>
-                  </div>
-                )}
-
-                {/* Approval Toggle */}
-                <div className={styles.section}>
-                  <Card className={styles.card}>
-                    <div className={styles.switchCard}>
-                      <div className={styles.switchContent}>
-                        <div className={styles.switchInfo}>
-                          <div className={styles.iconWrapper}>
-                            <CheckmarkCircleIcon />
-                          </div>
-                          <div>
-                            <Title3>Approval Needed</Title3>
-                            <br />
-                            <Body1>Enable this option if documents require approval after validation</Body1>
-                          </div>
+              {/* Approval Toggle */}
+              <div className={styles.section}>
+                <Card className={styles.card}>
+                  <div className={styles.switchCard}>
+                    <div className={styles.switchContent}>
+                      <div className={styles.switchInfo}>
+                        <div className={styles.iconWrapper}>
+                          <CheckmarkCircleIcon />
+                        </div>
+                        <div>
+                          <Title3>Approval Needed</Title3>
+                          <br />
+                          <Body1>Enable this option if documents require approval after validation</Body1>
                         </div>
                       </div>
-                      <Switch 
-                        checked={approvalNeeded}
-                        onChange={(ev) => setApprovalNeeded(ev.currentTarget.checked)}
-                      />
                     </div>
-                  </Card>
-                </div>
+                    <Switch 
+                      checked={approvalNeeded}
+                      onChange={(ev) => setApprovalNeeded(ev.currentTarget.checked)}
+                    />
+                  </div>
+                </Card>
+              </div>
 
-                {/* Message Bars */}
-                {approvalNeeded && (
-                  <MessageBar intent="info" className={styles.messageBar}>
-                    <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                      <MessageBarTitle>Approval Configuration</MessageBarTitle>
-                      Approval settings will be fetched from document approval configuration. Documents will follow the complete validation and approval workflow.
-                    </MessageBarBody>
-                  </MessageBar>
-                )}
+              {/* Message Bars */}
+              {approvalNeeded && (
+                <MessageBar intent="info" className={styles.messageBar}>
+                  <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                    <MessageBarTitle>Approval Configuration</MessageBarTitle>
+                    Approval settings will be fetched from document approval configuration. Documents will follow the complete validation and approval workflow.
+                  </MessageBarBody>
+                </MessageBar>
+              )}
 
-                {!approvalNeeded && manualValidation && (
-                  <MessageBar intent="success" className={styles.messageBar}>
-                    <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                      Documents will be automatically approved after successful validation by the assigned validators.
-                    </MessageBarBody>
-                  </MessageBar>
-                )}
-              </>
-            )}
+              {!approvalNeeded && manualValidation && (
+                <MessageBar intent="success" className={styles.messageBar}>
+                  <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                    Documents will be automatically approved after successful validation by the assigned validators.
+                  </MessageBarBody>
+                </MessageBar>
+              )}
+            </>
+          )}
 
-            {/* Automatic Processing Message */}
-            {!manualValidation && (
-              <MessageBar intent="success" className={styles.messageBar}>
-                <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                  <MessageBarTitle>Automatic Document Processing Enabled</MessageBarTitle>
-                  Documents will be automatically validated and processed without manual intervention.
-                </MessageBarBody>
-              </MessageBar>
-            )}
+          {/* Automatic Processing Message */}
+          {!manualValidation && (
+            <MessageBar intent="success" className={styles.messageBar}>
+              <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                <MessageBarTitle>Automatic Document Processing Enabled</MessageBarTitle>
+                Documents will be automatically validated and processed without manual intervention.
+              </MessageBarBody>
+            </MessageBar>
+          )}
 
-          </div>
         </div>
-
-        {/* Employee Selection Dialog */}
-        <Dialog 
-          open={showEmployeeDialog} 
-          onOpenChange={(event, data) => setShowEmployeeDialog(data.open)}
-        >
-          <DialogSurface className={styles.dialogContent}>
-            <DialogBody>
-              <DialogTitle>Select Validators</DialogTitle>
-              <DialogContent>
-                <div className={styles.searchContainer}>
-                  <SearchBox
-                    placeholder="Search employees..."
-                    value={searchTerm}
-                    onChange={(_, data) => setSearchTerm(data.value)}
-                  />
-                </div>
-                
-                <div className={styles.employeeList}>
-                  {filteredEmployees.map(employee => {
-                    const isSelected = validationType === 'employee' 
-                      ? selectedEmployees.some(emp => emp.id === employee.id)
-                      : currentOfficeId ? officeValidators[currentOfficeId]?.some(emp => emp.id === employee.id) : false;
-                    
-                    return (
-                      <div
-                        key={employee.id}
-                        className={mergeClasses(
-                          styles.employeeItem,
-                          isSelected && styles.employeeSelected
-                        )}
-                        onClick={() => handleEmployeeSelect(employee)}
-                      >
-                        <div className={styles.employeeInfo}>
-                          <Avatar>{employee.avatar}</Avatar>
-                          <div className={styles.employeeDetails}>
-                            <Body1>{employee.name}</Body1>
-                            <Caption1>{getDepartmentName(employee.department)}</Caption1>
-                          </div>
-                        </div>
-                        {isSelected && <CheckmarkCircleIcon color={tokens.colorBrandForeground1} />}
-                      </div>
-                    );
-                  })}
-                </div>
-              </DialogContent>
-              <DialogActions>
-                <Button
-                  appearance="primary"
-                  onClick={() => setShowEmployeeDialog(false)}
-                  className={styles.primaryButton}
-                >
-                  Done
-                </Button>
-              </DialogActions>
-            </DialogBody>
-          </DialogSurface>
-        </Dialog>
-
       </div>
+
+      {/* Employee Selection Dialog */}
+      <Dialog 
+        open={showEmployeeDialog} 
+        onOpenChange={(event, data) => setShowEmployeeDialog(data.open)}
+      >
+        <DialogSurface className={styles.dialogContent}>
+          <DialogBody>
+            <DialogTitle>Select Validators</DialogTitle>
+            <DialogContent>
+              <div className={styles.searchContainer}>
+                <SearchBox
+                  placeholder="Search employees..."
+                  value={searchTerm}
+                  onChange={(_, data) => setSearchTerm(data.value)}
+                />
+              </div>
+              
+              <div className={styles.employeeList}>
+                {filteredEmployees.map(employee => {
+                  const isSelected = validationType === 'employee' 
+                    ? selectedEmployees.some(emp => emp.id === employee.id)
+                    : currentOfficeId ? officeValidators[currentOfficeId]?.some(emp => emp.id === employee.id) : false;
+                  
+                  return (
+                    <div
+                      key={employee.id}
+                      className={mergeClasses(
+                        styles.employeeItem,
+                        isSelected && styles.employeeSelected
+                      )}
+                      onClick={() => handleEmployeeSelect(employee)}
+                    >
+                      <div className={styles.employeeInfo}>
+                        <Avatar>{employee.avatar}</Avatar>
+                        <div className={styles.employeeDetails}>
+                          <Body1>{employee.name}</Body1>
+                          <Caption1>{getDepartmentName(employee.department)}</Caption1>
+                        </div>
+                      </div>
+                      {isSelected && <CheckmarkCircleIcon color={tokens.colorBrandForeground1} />}
+                    </div>
+                  );
+                })}
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                appearance="primary"
+                onClick={() => setShowEmployeeDialog(false)}
+                className={styles.primaryButton}
+              >
+                Done
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
+
+    </div>
   );
 };
 
@@ -481,40 +473,18 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
     fontFamily: tokens.fontFamilyBase,
   },
-  header: {
-    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalXL}`,
-    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground1,
-    boxShadow: tokens.shadow2,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    '@media (max-width: 768px)': {
-      padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-      flexDirection: 'column',
-      gap: tokens.spacingVerticalM,
-    },
-  },
-  headerLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalM,
-  },
-  brandIcon: {
-    color: tokens.colorBrandForeground1,
-  },
   content: {
     flex: '1',
     overflowY: 'auto',
-    paddingTop: tokens.spacingVerticalL,
-    paddingBottom: tokens.spacingVerticalL,
+    paddingTop: tokens.spacingHorizontalXL,
+    paddingBottom: tokens.spacingHorizontalXL,
     '@media (max-width: 768px)': {
       paddingTop: tokens.spacingVerticalM,
       paddingBottom: tokens.spacingVerticalM,
     },
   },
   contentWrapper: {
-    maxWidth: '768px',
+    maxWidth: '1000px',
     margin: '0 auto',
     paddingLeft: tokens.spacingHorizontalXL,
     paddingRight: tokens.spacingHorizontalXL,
@@ -524,7 +494,7 @@ const useStyles = makeStyles({
     },
   },
   section: {
-    marginBottom: tokens.spacingVerticalL,
+    marginBottom: tokens.spacingHorizontalXL,
   },
   card: {
     padding: tokens.spacingVerticalL,
@@ -682,13 +652,8 @@ const useStyles = makeStyles({
     },
   },
   messageBar: {
+    padding: tokens.spacingHorizontalL,
     marginBottom: tokens.spacingVerticalM,
-  },
-  responsive: {
-    '@media (max-width: 550px)': {
-      fontSize: tokens.fontSizeBase200,
-      padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
-    },
   },
   addValidatorButton: {
     justifyContent: 'flex-start',
