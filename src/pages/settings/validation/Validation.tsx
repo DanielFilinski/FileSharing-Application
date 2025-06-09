@@ -323,11 +323,11 @@ const TeamsValidationSettings = () => {
                               officeValidators[office.id].map(validator => (
                                 <Badge key={validator.id} color="brand">
                                   {validator.avatar} {validator.name}
-                                  <Button
+                                  <Button                                
                                     size="small"
                                     icon={<Dismiss20Regular />}
                                     onClick={() => removeEmployee(validator.id, office.id)}
-                                    appearance="subtle"
+                                    className={styles.removeButton}
                                   />
                                 </Badge>
                               ))
@@ -467,6 +467,7 @@ export default TeamsValidationSettings;
 
 const useStyles = makeStyles({
   root: {
+    flex: '1',
     display: 'flex',
     flexDirection: 'column',
     height: '100vh',
@@ -476,32 +477,36 @@ const useStyles = makeStyles({
   content: {
     flex: '1',
     overflowY: 'auto',
-    paddingTop: tokens.spacingHorizontalXL,
-    paddingBottom: tokens.spacingHorizontalXL,
+    marginTop: tokens.spacingVerticalL,
     '@media (max-width: 768px)': {
-      paddingTop: tokens.spacingVerticalM,
-      paddingBottom: tokens.spacingVerticalM,
+      marginTop: tokens.spacingVerticalM,
     },
   },
   contentWrapper: {
     maxWidth: '1000px',
     margin: '0 auto',
-    paddingLeft: tokens.spacingHorizontalXL,
-    paddingRight: tokens.spacingHorizontalXL,
+    paddingLeft: tokens.spacingHorizontalL,
+    paddingRight: tokens.spacingHorizontalL,
     '@media (max-width: 768px)': {
       paddingLeft: tokens.spacingHorizontalM,
       paddingRight: tokens.spacingHorizontalM,
     },
   },
   section: {
-    marginBottom: tokens.spacingHorizontalXL,
+    marginBottom: tokens.spacingVerticalL,
+    '@media (max-width: 768px)': {
+      marginBottom: tokens.spacingVerticalM,
+    },
   },
   card: {
-    padding: tokens.spacingVerticalL,
+    // padding: tokens.spacingVerticalL,
     backgroundColor: tokens.colorNeutralBackground1,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
     borderRadius: tokens.borderRadiusMedium,
     boxShadow: tokens.shadow2,
+    '@media (max-width: 768px)': {
+      // padding: tokens.spacingVerticalM,
+    },
   },
   switchCard: {
     display: 'flex',
@@ -626,18 +631,6 @@ const useStyles = makeStyles({
     width: '100%',
     marginBottom: tokens.spacingVerticalM,
     padding: `0 ${tokens.spacingHorizontalM}`,
-    '& .fui-SearchBox': {
-      width: '100%',
-      borderRadius: tokens.borderRadiusMedium,
-      border: `1px solid ${tokens.colorNeutralStroke1}`,
-      '&:hover': {
-        border: `1px solid ${tokens.colorNeutralStroke1Hover}`,
-      },
-      '&:focus-within': {
-        border: `1px solid ${tokens.colorBrandStroke1}`,
-        boxShadow: `0 0 0 2px ${tokens.colorBrandStroke2}`,
-      },
-    },
   },
   primaryButton: {
     backgroundColor: tokens.colorBrandBackground,
@@ -657,5 +650,24 @@ const useStyles = makeStyles({
   },
   addValidatorButton: {
     justifyContent: 'flex-start',
+  },
+  removeButton: {
+    padding: '0px',
+    // padding: '4px',
+    // minWidth: '24px',
+    // minHeight: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    color: 'white',
+    backgroundColor: 'transparent',
+    zIndex: 1000,
+
+    '&:hover': {
+      color: 'white',
+      backgroundColor: 'transparent',
+    },
+    
   },
 });

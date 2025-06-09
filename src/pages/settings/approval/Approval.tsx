@@ -15,7 +15,6 @@ import {
   Divider,
   Title2,
   Title3,
-  Subtitle1,
   Body1,
   Caption1,
   Subtitle2,
@@ -132,7 +131,7 @@ function ApprovalSettingsForm() {
                 <CheckmarkCircle20Regular />
               </div>
               <div className={styles.textContainer}>
-                <Subtitle1>Manual Approval Needed</Subtitle1>
+                <Title3>Manual Approval Needed</Title3>
                 <Body1>Enable this to require manual approval for documents</Body1>
               </div>
             </div>
@@ -154,7 +153,7 @@ function ApprovalSettingsForm() {
                     <People20Regular />
                   </div>
                   <div className={styles.textContainer}>
-                    <Subtitle1>Department Selection</Subtitle1>
+                    <Title3>Department Selection</Title3>
                     <Body1>Choose which departments need to approve documents</Body1>
                   </div>
                 </div>
@@ -210,7 +209,7 @@ function ApprovalSettingsForm() {
                       <FlashRegular />
                     </div>
                     <div className={styles.textContainer}>
-                      <Subtitle1>Approval Flow</Subtitle1>
+                      <Title3>Approval Flow</Title3>
                       <Body1>Choose how approvals flow between departments</Body1>
                     </div>
                   </div>
@@ -272,13 +271,13 @@ function ApprovalSettingsForm() {
 
             {/* Employee Selection */}
             <Card className={styles.card}>
-              <div className={styles.cardContent}>
+              <div className={styles.cardContent}> 
                 <div className={styles.iconTextContainer}>
                   <div className={styles.iconContainer}>
                     <Building20Regular />
                   </div>
                   <div className={styles.textContainer}>
-                    <Subtitle1>Employee Selection</Subtitle1>
+                    <Title3>Employee Selection</Title3>
                     <Body1>Select employees based on offices for approval</Body1>
                   </div>
                 </div>
@@ -395,25 +394,19 @@ function ApprovalSettingsForm() {
 const useStyles = makeStyles({
   container: {
     width: '100%',
-    // maxWidth: '800px',
     margin: '0 auto',
-    // padding: '24px',
-    
-    // Mobile responsiveness - Teams mobile requirement: 320px minimum
     '@media (max-width: 767px)': {
-      padding: '16px',
-      maxWidth: '100%'
+      padding: tokens.spacingVerticalM,
     }
   },
   
   header: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px', // Teams 4px grid system: 12px = 3 * 4px
-    marginBottom: '24px', // 6 * 4px
-    
+    gap: tokens.spacingHorizontalM,
+    marginBottom: tokens.spacingVerticalL,
     '@media (max-width: 767px)': {
-      marginBottom: '16px' // 4 * 4px
+      marginBottom: tokens.spacingVerticalM
     }
   },
   
@@ -423,10 +416,9 @@ const useStyles = makeStyles({
   },
   
   headerDivider: {
-    marginBottom: '24px',
-    
+    marginBottom: tokens.spacingVerticalL,
     '@media (max-width: 767px)': {
-      marginBottom: '16px'
+      marginBottom: tokens.spacingVerticalM
     }
   },
   
@@ -435,47 +427,43 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     maxWidth: '1000px',
     margin: '0 auto',
-    gap: '20px', // 5 * 4px
-    
+    gap: tokens.spacingVerticalM,
     '@media (max-width: 767px)': {
-      gap: '16px' // 4 * 4px
+      gap: tokens.spacingVerticalS
     }
   },
   
   card: {
     width: '100%',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusMedium, // Teams standard 4px radius
+    borderRadius: tokens.borderRadiusMedium,
     boxShadow: tokens.shadow4,
-    
     '@media (max-width: 767px)': {
       borderRadius: tokens.borderRadiusSmall
     }
   },
   
   cardContent: {
-    padding: tokens.spacingVerticalL, // 5 * 4px
+    // padding: tokens.spacingVerticalL,
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px', // 4 * 4px
-    
+    gap: tokens.spacingVerticalM,
     '@media (max-width: 767px)': {
-      padding: tokens.spacingVerticalL
+      // padding: tokens.spacingVerticalM
     }
   },
   
   iconTextContainer: {
     display: 'flex',
     alignItems: 'flex-start',
-    gap: '12px', // 3 * 4px
-    
+    gap: tokens.spacingHorizontalM,
     '@media (max-width: 767px)': {
-      gap: '8px' // 2 * 4px
+      gap: tokens.spacingHorizontalS
     }
   },
   
   iconContainer: {
-    width: '32px', // 8 * 4px
+    width: '32px',
     height: '32px',
     borderRadius: tokens.borderRadiusSmall,
     backgroundColor: tokens.colorBrandBackground2,
@@ -490,15 +478,15 @@ const useStyles = makeStyles({
   textContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px', // 1 * 4px
+    gap: tokens.spacingVerticalXXS,
     flex: 1,
-    minWidth: 0 // Prevents text overflow
+    minWidth: 0
   },
   
   dropdownContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: tokens.spacingVerticalM
   },
   
   dropdown: {
@@ -509,14 +497,14 @@ const useStyles = makeStyles({
   optionContent: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     width: '100%'
   },
   
   selectedItems: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '8px'
+    gap: tokens.spacingHorizontalS
   },
   
   badge: {
@@ -526,7 +514,7 @@ const useStyles = makeStyles({
   radioGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    gap: tokens.spacingVerticalM,
     width: '100%'
   },
   
@@ -534,8 +522,8 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     width: '100%',
-    gap: '12px',
-    padding: '16px',
+    gap: tokens.spacingHorizontalM,
+    padding: tokens.spacingVerticalM,
     borderRadius: tokens.borderRadiusMedium,
     border: `2px solid ${tokens.colorNeutralStroke1}`,
     backgroundColor: tokens.colorNeutralBackground1,
@@ -544,30 +532,27 @@ const useStyles = makeStyles({
     
     '&:hover': {
       backgroundColor: tokens.colorNeutralBackground1Hover,
-      // @ts-ignore
-      borderColor: tokens.colorNeutralStroke1Hover
+      border: `2px solid ${tokens.colorNeutralStroke1Hover}`
     },
     
     '@media (max-width: 767px)': {
-      padding: '12px'
+      padding: tokens.spacingVerticalS
     }
   },
   
   radioOptionSelected: {
     backgroundColor: tokens.colorBrandBackground2,
-    // @ts-ignore
-    borderColor: tokens.colorBrandStroke1,
+    border: `2px solid ${tokens.colorBrandStroke1}`,
     
     '&:hover': {
       backgroundColor: tokens.colorBrandBackground2,
-      // @ts-ignore
-      borderColor: tokens.colorBrandStroke1
+      border: `2px solid ${tokens.colorBrandStroke1}`
     }
   },
   
   sequentialSection: {
-    marginTop: '16px',
-    padding: '16px',
+    marginTop: tokens.spacingVerticalM,
+    padding: tokens.spacingVerticalM,
     backgroundColor: tokens.colorNeutralBackground2,
     borderRadius: tokens.borderRadiusMedium,
     border: `1px solid ${tokens.colorNeutralStroke2}`
@@ -575,21 +560,21 @@ const useStyles = makeStyles({
   
   sequentialTitle: {
     color: tokens.colorBrandForeground1,
-    marginBottom: '12px'
+    marginBottom: tokens.spacingVerticalM
   },
   
   sequentialList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
-    marginBottom: '12px',
-    marginTop: '10px'
+    gap: tokens.spacingHorizontalS,
+    marginBottom: tokens.spacingVerticalM,
+    marginTop: tokens.spacingVerticalS
   },
   
   sequentialItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px'
+    gap: tokens.spacingHorizontalM
   },
   
   sequentialNumber: {
@@ -614,8 +599,8 @@ const useStyles = makeStyles({
   employeeSection: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
-    marginTop: '4px'
+    gap: tokens.spacingVerticalM,
+    marginTop: tokens.spacingVerticalXXS
   },
   
   employeeCard: {
@@ -628,7 +613,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '12px 16px',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
     cursor: 'pointer',
     
     '&:hover': {
@@ -636,14 +621,14 @@ const useStyles = makeStyles({
     },
     
     '@media (max-width: 767px)': {
-      padding: '12px'
+      padding: tokens.spacingVerticalS
     }
   },
   
   employeeHeaderContent: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px'
+    gap: tokens.spacingHorizontalM
   },
   
   employeeIcon: {
@@ -662,22 +647,22 @@ const useStyles = makeStyles({
   },
   
   employeeList: {
-    padding: '0 16px 16px',
+    padding: `0 ${tokens.spacingHorizontalM} ${tokens.spacingVerticalM}`,
     borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     
     '@media (max-width: 767px)': {
-      padding: '0 12px 12px'
+      padding: `0 ${tokens.spacingHorizontalS} ${tokens.spacingVerticalS}`
     }
   },
   
   employeeItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    padding: '8px 0',
+    gap: tokens.spacingHorizontalM,
+    padding: `${tokens.spacingVerticalS} 0`,
     cursor: 'pointer',
     borderRadius: tokens.borderRadiusSmall,
     
@@ -686,8 +671,8 @@ const useStyles = makeStyles({
     },
     
     '@media (max-width: 767px)': {
-      gap: '8px',
-      padding: '6px 0'
+      gap: tokens.spacingHorizontalS,
+      padding: `${tokens.spacingVerticalXXS} 0`
     }
   },
   
@@ -696,17 +681,17 @@ const useStyles = makeStyles({
   },
   
   actionsDivider: {
-    margin: '8px 0'
+    margin: `${tokens.spacingVerticalS} 0`
   },
   
   actions: {
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '12px',
+    gap: tokens.spacingHorizontalM,
     
     '@media (max-width: 767px)': {
       flexDirection: 'column-reverse',
-      gap: '8px'
+      gap: tokens.spacingVerticalS
     }
   }
 });

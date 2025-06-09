@@ -30,6 +30,7 @@ import {
   Checkmark24Regular,
   Dismiss24Regular
 } from '@fluentui/react-icons';
+import { SettingsHeader } from '@/components/SettingsHeader';
 
 // Custom theme with brand color
 
@@ -337,7 +338,7 @@ const OrganizationSettings: React.FC = () => {
         <Toaster toasterId={toasterId} />
         
         <div className={styles.main}>
-          <div className={styles.header}>
+          {/* <div className={styles.header}>
             <div className={styles.headerTitle}>
               <Settings24Regular className={styles.headerIcon} />
               <Text size={600} weight="semibold">Organization Settings</Text>
@@ -354,7 +355,14 @@ const OrganizationSettings: React.FC = () => {
                 Save changes
               </Button>
             </div>
-          </div>
+          </div> */}
+
+          <SettingsHeader
+            title="Organization Settings"
+            icon={<Settings24Regular />}
+            buttonText="Save changes"
+            onButtonClick={handleSave}
+          />
 
           <div className={styles.tabsContainer}>
             <TabList
@@ -381,16 +389,14 @@ export default OrganizationSettings;
 const useStyles = makeStyles({
   container: {
     minHeight: '100vh',
-    // backgroundColor: tokens.colorNeutralBackground3,
     padding: '0',
   },
   
   main: {
     marginLeft: 'auto',
     marginRight: 'auto',
-    
     '@media (max-width: 768px)': {
-      padding: '8px',
+      padding: tokens.spacingVerticalS,
     },
   },
   
@@ -398,14 +404,13 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '16px',
+    padding: tokens.spacingVerticalM,
     backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: tokens.shadow4,
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,    
-    
     '@media (max-width: 640px)': {
       flexDirection: 'column',
-      gap: '12px',
+      gap: tokens.spacingVerticalM,
       alignItems: 'flex-start',
     },
   },
@@ -413,7 +418,7 @@ const useStyles = makeStyles({
   headerTitle: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: tokens.spacingHorizontalM,
   },
   
   headerIcon: {
@@ -421,17 +426,17 @@ const useStyles = makeStyles({
   },
   
   saveButton: {
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
   },
   
   tabsContainer: {
     backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: tokens.shadow2,
-    marginBottom: '16px',
+    marginBottom: tokens.spacingVerticalM,
   },
   
   tabsList: {
-    padding: '0 16px',
+    padding: `0 ${tokens.spacingHorizontalM}`,
   },
   
   content: {
@@ -441,22 +446,21 @@ const useStyles = makeStyles({
   },
   
   section: {
-    marginBottom: '16px',
+    marginBottom: tokens.spacingVerticalM,
   },
   
   sectionCard: {
-    padding: '24px',
-    
+    padding: tokens.spacingVerticalL,
     '@media (max-width: 768px)': {
-      padding: '16px',
+      padding: tokens.spacingVerticalM,
     },
   },
   
   sectionHeader: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    marginBottom: '20px',
+    gap: tokens.spacingHorizontalM,
+    marginBottom: tokens.spacingVerticalL,
   },
   
   sectionIcon: {
@@ -467,27 +471,25 @@ const useStyles = makeStyles({
     height: '32px',
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
-    borderRadius: '4px',
+    borderRadius: tokens.borderRadiusSmall,
   },
   
   formGrid: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
-    
+    gap: tokens.spacingVerticalL,
     '@media (max-width: 640px)': {
-      gap: '16px',
+      gap: tokens.spacingVerticalM,
     },
   },
   
   formRow: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '16px',
-    
+    gap: tokens.spacingVerticalM,
     '@media (max-width: 640px)': {
       gridTemplateColumns: '1fr',
-      gap: '12px',
+      gap: tokens.spacingVerticalS,
     },
   },
   
@@ -499,25 +501,24 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '20px',
-    
+    marginBottom: tokens.spacingVerticalL,
     '@media (max-width: 640px)': {
       flexDirection: 'column',
       alignItems: 'flex-start',
-      gap: '12px',
+      gap: tokens.spacingVerticalM,
     },
   },
   
   officesList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    gap: tokens.spacingVerticalM,
   },
   
   officeItem: {
-    padding: '16px',
+    padding: tokens.spacingVerticalM,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
-    borderRadius: '4px',
+    borderRadius: tokens.borderRadiusSmall,
     backgroundColor: tokens.colorNeutralBackground1,
     position: 'relative',
     transition: 'border-color 0.2s ease',
@@ -530,7 +531,7 @@ const useStyles = makeStyles({
   
   officeContent: {
     display: 'flex',
-    gap: '12px',
+    gap: tokens.spacingHorizontalM,
     alignItems: 'flex-start',
   },
   
@@ -542,7 +543,7 @@ const useStyles = makeStyles({
     height: '32px',
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
-    borderRadius: '4px',
+    borderRadius: tokens.borderRadiusSmall,
     flexShrink: 0,
   },
   
@@ -552,20 +553,20 @@ const useStyles = makeStyles({
   
   officeName: {
     fontWeight: tokens.fontWeightMedium,
-    marginBottom: '4px',
+    marginBottom: tokens.spacingVerticalXXS,
   },
   
   officeAddress: {
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: tokens.spacingHorizontalXXS,
     color: tokens.colorNeutralForeground2,
   },
   
   removeButton: {
     position: 'absolute',
-    top: '8px',
-    right: '8px',
+    top: tokens.spacingVerticalS,
+    right: tokens.spacingHorizontalS,
     width: '24px',
     height: '24px',
     minWidth: '24px',
@@ -575,14 +576,13 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: '48px 16px',
+    padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalM}`,
     backgroundColor: tokens.colorNeutralBackground1,
     border: `2px dashed ${tokens.colorNeutralStroke2}`,
-    borderRadius: '4px',
+    borderRadius: tokens.borderRadiusSmall,
     textAlign: 'center',
-    
     '@media (max-width: 640px)': {
-      padding: '32px 16px',
+      padding: `${tokens.spacingVerticalXL} ${tokens.spacingHorizontalM}`,
     },
   },
   
@@ -594,19 +594,18 @@ const useStyles = makeStyles({
     height: '48px',
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
-    borderRadius: '8px',
-    marginBottom: '16px',
+    borderRadius: tokens.borderRadiusMedium,
+    marginBottom: tokens.spacingVerticalM,
   },
   
   addOfficeForm: {
-    marginTop: '20px',
-    padding: '20px',
+    marginTop: tokens.spacingVerticalL,
+    padding: tokens.spacingVerticalL,
     backgroundColor: tokens.colorBrandBackground2,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
-    borderRadius: '4px',
-    
+    borderRadius: tokens.borderRadiusSmall,
     '@media (max-width: 640px)': {
-      padding: '16px',
+      padding: tokens.spacingVerticalM,
     },
   },
   
@@ -614,22 +613,21 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '16px',
+    marginBottom: tokens.spacingVerticalM,
   },
   
   formTitle: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: tokens.spacingHorizontalS,
     color: tokens.colorBrandForeground1,
   },
   
   formActions: {
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '12px',
-    marginTop: '20px',
-    
+    gap: tokens.spacingHorizontalM,
+    marginTop: tokens.spacingVerticalL,
     '@media (max-width: 640px)': {
       flexDirection: 'column',
     },
