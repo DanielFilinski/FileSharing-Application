@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   makeStyles, 
   tokens, 
@@ -20,9 +20,68 @@ import {
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
 
-
 export const Toolbar: React.FC = () => {
   const styles = useStyles();
+  const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
+  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setVisibleButtons(window.innerWidth > 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const renderMainButtons = () => (
+    <>
+      <Button
+        icon={<ArrowUploadRegular />}
+        iconPosition="before"
+        appearance="primary"
+        shape="rounded"
+        className={styles.uploadButton}
+      >
+        Upload
+      </Button>
+      <Button
+        icon={<Table20Regular />}
+        iconPosition="before"
+        appearance="secondary"
+        shape="rounded"
+      >
+        Edit in grid view
+      </Button>
+      <Menu>
+        <MenuTrigger>
+          <MenuButton
+            appearance="secondary"
+            shape="rounded"
+          >
+            Open
+          </MenuButton>
+        </MenuTrigger>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem onClick={() => { console.log('Open from device') }}>Open from device</MenuItem>
+            <MenuItem onClick={() => { console.log('Open from URL') }}>Open from URL</MenuItem>
+            <MenuItem onClick={() => { console.log('Open recent') }}>Open recent</MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
+      <Button
+        icon={<ShareAndroid20Regular />}
+        iconPosition="before"
+        appearance="secondary"
+        shape="rounded"
+      >
+        Share
+      </Button>
+    </>
+  );
 
   return (
     <div className={styles.toolbar}>
@@ -47,42 +106,24 @@ export const Toolbar: React.FC = () => {
             </MenuList>
           </MenuPopover>
         </Menu>
-        <Button
-          icon={<ArrowUploadRegular />}
-          iconPosition="before"
-          appearance="primary"
-          shape="rounded"
-          className={styles.uploadButton}
-        >
-          Upload
-        </Button>
-        <Button
-          icon={<Table20Regular />}
-          iconPosition="before"
-          appearance="secondary"
-          shape="rounded"
-        >
-          Edit in grid view
-        </Button>
-        <MenuButton
-          appearance="secondary"
-          shape="rounded"
-        >
-          Open
-        </MenuButton>
-        <Button
-          icon={<ShareAndroid20Regular />}
-          iconPosition="before"
-          appearance="secondary"
-          shape="rounded"
-        >
-          Share
-        </Button>
-        <Button
-          icon={<MoreHorizontalRegular />}
-          appearance="transparent"
-          shape="rounded"
-        />
+        {visibleButtons ? renderMainButtons() : (
+          <Menu>
+            <MenuTrigger>
+              <MenuButton
+                icon={<MoreHorizontalRegular />}
+                appearance="secondary"
+                shape="rounded"
+              >
+                More
+              </MenuButton>
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                {renderMainButtons()}
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        )}
       </div>
       
       <div className={styles.toolbarRight}>
@@ -129,7 +170,7 @@ const useStyles = makeStyles({
       minHeight: '48px',
       '@media (max-width: 768px)': {
         flexDirection: 'column',
-        gap: '8px',
+        gap: '12px',
         alignItems: 'stretch',
         padding: '8px 16px'
       }
@@ -140,7 +181,8 @@ const useStyles = makeStyles({
       alignItems: 'center',
       flexWrap: 'wrap',
       '@media (max-width: 768px)': {
-        justifyContent: 'center'
+        justifyContent: 'center',
+        width: '100%'
       }
     },
     toolbarRight: {
@@ -149,7 +191,8 @@ const useStyles = makeStyles({
       gap: '16px',
       '@media (max-width: 768px)': {
         justifyContent: 'space-between',
-        width: '100%'
+        width: '100%',
+        padding: '8px 0'
       }
     },
     primaryButton: {
@@ -161,6 +204,9 @@ const useStyles = makeStyles({
       },
       ':active': {
         backgroundColor: '#6B2AAE'
+      },
+      '@media (max-width: 768px)': {
+        // width: '100%'
       }
     },
     uploadButton: {
@@ -169,6 +215,9 @@ const useStyles = makeStyles({
       border: 'none',
       ':hover': {
         backgroundColor: tokens.colorPaletteGreenBackground2
+      },
+      '@media (max-width: 768px)': {
+        width: '100%'
       }
     },
     selectedText: {
@@ -177,13 +226,14 @@ const useStyles = makeStyles({
       fontWeight: tokens.fontWeightMedium
     },
     menuButton: {
-      minWidth: '160px',
+      // minWidth: '160px',
       fontWeight: tokens.fontWeightMedium,
       backgroundColor: tokens.colorNeutralBackground1,
       border: `1px solid ${tokens.colorNeutralStroke1}`,
       color: tokens.colorNeutralForeground1,
       '@media (max-width: 768px)': {
-        minWidth: '120px'
+        // minWidth: '120px',
+        // width: '100%'
       }
     },
     helpButton: {

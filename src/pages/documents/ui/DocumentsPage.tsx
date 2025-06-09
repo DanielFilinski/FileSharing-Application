@@ -13,14 +13,15 @@ const useStyles = makeStyles({
     fontFamily: tokens.fontFamilyBase,
     height: '100vh',
     width: '100%',
-    overflow: 'auto',
+    overflow: 'hidden',
   },
   content: {
     flex: 1,
     display: 'flex',
+    height: '100vh',
     flexDirection: 'column',
     backgroundColor: tokens.colorNeutralBackground1,
-    overflow: 'auto',
+    overflow: 'hidden',
     width: '100%',
     position: 'relative',
     minHeight: 0
@@ -33,7 +34,7 @@ export default function DocumentsPage() {
   return (
     <div className={styles.root}>
       <div className={styles.content}>
-         <Toolbar />
+        <Toolbar />
         <Breadcrumbs /> 
         <DocumentsTable />
       </div>
