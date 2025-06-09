@@ -99,7 +99,7 @@ const useStyles = makeStyles({
     ...shorthands.gap(tokens.spacingHorizontalM),
   },
   brandIcon: {
-    color: '#9333EA',
+    color: tokens.colorBrandForeground1,
   },
   content: {
     flex: '1',
@@ -147,8 +147,8 @@ const useStyles = makeStyles({
     ...shorthands.gap(tokens.spacingHorizontalM),
   },
   iconWrapper: {
-    backgroundColor: '#f3e8ff',
-    color: '#9333EA',
+    backgroundColor: tokens.colorBrandBackground2,
+    color: tokens.colorBrandForeground1,
     ...shorthands.padding(tokens.spacingVerticalXS),
     borderRadius: tokens.borderRadiusSmall,
     display: 'flex',
@@ -195,9 +195,9 @@ const useStyles = makeStyles({
     },
   },
   employeeSelected: {
-    backgroundColor: '#f3e8ff',
+    backgroundColor: tokens.colorBrandBackground2,
     '&:hover': {
-      backgroundColor: '#f3e8ff',
+      backgroundColor: tokens.colorBrandBackground2,
     },
   },
   employeeInfo: {
@@ -244,9 +244,9 @@ const useStyles = makeStyles({
     marginBottom: tokens.spacingVerticalM,
   },
   primaryButton: {
-    backgroundColor: '#9333EA',
+    backgroundColor: tokens.colorBrandBackground,
     '&:hover': {
-      backgroundColor: '#7e22ce',
+      backgroundColor: tokens.colorBrandBackgroundHover,
     },
   },
   messageBar: {
@@ -632,7 +632,7 @@ const TeamsValidationSettings = () => {
                             <Caption1>{getDepartmentName(employee.department)}</Caption1>
                           </div>
                         </div>
-                        {isSelected && <CheckmarkCircleIcon color="#9333EA" />}
+                        {isSelected && <CheckmarkCircleIcon color={tokens.colorBrandForeground1} />}
                       </div>
                     );
                   })}

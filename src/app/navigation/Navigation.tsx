@@ -103,10 +103,10 @@ const useStyles = makeStyles({
   },
 
   navItemSelected: {
-    backgroundColor: '#9333EA', // Brand color
-    color: tokens.colorNeutralForegroundOnBrand,
+    backgroundColor: tokens.colorNeutralBackground3,
+    color: tokens.colorNeutralForeground1,
     '&:hover': {
-      backgroundColor: '#7c3aed',
+      backgroundColor: tokens.colorNeutralBackground4,
     }
   },
 
@@ -193,6 +193,10 @@ const Navigation: React.FC<NavigationProps> = ({
     if (path.includes('/settings/storage')) return 'storage';
     if (path.includes('/settings/validation')) return 'validation';
     if (path.includes('/settings/approval')) return 'approval';
+    if (path.includes('/to-end-user')) return 'toenduser';
+    if (path.includes('/from-end-user')) return 'fromenduser';
+    if (path.includes('/users')) return 'users';
+    if (path.includes('/employees')) return 'employees';
     return 'dms'; // Default
   };
 
@@ -226,11 +230,16 @@ const Navigation: React.FC<NavigationProps> = ({
         navigate('/settings/approval');
         break;
       case 'toenduser':
+        navigate('/to-end-user');
+        break;
       case 'fromenduser':
+        navigate('/from-end-user');
+        break;
       case 'users':
+        navigate('/users');
+        break;
       case 'employees':
-        // Handle sub-navigation items
-        console.log(`Navigate to sub-item: ${key}`);
+        navigate('/employees');
         break;
       default:
         navigate('/');

@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useState } from 'react';
-import { FluentProvider, webLightTheme, webDarkTheme } from '@fluentui/react-components';
+import { FluentProvider, webLightTheme, webDarkTheme, makeStyles } from '@fluentui/react-components';
+import { darkTheme, lightTheme } from './theme';
 // import * as microsoftTeams from '@microsoft/teams-js';
+
+
+
 
 
 type ThemeContextType = {
@@ -40,7 +44,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-      <FluentProvider theme={isDark ? webDarkTheme : webLightTheme}>
+      <FluentProvider theme={isDark ? darkTheme : lightTheme}>
         {children}
       </FluentProvider>
     </ThemeContext.Provider>

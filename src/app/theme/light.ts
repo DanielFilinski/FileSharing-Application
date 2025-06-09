@@ -186,7 +186,7 @@ export const light = {
     "colorCompoundBrandBackgroundHover": "#722cca",
     "colorCompoundBrandBackgroundPressed": "#5d29ad",
     "colorBrandBackgroundStatic": "#8a30e3",
-    "colorBrandBackground2": "#f6c7f9",
+    "colorBrandBackground2": "#F3E8FF",
     "colorBrandBackground2Hover": "#f0b2f8",
     "colorBrandBackground2Pressed": "#dd89f6",
     "colorBrandBackground3Static": "#5d29ad",

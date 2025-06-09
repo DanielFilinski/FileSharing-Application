@@ -74,7 +74,7 @@ const GeneralTab: React.FC = () => {
           </div>
           
           <div className={styles.formGrid}>
-            <div className={styles.formRow}>
+          <div className={styles.fullWidth}>
               <Field label="Company Name" required>
                 <Input
                   value={companyName}
@@ -82,7 +82,8 @@ const GeneralTab: React.FC = () => {
                   placeholder="Enter company name"
                 />
               </Field>
-              
+              </div>
+              <div className={styles.fullWidth}>  
               <Field label="Company Contact" required>
                 <Input
                   value={companyContact}
@@ -90,7 +91,7 @@ const GeneralTab: React.FC = () => {
                   placeholder="Enter company contact number"
                 />
               </Field>
-            </div>
+              </div>    
             
             <div className={styles.fullWidth}>
               <Field label="Company Email" required>
@@ -116,7 +117,7 @@ const GeneralTab: React.FC = () => {
           </div>
           
           <div className={styles.formGrid}>
-            <div className={styles.formRow}>
+            <div className={styles.fullWidth}>
               <Field label="Owner Full Name" required>
                 <Input
                   value={ownerName}
@@ -124,7 +125,8 @@ const GeneralTab: React.FC = () => {
                   placeholder="Enter owner's full name"
                 />
               </Field>
-              
+              </div>
+              <div className={styles.fullWidth}>  
               <Field label="Owner Contact" required>
                 <Input
                   value={ownerContact}
@@ -132,6 +134,7 @@ const GeneralTab: React.FC = () => {
                   placeholder="Enter owner's contact number"
                 />
               </Field>
+              
             </div>
             
             <div className={styles.fullWidth}>
@@ -355,13 +358,7 @@ const OrganizationSettings: React.FC = () => {
             </div>
             
             <div style={{ display: 'flex', gap: '8px' }}>
-              <Button
-                appearance="subtle"
-                onClick={() => setIsDarkTheme(!isDarkTheme)}
-              >
-                {isDarkTheme ? 'Light' : 'Dark'} Theme
-              </Button>
-              
+                            
               <Button
                 appearance="primary"
                 icon={<Save24Regular />}
@@ -399,17 +396,15 @@ const useStyles = makeStyles({
   container: {
     minHeight: '100vh',
     backgroundColor: tokens.colorNeutralBackground3,
-    ...shorthands.padding('0'),
+    padding: '0',
   },
   
   main: {
-    maxWidth: '1200px',
     marginLeft: 'auto',
     marginRight: 'auto',
-    ...shorthands.padding('16px'),
     
     '@media (max-width: 768px)': {
-      ...shorthands.padding('8px'),
+      padding: '8px',
     },
   },
   
@@ -417,15 +412,14 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    ...shorthands.padding('16px'),
+    padding: '16px',
     backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: tokens.shadow4,
-    ...shorthands.borderBottom('1px', 'solid', tokens.colorNeutralStroke2),
-    marginBottom: '16px',
+    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,    
     
     '@media (max-width: 640px)': {
       flexDirection: 'column',
-      ...shorthands.gap('12px'),
+      gap: '12px',
       alignItems: 'flex-start',
     },
   },
@@ -433,7 +427,7 @@ const useStyles = makeStyles({
   headerTitle: {
     display: 'flex',
     alignItems: 'center',
-    ...shorthands.gap('12px'),
+    gap: '12px',
   },
   
   headerIcon: {
@@ -441,18 +435,17 @@ const useStyles = makeStyles({
   },
   
   saveButton: {
-    ...shorthands.gap('8px'),
+    gap: '8px',
   },
   
   tabsContainer: {
     backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: tokens.shadow2,
     marginBottom: '16px',
-    ...shorthands.borderRadius('4px'),
   },
   
   tabsList: {
-    ...shorthands.padding('0', '16px'),
+    padding: '0 16px',
   },
   
   content: {
@@ -466,17 +459,17 @@ const useStyles = makeStyles({
   },
   
   sectionCard: {
-    ...shorthands.padding('24px'),
+    padding: '24px',
     
     '@media (max-width: 768px)': {
-      ...shorthands.padding('16px'),
+      padding: '16px',
     },
   },
   
   sectionHeader: {
     display: 'flex',
     alignItems: 'center',
-    ...shorthands.gap('12px'),
+    gap: '12px',
     marginBottom: '20px',
   },
   
@@ -488,27 +481,27 @@ const useStyles = makeStyles({
     height: '32px',
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
-    ...shorthands.borderRadius('4px'),
+    borderRadius: '4px',
   },
   
   formGrid: {
     display: 'flex',
     flexDirection: 'column',
-    ...shorthands.gap('20px'),
+    gap: '20px',
     
     '@media (max-width: 640px)': {
-      ...shorthands.gap('16px'),
+      gap: '16px',
     },
   },
   
   formRow: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    ...shorthands.gap('16px'),
+    gap: '16px',
     
     '@media (max-width: 640px)': {
       gridTemplateColumns: '1fr',
-      ...shorthands.gap('12px'),
+      gap: '12px',
     },
   },
   
@@ -525,33 +518,33 @@ const useStyles = makeStyles({
     '@media (max-width: 640px)': {
       flexDirection: 'column',
       alignItems: 'flex-start',
-      ...shorthands.gap('12px'),
+      gap: '12px',
     },
   },
   
   officesList: {
     display: 'flex',
     flexDirection: 'column',
-    ...shorthands.gap('12px'),
+    gap: '12px',
   },
   
   officeItem: {
-    ...shorthands.padding('16px'),
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-    ...shorthands.borderRadius('4px'),
+    padding: '16px',
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: '4px',
     backgroundColor: tokens.colorNeutralBackground1,
     position: 'relative',
     transition: 'border-color 0.2s ease',
     
     '&:hover': {
-      ...shorthands.border('1px', 'solid', tokens.colorBrandStroke1),
+      border: `1px solid ${tokens.colorBrandStroke1}`,
       boxShadow: `0 1px 3px ${tokens.colorBrandBackground}1A`,
     },
   },
   
   officeContent: {
     display: 'flex',
-    ...shorthands.gap('12px'),
+    gap: '12px',
     alignItems: 'flex-start',
   },
   
@@ -563,7 +556,7 @@ const useStyles = makeStyles({
     height: '32px',
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
-    ...shorthands.borderRadius('4px'),
+    borderRadius: '4px',
     flexShrink: 0,
   },
   
@@ -579,7 +572,7 @@ const useStyles = makeStyles({
   officeAddress: {
     display: 'flex',
     alignItems: 'center',
-    ...shorthands.gap('6px'),
+    gap: '6px',
     color: tokens.colorNeutralForeground2,
   },
   
@@ -596,14 +589,14 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    ...shorthands.padding('48px', '16px'),
+    padding: '48px 16px',
     backgroundColor: tokens.colorNeutralBackground1,
-    ...shorthands.border('2px', 'dashed', tokens.colorNeutralStroke2),
-    ...shorthands.borderRadius('4px'),
+    border: `2px dashed ${tokens.colorNeutralStroke2}`,
+    borderRadius: '4px',
     textAlign: 'center',
     
     '@media (max-width: 640px)': {
-      ...shorthands.padding('32px', '16px'),
+      padding: '32px 16px',
     },
   },
   
@@ -615,19 +608,19 @@ const useStyles = makeStyles({
     height: '48px',
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
-    ...shorthands.borderRadius('8px'),
+    borderRadius: '8px',
     marginBottom: '16px',
   },
   
   addOfficeForm: {
     marginTop: '20px',
-    ...shorthands.padding('20px'),
+    padding: '20px',
     backgroundColor: tokens.colorBrandBackground2,
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-    ...shorthands.borderRadius('4px'),
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: '4px',
     
     '@media (max-width: 640px)': {
-      ...shorthands.padding('16px'),
+      padding: '16px',
     },
   },
   
@@ -641,14 +634,14 @@ const useStyles = makeStyles({
   formTitle: {
     display: 'flex',
     alignItems: 'center',
-    ...shorthands.gap('8px'),
+    gap: '8px',
     color: tokens.colorBrandForeground1,
   },
   
   formActions: {
     display: 'flex',
     justifyContent: 'flex-end',
-    ...shorthands.gap('12px'),
+    gap: '12px',
     marginTop: '20px',
     
     '@media (max-width: 640px)': {
