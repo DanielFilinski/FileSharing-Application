@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import {
-  makeStyles,
-  tokens,
   Button,
   Text,
   Card,
@@ -10,7 +9,8 @@ import {
   ToastBody,
   useToastController,
   Toaster,
-  useId
+  useId,
+  tokens
 } from '@fluentui/react-components';
 import {
   Building24Regular,
@@ -19,14 +19,17 @@ import {
 import OfficeItem from './OfficeItem';
 import EmptyOfficesState from './EmptyOfficesState';
 import AddOfficeForm from './AddOfficeForm';
+import { CardContainer, RowCardItemContainer } from '@/app/styles/layouts';
+import { CardHeader } from '@/components/card/card-header';
 
 interface Office {
   name: string;
   address: string;
 }
 
+
+
 const OfficesTab: React.FC = () => {
-  const styles = useStyles();
   const [offices, setOffices] = useState<Office[]>([]);
   const [showAddOffice, setShowAddOffice] = useState(false);
   
@@ -62,18 +65,16 @@ const OfficesTab: React.FC = () => {
   };
 
   return (
-    <div className={styles.content}>
+    <>
       <Toaster toasterId={toasterId} />
       
-      <div className={styles.section}>
-        <Card className={styles.sectionCard}>
-          <div className={styles.officesHeader}>
-            <div className={styles.sectionHeader} style={{ marginBottom: 0 }}>
-              <div className={styles.sectionIcon}>
-                <Building24Regular />
-              </div>
-              <Text size={500} weight="semibold">Offices</Text>
-            </div>
+      <CardContainer>   
+        <RowCardItemContainer >
+          <OfficesHeader>
+            <CardHeader
+              text="Offices"
+              icon={<Building24Regular />}
+            />
 
             <Button
               appearance="outline"
@@ -82,9 +83,9 @@ const OfficesTab: React.FC = () => {
             >
               Add Office
             </Button>
-          </div>
+          </OfficesHeader>
 
-          <div className={styles.officesList}>
+          <OfficesList>
             {offices.length > 0 ? (
               offices.map((office, index) => (
                 <OfficeItem
@@ -97,67 +98,31 @@ const OfficesTab: React.FC = () => {
             ) : (
               <EmptyOfficesState />
             )}
-          </div>
+          </OfficesList>
 
           {showAddOffice && (
             <AddOfficeForm
               onAdd={handleAddOffice}
               onCancel={() => setShowAddOffice(false)}
             />
-          )}
-        </Card>
-      </div>
-    </div>
+          )}         
+        </RowCardItemContainer>
+    </CardContainer>
+    </>
   );
 };
 
-const useStyles = makeStyles({
-  content: {
-    maxWidth: '1000px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  section: {
-    marginBottom: tokens.spacingVerticalM,
-  },
-  sectionCard: {
-    padding: tokens.spacingVerticalL,
-    '@media (max-width: 768px)': {
-      padding: tokens.spacingVerticalM,
-    },
-  },
-  sectionHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalM,
-    marginBottom: tokens.spacingVerticalL,
-  },
-  sectionIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '32px',
-    height: '32px',
-    backgroundColor: tokens.colorBrandBackground2,
-    color: tokens.colorBrandForeground1,
-    borderRadius: tokens.borderRadiusSmall,
-  },
-  officesHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: tokens.spacingVerticalL,
-    '@media (max-width: 640px)': {
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      gap: tokens.spacingVerticalM,
-    },
-  },
-  officesList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
-  },
-});
-
 export default OfficesTab; 
+
+
+const OfficesHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+`;
+
+const OfficesList = styled.div`
+  display: flex;
+  flex-direction: column;  
+`;

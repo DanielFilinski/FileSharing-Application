@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
-import {
-  makeStyles,
-  tokens,
-  Button,
-  Input,
-  Text,
-  Field,
-  Textarea,
-} from '@fluentui/react-components';
-import {
-  Add24Regular,
-  Dismiss24Regular,
-  Checkmark24Regular,
-} from '@fluentui/react-icons';
+import { tokens, Button, Input, Text, Field, Textarea } from '@fluentui/react-components';
+import { Add24Regular, Dismiss24Regular, Checkmark24Regular } from '@fluentui/react-icons';
+import styled from 'styled-components';
+import { CardContainer, RowCardItemContainer, IconTitleContainer } from '../../../../app/styles/layouts';
 
 interface AddOfficeFormProps {
   onAdd: (name: string, address: string) => void;
   onCancel: () => void;
 }
 
+
+
 const AddOfficeForm: React.FC<AddOfficeFormProps> = ({ onAdd, onCancel }) => {
-  const styles = useStyles();
   const [newOfficeName, setNewOfficeName] = useState('');
   const [newOfficeAddress, setNewOfficeAddress] = useState('');
 
@@ -33,21 +24,21 @@ const AddOfficeForm: React.FC<AddOfficeFormProps> = ({ onAdd, onCancel }) => {
   };
 
   return (
-    <div className={styles.addOfficeForm}>
-      <div className={styles.formHeader}>
-        <div className={styles.formTitle}>
+    <CardContainer style={{ backgroundColor: tokens.colorBrandBackground2 }}>
+      <FormHeader>
+        <FormTitle>
           <Add24Regular />
           <Text weight="medium">Add New Office</Text>
-        </div>
+        </FormTitle>
         <Button
           appearance="subtle"
           icon={<Dismiss24Regular />}
           size="small"
           onClick={onCancel}
         />
-      </div>
+      </FormHeader>
       
-      <div className={styles.formGrid}>
+      <FormGrid>
         <Field label="Office Name" required>
           <Input
             value={newOfficeName}
@@ -65,7 +56,7 @@ const AddOfficeForm: React.FC<AddOfficeFormProps> = ({ onAdd, onCancel }) => {
           />
         </Field>
         
-        <div className={styles.formActions}>
+        <FormActions>
           <Button
             appearance="subtle"
             onClick={onCancel}
@@ -81,49 +72,34 @@ const AddOfficeForm: React.FC<AddOfficeFormProps> = ({ onAdd, onCancel }) => {
           >
             Add Office
           </Button>
-        </div>
-      </div>
-    </div>
+        </FormActions>
+      </FormGrid>
+    </CardContainer>
   );
 };
 
-const useStyles = makeStyles({
-  addOfficeForm: {
-    marginTop: tokens.spacingVerticalL,
-    padding: tokens.spacingVerticalL,
-    backgroundColor: tokens.colorBrandBackground2,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    borderRadius: tokens.borderRadiusSmall,
-    '@media (max-width: 640px)': {
-      padding: tokens.spacingVerticalM,
-    },
-  },
-  formHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: tokens.spacingVerticalM,
-  },
-  formTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalS,
-    color: tokens.colorBrandForeground1,
-  },
-  formGrid: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalL,
-  },
-  formActions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: tokens.spacingHorizontalM,
-    marginTop: tokens.spacingVerticalL,
-    '@media (max-width: 640px)': {
-      flexDirection: 'column',
-    },
-  },
-});
-
 export default AddOfficeForm; 
+
+
+const FormHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const FormTitle = styled(IconTitleContainer)`
+  color: ${tokens.colorBrandForeground1};
+`;
+
+const FormGrid = styled(RowCardItemContainer)`
+  
+`;
+
+const FormActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+`;

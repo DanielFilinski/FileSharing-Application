@@ -33,6 +33,7 @@ import {
 import { SettingsHeader } from '@/components/SettingsHeader';
 import GeneralTab from './components/GeneralTab';
 import OfficesTab from './components/OfficesTab';
+import { ContentContainer, MarginTop, RowCardContainer, ScreenContainer } from '@/app/styles/layouts';
 
 // Custom theme with brand color
 
@@ -65,36 +66,41 @@ const OrganizationSettings: React.FC = () => {
   };
 
   return (    
-    <div className={styles.container}>
+    <ScreenContainer>
       <Toaster toasterId={toasterId} />
-      
-      <div className={styles.main}>
-        <SettingsHeader
-          title="Organization Settings"
-          icon={<Settings24Regular />}
-          buttonText="Save changes"
-          onButtonClick={handleSave}
-        />
 
-        <div className={styles.tabsContainer}>
-          <TabList
-            selectedValue={selectedTab}
-            onTabSelect={handleTabSelect}
-            className={styles.tabsList}
-          >
-            <Tab value="general">General</Tab>
-            <Tab value="offices">Offices</Tab>
-          </TabList>
-        </div>
-
-        {selectedTab === 'general' && <GeneralTab />}
-        {selectedTab === 'offices' && <OfficesTab />}
-      </div>
-    </div>
+          <div>
+            <SettingsHeader
+                title="Organization Settings"
+                icon={<Settings24Regular />}
+                buttonText="Save changes"
+                onButtonClick={handleSave}
+              />
+              <div className={styles.tabsContainer}>
+                <TabList
+                  selectedValue={selectedTab}
+                  onTabSelect={handleTabSelect}
+                  className={styles.tabsList}
+                >
+                  <Tab value="general">General</Tab>
+                  <Tab value="offices">Offices</Tab>
+                </TabList>
+              </div>
+          </div>
+       
+          
+          
+        <ContentContainer>             
+              {selectedTab === 'general' && <GeneralTab />}           
+            
+              {selectedTab === 'offices' && <OfficesTab />}             
+        </ContentContainer>
+        
+    </ScreenContainer>
   );
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles({  
   container: {
     minHeight: '100vh',
     padding: '0',
@@ -109,7 +115,6 @@ const useStyles = makeStyles({
   tabsContainer: {
     backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: tokens.shadow2,
-    marginBottom: tokens.spacingVerticalM,
   },
   tabsList: {
     padding: `0 ${tokens.spacingHorizontalM}`,

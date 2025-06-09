@@ -10,6 +10,36 @@ interface SettingsHeaderProps {
   buttonIcon?: JSX.Element;
 }
 
+export const SettingsHeader: React.FC<SettingsHeaderProps> = ({
+  title,
+  icon,
+  buttonText = "Save changes",
+  onButtonClick = () => {},
+  buttonIcon = <SaveRegular />,
+}) => {
+  const styles = useStyles();
+
+  return (
+    <div className={styles.header}>
+      <div className={styles.menu}></div>
+      <div className={styles.headerLeft}>
+        <div className={styles.brandIcon}>{icon}</div>
+        <Title2>{title}</Title2>
+      </div>
+      {buttonText && onButtonClick && (
+        <Button 
+          appearance="primary" 
+          icon={buttonIcon}
+          onClick={onButtonClick}
+          className={styles.primaryButton}
+        >
+          {buttonText}
+        </Button>
+      )}
+    </div>
+  );
+}; 
+
 const useStyles = makeStyles({
   header: {
     padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalXL}`,
@@ -20,9 +50,16 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'space-between',
     '@media (max-width: 768px)': {
-      padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-      flexDirection: 'column',
+      // padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
       gap: tokens.spacingVerticalM,
+    },
+  },
+  menu: {
+    display: 'none',
+    width: '32px',
+    height: '32px',
+    '@media (max-width: 768px)': {
+      display: 'flex',
     },
   },
   headerLeft: {
@@ -49,32 +86,3 @@ const useStyles = makeStyles({
     },
   },
 });
-
-export const SettingsHeader: React.FC<SettingsHeaderProps> = ({
-  title,
-  icon,
-  buttonText = "Save changes",
-  onButtonClick = () => {},
-  buttonIcon = <SaveRegular />,
-}) => {
-  const styles = useStyles();
-
-  return (
-    <div className={styles.header}>
-      <div className={styles.headerLeft}>
-        <div className={styles.brandIcon}>{icon}</div>
-        <Title2>{title}</Title2>
-      </div>
-      {buttonText && onButtonClick && (
-        <Button 
-          appearance="primary" 
-          icon={buttonIcon}
-          onClick={onButtonClick}
-          className={styles.primaryButton}
-        >
-          {buttonText}
-        </Button>
-      )}
-    </div>
-  );
-}; 

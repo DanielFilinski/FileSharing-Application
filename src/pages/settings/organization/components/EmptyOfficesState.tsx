@@ -1,56 +1,51 @@
 import React from 'react';
-import {
-  makeStyles,
-  tokens,
-  Text,
-} from '@fluentui/react-components';
-import {
-  Building24Regular,
-} from '@fluentui/react-icons';
+import styled from 'styled-components';
+import { Body1, Subtitle2, Text, tokens } from '@fluentui/react-components';
+import { Building24Regular } from '@fluentui/react-icons';
+
 
 const EmptyOfficesState: React.FC = () => {
-  const styles = useStyles();
-
   return (
-    <div className={styles.emptyState}>
-      <div className={styles.emptyIcon}>
+    <EmptyStateContainer>
+      <EmptyIcon>
         <Building24Regular />
-      </div>
-      <Text size={400} weight="medium" style={{ marginBottom: '8px' }}>
+      </EmptyIcon>
+      <Subtitle2>
         No offices added yet
-      </Text>
-      <Text size={300}>
+      </Subtitle2>
+      <Body1>
         Click "Add Office" to add your first office location
-      </Text>
-    </div>
+      </Body1>
+    </EmptyStateContainer>
   );
 };
 
-const useStyles = makeStyles({
-  emptyState: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: `${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalM}`,
-    backgroundColor: tokens.colorNeutralBackground1,
-    border: `2px dashed ${tokens.colorNeutralStroke2}`,
-    borderRadius: tokens.borderRadiusSmall,
-    textAlign: 'center',
-    '@media (max-width: 640px)': {
-      padding: `${tokens.spacingVerticalXL} ${tokens.spacingHorizontalM}`,
-    },
-  },
-  emptyIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '48px',
-    height: '48px',
-    backgroundColor: tokens.colorBrandBackground2,
-    color: tokens.colorBrandForeground1,
-    borderRadius: tokens.borderRadiusMedium,
-    marginBottom: tokens.spacingVerticalM,
-  },
-});
-
 export default EmptyOfficesState; 
+
+
+const EmptyStateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: ${tokens.spacingVerticalXXL} ${tokens.spacingHorizontalM};
+  background-color: ${tokens.colorNeutralBackground1};
+  border: 2px dashed ${tokens.colorNeutralStroke2};
+  border-radius: ${tokens.borderRadiusSmall};
+  text-align: center;
+
+  @media (max-width: 640px) {
+    padding: ${tokens.spacingVerticalXL} ${tokens.spacingHorizontalM};
+  }
+`;
+
+const EmptyIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: ${tokens.colorBrandBackground2};
+  color: ${tokens.colorBrandForeground1};
+  border-radius: ${tokens.borderRadiusMedium};
+  margin-bottom: ${tokens.spacingVerticalM};
+`;

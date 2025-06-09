@@ -1,13 +1,18 @@
 import { styled } from "styled-components";
+import { Card, tokens } from "@fluentui/react-components";
+
+const CONTENT_MAX_WIDTH = 1000;
+const CONTENT_PADDING_TOP = 24;
+
 
 const PADDING = 16;
-const CONTENT_MAX_WIDTH = 1000;
 const ICON_TITLE_GAP = 16;
 const RADIO_TITLE_GAP = 8;
 const ICON_TITLE_HEADER_GAP = 8;
 const TEXT_ROWS_GAP = 8;
-const ROW_ITEM_GAP = 24;
 
+const ROW_ITEM_GAP = 24;
+const ROW_CARD_ITEM_GAP = 16;
 
 const ScreenContainer = styled.div`
   padding: 0px;
@@ -19,13 +24,16 @@ const HeaderContainer = styled.header`
 `;
 
 const ContentContainer = styled.main`
-  padding: ${PADDING}px;
+  padding-top: ${CONTENT_PADDING_TOP}px;
   max-width: ${CONTENT_MAX_WIDTH}px;
   margin: 0 auto;
 `;
 
-const CardContainer = styled.main`
+const CardContainer = styled(Card)`
   padding: ${PADDING}px;
+  @media (max-width: 768px) {
+    padding: ${tokens.spacingVerticalM};
+  }
 `;
 
 const FooterContainer = styled.footer`
@@ -69,6 +77,25 @@ const RowItemContainer = styled.div`
   gap: ${ROW_ITEM_GAP}px;
 `;
 
+const RowCardContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${ROW_ITEM_GAP}px;
+`;
+
+const RowCardItemContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${ROW_CARD_ITEM_GAP}px;
+`;
+
+const MarginBottom = styled.div`
+  margin-bottom: ${ROW_ITEM_GAP}px;
+`;
+
+const MarginTop = styled.div`
+  margin-top: ${ROW_ITEM_GAP}px;
+`;
 export { 
     ScreenContainer, 
     HeaderContainer, 
@@ -78,5 +105,11 @@ export {
     TextRowsContainer,
     RowSpaceBetween,
     RowItemContainer,
-    RadioTitleContainer
+    RadioTitleContainer,
+    RowCardContainer,
+    RowCardItemContainer,
+    CardContainer,
+    FooterContainer,
+    MarginBottom,
+    MarginTop
 };
