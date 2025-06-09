@@ -28,7 +28,6 @@ import {
   Checkbox,
   tokens,
   makeStyles,
-  shorthands,
   mergeClasses,
   Badge,
   Divider,
@@ -71,194 +70,6 @@ const BuildingIcon = bundleIcon(Building20Filled, Building20Regular);
 const AddIcon = bundleIcon(Add20Filled, Add20Regular);
 const CheckmarkCircleIcon = bundleIcon(CheckmarkCircle20Filled, CheckmarkCircle20Regular);
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    backgroundColor: tokens.colorNeutralBackground1,
-    fontFamily: tokens.fontFamilyBase,
-  },
-  header: {
-    ...shorthands.padding(tokens.spacingVerticalM, tokens.spacingHorizontalXL),
-    ...shorthands.borderBottom('1px', 'solid', tokens.colorNeutralStroke2),
-    backgroundColor: tokens.colorNeutralBackground1,
-    boxShadow: tokens.shadow2,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    '@media (max-width: 768px)': {
-      ...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalM),
-      flexDirection: 'column',
-      ...shorthands.gap(tokens.spacingVerticalM),
-    },
-  },
-  headerLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    ...shorthands.gap(tokens.spacingHorizontalM),
-  },
-  brandIcon: {
-    color: tokens.colorBrandForeground1,
-  },
-  content: {
-    flex: '1',
-    overflowY: 'auto',
-    ...shorthands.padding(tokens.spacingVerticalL, 0),
-    '@media (max-width: 768px)': {
-      ...shorthands.padding(tokens.spacingVerticalM, 0),
-    },
-  },
-  contentWrapper: {
-    maxWidth: '768px',
-    ...shorthands.margin(0, 'auto'),
-    ...shorthands.padding(0, tokens.spacingHorizontalXL),
-    '@media (max-width: 768px)': {
-      ...shorthands.padding(0, tokens.spacingHorizontalM),
-    },
-  },
-  section: {
-    ...shorthands.margin(0, 0, tokens.spacingVerticalL, 0),
-  },
-  card: {
-    ...shorthands.padding(tokens.spacingVerticalL),
-    backgroundColor: tokens.colorNeutralBackground1,
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-    borderRadius: tokens.borderRadiusMedium,
-    boxShadow: tokens.shadow2,
-  },
-  switchCard: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    ...shorthands.gap(tokens.spacingHorizontalL),
-    '@media (max-width: 768px)': {
-      flexDirection: 'column',
-      ...shorthands.gap(tokens.spacingVerticalM),
-      alignItems: 'stretch',
-    },
-  },
-  switchContent: {
-    flex: '1',
-  },
-  switchInfo: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    ...shorthands.gap(tokens.spacingHorizontalM),
-  },
-  iconWrapper: {
-    backgroundColor: tokens.colorBrandBackground2,
-    color: tokens.colorBrandForeground1,
-    ...shorthands.padding(tokens.spacingVerticalXS),
-    borderRadius: tokens.borderRadiusSmall,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: '2px',
-  },
-  typeSelector: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    ...shorthands.gap(tokens.spacingHorizontalM),
-    marginTop: tokens.spacingVerticalM,
-    '@media (max-width: 768px)': {
-      gridTemplateColumns: '1fr',
-    },
-  },
-  typeButton: {
-    minHeight: '60px',
-    justifyContent: 'flex-start',
-    ...shorthands.padding(tokens.spacingVerticalM, tokens.spacingHorizontalL),
-  },
-  selectedEmployees: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    ...shorthands.gap(tokens.spacingHorizontalS),
-    marginBottom: tokens.spacingVerticalM,
-  },
-  employeeList: {
-    display: 'flex',
-    flexDirection: 'column',
-    ...shorthands.gap(tokens.spacingVerticalS),
-    maxHeight: '300px',
-    overflowY: 'auto',
-  },
-  employeeItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    ...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalM),
-    borderRadius: tokens.borderRadiusSmall,
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: tokens.colorNeutralBackground1Hover,
-    },
-  },
-  employeeSelected: {
-    backgroundColor: tokens.colorBrandBackground2,
-    '&:hover': {
-      backgroundColor: tokens.colorBrandBackground2,
-    },
-  },
-  employeeInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    ...shorthands.gap(tokens.spacingHorizontalM),
-    flex: '1',
-  },
-  employeeDetails: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  officeCard: {
-    ...shorthands.margin(0, 0, tokens.spacingVerticalM, 0),
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-    borderRadius: tokens.borderRadiusMedium,
-    ...shorthands.padding(tokens.spacingVerticalM),
-  },
-  officeHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: tokens.spacingVerticalM,
-    '@media (max-width: 768px)': {
-      flexDirection: 'column',
-      alignItems: 'stretch',
-      ...shorthands.gap(tokens.spacingVerticalS),
-    },
-  },
-  officeTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    ...shorthands.gap(tokens.spacingHorizontalS),
-  },
-  dialogContent: {
-    width: '100%',
-    maxWidth: '500px',
-    '@media (max-width: 768px)': {
-      maxWidth: '90vw',
-      ...shorthands.margin(tokens.spacingVerticalM),
-    },
-  },
-  searchContainer: {
-    marginBottom: tokens.spacingVerticalM,
-  },
-  primaryButton: {
-    backgroundColor: tokens.colorBrandBackground,
-    '&:hover': {
-      backgroundColor: tokens.colorBrandBackgroundHover,
-    },
-  },
-  messageBar: {
-    marginBottom: tokens.spacingVerticalM,
-  },
-  responsive: {
-    '@media (max-width: 550px)': {
-      fontSize: tokens.fontSizeBase200,
-      ...shorthands.padding(tokens.spacingVerticalXS, tokens.spacingHorizontalS),
-    },
-  },
-});
 
 interface Employee {
   id: string;
@@ -407,6 +218,7 @@ const TeamsValidationSettings = () => {
                       </div>
                       <div>
                         <Title3>Manual Validation Needed</Title3>
+                        <br />
                         <Body1>Enable this option if documents require manual validation before processing</Body1>
                       </div>
                     </div>
@@ -482,6 +294,7 @@ const TeamsValidationSettings = () => {
                         appearance="subtle"
                         icon={<AddIcon />}
                         onClick={() => openEmployeeDialog()}
+                        className={styles.addValidatorButton}
                       >
                         Add Validator
                       </Button>
@@ -509,7 +322,7 @@ const TeamsValidationSettings = () => {
                                 icon={<AddIcon />}
                                 onClick={() => openEmployeeDialog(office.id)}
                               >
-                                Add Validator
+                                Add
                               </Button>
                             </div>
 
@@ -548,6 +361,7 @@ const TeamsValidationSettings = () => {
                           </div>
                           <div>
                             <Title3>Approval Needed</Title3>
+                            <br />
                             <Body1>Enable this option if documents require approval after validation</Body1>
                           </div>
                         </div>
@@ -563,7 +377,7 @@ const TeamsValidationSettings = () => {
                 {/* Message Bars */}
                 {approvalNeeded && (
                   <MessageBar intent="info" className={styles.messageBar}>
-                    <MessageBarBody>
+                    <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                       <MessageBarTitle>Approval Configuration</MessageBarTitle>
                       Approval settings will be fetched from document approval configuration. Documents will follow the complete validation and approval workflow.
                     </MessageBarBody>
@@ -572,7 +386,7 @@ const TeamsValidationSettings = () => {
 
                 {!approvalNeeded && manualValidation && (
                   <MessageBar intent="success" className={styles.messageBar}>
-                    <MessageBarBody>
+                    <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                       Documents will be automatically approved after successful validation by the assigned validators.
                     </MessageBarBody>
                   </MessageBar>
@@ -583,7 +397,7 @@ const TeamsValidationSettings = () => {
             {/* Automatic Processing Message */}
             {!manualValidation && (
               <MessageBar intent="success" className={styles.messageBar}>
-                <MessageBarBody>
+                <MessageBarBody style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                   <MessageBarTitle>Automatic Document Processing Enabled</MessageBarTitle>
                   Documents will be automatically validated and processed without manual intervention.
                 </MessageBarBody>
@@ -656,3 +470,227 @@ const TeamsValidationSettings = () => {
 };
 
 export default TeamsValidationSettings;
+
+
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+    backgroundColor: tokens.colorNeutralBackground1,
+    fontFamily: tokens.fontFamilyBase,
+  },
+  header: {
+    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalXL}`,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    boxShadow: tokens.shadow2,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    '@media (max-width: 768px)': {
+      padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
+      flexDirection: 'column',
+      gap: tokens.spacingVerticalM,
+    },
+  },
+  headerLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalM,
+  },
+  brandIcon: {
+    color: tokens.colorBrandForeground1,
+  },
+  content: {
+    flex: '1',
+    overflowY: 'auto',
+    paddingTop: tokens.spacingVerticalL,
+    paddingBottom: tokens.spacingVerticalL,
+    '@media (max-width: 768px)': {
+      paddingTop: tokens.spacingVerticalM,
+      paddingBottom: tokens.spacingVerticalM,
+    },
+  },
+  contentWrapper: {
+    maxWidth: '768px',
+    margin: '0 auto',
+    paddingLeft: tokens.spacingHorizontalXL,
+    paddingRight: tokens.spacingHorizontalXL,
+    '@media (max-width: 768px)': {
+      paddingLeft: tokens.spacingHorizontalM,
+      paddingRight: tokens.spacingHorizontalM,
+    },
+  },
+  section: {
+    marginBottom: tokens.spacingVerticalL,
+  },
+  card: {
+    padding: tokens.spacingVerticalL,
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: tokens.borderRadiusMedium,
+    boxShadow: tokens.shadow2,
+  },
+  switchCard: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: tokens.spacingHorizontalL,
+    '@media (max-width: 768px)': {
+      flexDirection: 'column',
+      gap: tokens.spacingVerticalM,
+      alignItems: 'stretch',
+    },
+  },
+  switchContent: {
+    flex: '1',
+  },
+  switchInfo: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: tokens.spacingHorizontalM,
+  },
+  iconWrapper: {
+    backgroundColor: tokens.colorBrandBackground2,
+    color: tokens.colorBrandForeground1,
+    padding: tokens.spacingVerticalXS,
+    borderRadius: tokens.borderRadiusSmall,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '2px',
+  },
+  typeSelector: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: tokens.spacingHorizontalM,
+    marginTop: tokens.spacingVerticalM,
+    '@media (max-width: 768px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
+  typeButton: {
+    minHeight: '50px',
+    justifyContent: 'center',
+    padding: `${tokens.spacingVerticalM} ${tokens.spacingHorizontalL}`,
+  },
+  selectedEmployees: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: tokens.spacingHorizontalS,
+    marginBottom: tokens.spacingVerticalM,
+  },
+  employeeList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalS,
+    maxHeight: '300px',
+    overflowY: 'auto',
+    padding: tokens.spacingVerticalS,
+  },
+  employeeItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
+    borderRadius: tokens.borderRadiusMedium,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground1Hover,
+      transform: 'translateX(4px)',
+    },
+  },
+  employeeSelected: {
+    backgroundColor: tokens.colorBrandBackground2,
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackground2Hover,
+    },
+  },
+  employeeInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalM,
+    flex: '1',
+  },
+  employeeDetails: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalXXS,
+  },
+  officeCard: {
+    marginBottom: tokens.spacingVerticalM,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: tokens.borderRadiusMedium,
+    padding: tokens.spacingVerticalM,
+  },
+  officeHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: tokens.spacingVerticalM,
+    '@media (max-width: 768px)': {
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      gap: tokens.spacingVerticalS,
+    },
+  },
+  officeTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalS,
+  },
+  dialogContent: {
+    width: '100%',
+    maxWidth: '500px',
+    borderRadius: tokens.borderRadiusLarge,
+    boxShadow: tokens.shadow16,
+    '@media (max-width: 768px)': {
+      maxWidth: '90vw',
+      margin: tokens.spacingVerticalM,
+    },
+  },
+  searchContainer: {
+    width: '100%',
+    marginBottom: tokens.spacingVerticalM,
+    padding: `0 ${tokens.spacingHorizontalM}`,
+    '& .fui-SearchBox': {
+      width: '100%',
+      borderRadius: tokens.borderRadiusMedium,
+      border: `1px solid ${tokens.colorNeutralStroke1}`,
+      '&:hover': {
+        border: `1px solid ${tokens.colorNeutralStroke1Hover}`,
+      },
+      '&:focus-within': {
+        border: `1px solid ${tokens.colorBrandStroke1}`,
+        boxShadow: `0 0 0 2px ${tokens.colorBrandStroke2}`,
+      },
+    },
+  },
+  primaryButton: {
+    backgroundColor: tokens.colorBrandBackground,
+    borderRadius: tokens.borderRadiusMedium,
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackgroundHover,
+      transform: 'translateY(-1px)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
+    },
+  },
+  messageBar: {
+    marginBottom: tokens.spacingVerticalM,
+  },
+  responsive: {
+    '@media (max-width: 550px)': {
+      fontSize: tokens.fontSizeBase200,
+      padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
+    },
+  },
+  addValidatorButton: {
+    justifyContent: 'flex-start',
+  },
+});
