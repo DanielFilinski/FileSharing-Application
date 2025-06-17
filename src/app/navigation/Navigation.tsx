@@ -16,10 +16,14 @@ import {
   NavigationRegular,
   SearchRegular,
   ChevronRightRegular,
-  Dismiss24Regular
+  Dismiss24Regular,
+  WeatherSunnyRegular,
+  WeatherMoonFilled,
+  WeatherSunnyFilled
 } from '@fluentui/react-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NAV_GROUPS } from './constants';
+import { useTheme } from '../theme/ThemeProvider';
 
 // Teams-compliant styles using 4px grid system
 const useStyles = makeStyles({
@@ -155,6 +159,29 @@ const useStyles = makeStyles({
 
   drawerContent: {
     ...shorthands.padding('0', '16px')
+  },
+
+  themeToggle: {
+    marginTop: 'auto',
+    marginBottom: '16px',
+    width: '100%',
+    justifyContent: 'flex-start',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderRadius: '4px',
+    ...shorthands.padding('8px', '12px'),
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground2,
+    }
+  },
+
+  themeToggleContent: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    ...shorthands.gap('12px')
   }
 });
 
@@ -176,8 +203,10 @@ const Navigation: React.FC<NavigationProps> = ({
   onNavItemSelect,
   selectedItem 
 }) => {
+  const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>(['dms', 'storage']);
+  
   const styles = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
@@ -326,6 +355,19 @@ const Navigation: React.FC<NavigationProps> = ({
           {group.links.map(link => renderNavItem(link))}
         </div>
       ))}
+
+      <Button
+        className={styles.themeToggle}
+        onClick={() => toggleTheme()}
+        appearance="subtle"
+      >
+        <div className={styles.themeToggleContent}>
+          {isDark ? <WeatherSunnyFilled /> : <WeatherMoonFilled />}
+          <Text className={styles.navItemText}>
+            {isDark ? 'Light theme' : 'Dark theme'}
+          </Text>
+        </div>
+      </Button>
     </>
   );
 
@@ -363,7 +405,6 @@ const Navigation: React.FC<NavigationProps> = ({
               />
             }
           >
-            Navigation
           </DrawerHeaderTitle>
         </DrawerHeader>
         <DrawerBody>

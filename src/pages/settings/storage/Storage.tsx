@@ -15,7 +15,7 @@ const StorageSettings: React.FC = () => {
      </HeaderContainer>
      
      <ContentContainer>
-      <Switch checked={isDark} onChange={toggleTheme} />
+      {/* <Switch checked={isDark} onChange={toggleTheme} /> */}
      </ContentContainer>
       
     </ScreenContainer>
