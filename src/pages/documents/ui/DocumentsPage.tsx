@@ -1,43 +1,17 @@
-import React from 'react';
-import { makeStyles, tokens } from '@fluentui/react-components';
-import { Breadcrumbs } from '../components/Breadcrumbs';
-import { Toolbar } from '../components/Toolbar';
-import { DocumentsTable } from '../components/DocumentsTable';
+import BaseDocumentsPage, { Document } from './BaseDocumentsPage';
 
-const useStyles = makeStyles({
-  root: {
-    padding: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: tokens.colorNeutralBackground2,
-    fontFamily: tokens.fontFamilyBase,
-    height: '100vh',
-    width: '100%',
-    overflow: 'hidden',
-  },
-  content: {
-    flex: 1,
-    display: 'flex',
-    height: '100vh',
-    flexDirection: 'column',
-    backgroundColor: tokens.colorNeutralBackground1,
-    overflow: 'hidden',
-    width: '100%',
-    position: 'relative',
-    minHeight: 0
-  }
-});
+// Специфичные документы для обычной страницы
+const userDocuments: Document[] = [
+  { key: '1', name: 'Personal Notes.docx', modified: '2 days ago', createdBy: 'John Smith', modifiedBy: 'Jane Doe', owner: 'me', shared: false, status: 'Active', lock: false, clientEmail: 'john.smith@company.com' },
+  { key: '2', name: 'Meeting Notes.docx', modified: '1 week ago', createdBy: 'Alice Johnson', modifiedBy: 'Bob Wilson', owner: 'me', shared: true, status: 'pending validation', lock: false, clientEmail: 'alice.johnson@client.com' },
+  { key: '3', name: 'Personal Budget.xlsx', modified: '3 days ago', createdBy: 'Mike Brown', modifiedBy: 'Sarah Davis', owner: 'me', shared: false, status: 'validation in process', lock: false, clientEmail: 'mike.brown@enterprise.com' },
+];
 
 export default function DocumentsPage() {
-  const styles = useStyles();
-
   return (
-    <div className={styles.root}>
-      <div className={styles.content}>
-        <Toolbar />
-        <Breadcrumbs /> 
-        <DocumentsTable />
-      </div>
-    </div>
+    <BaseDocumentsPage 
+      initialDocuments={userDocuments}
+      showAccessControl={false}
+    />
   );
 }

@@ -45,6 +45,20 @@ export const NAV_LINKS: NavLink[] = [
     icon: 'Table'
   },
   {
+    name: 'Analytics',
+    url: '#',
+    key: 'portal2',
+    linkName: '/firm-side-2',
+    icon: 'TableMultiple'
+  },
+  {
+    name: 'Favorites',
+    url: '#',
+    key: 'favorites',
+    linkName: '/favorites',
+    icon: 'Star'
+  },
+  {
     name: 'Organization',
     url: '#',
     key: 'org',
@@ -57,20 +71,7 @@ export const NAV_LINKS: NavLink[] = [
     key: 'storage',
     linkName: '/settings/storage',
     icon: 'Storage',
-    links: [
-      { 
-        name: 'Users', 
-        url: '#', 
-        key: 'users', 
-        icon: 'People', 
-      },
-      { 
-        name: 'Employees', 
-        url: '#', 
-        key: 'employees', 
-        icon: 'Person' 
-      },
-    ],
+    
   },
   {
     name: 'Validation',
@@ -85,25 +86,43 @@ export const NAV_LINKS: NavLink[] = [
     key: 'approval',
     linkName: '/settings/approval',
     icon: 'CheckmarkCircle'
+  },
+  {
+    name: 'Leads',
+    url: '#',
+    key: 'leads',
+    linkName: '/leads',
+    icon: 'Leads'
+  },
+  {
+    name: 'Users',
+    url: '#',
+    key: 'users',
+    linkName: '/settings/users',
+    icon: 'Person'
   }
 ];
 
 // Navigation groups following Teams design patterns
 export const NAV_GROUPS: NavGroup[] = [
   {
-    title: 'Storage',
+    title: 'Dashboard',
     links: [
       NAV_LINKS[0], // Client Side
       NAV_LINKS[1], // Firm Side
+      NAV_LINKS[2], // Firm Side 2
+      NAV_LINKS[3], // Favorites
+      NAV_LINKS[8], // Leads
     ]
   },
   {
     title: 'Settings',
     links: [
-      NAV_LINKS[2], // Organization
-      NAV_LINKS[3], // Storage
-      NAV_LINKS[4], // Validation
-      NAV_LINKS[5], // Approval
+      NAV_LINKS[4], // Organization
+      NAV_LINKS[5], // Storage
+      NAV_LINKS[6], // Validation
+      NAV_LINKS[7], // Approval
+      NAV_LINKS[9], // Users
     ]
   }
 ];

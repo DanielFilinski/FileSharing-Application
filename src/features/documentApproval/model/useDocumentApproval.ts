@@ -1,26 +1,17 @@
 import { useCallback } from 'react';
 import { useTeamsContext } from '@/shared/lib/teams';
 
-
 export const useDocumentApproval = (documentId: string) => {
   const teamsContext = useTeamsContext();
 
   const approve = useCallback(async () => {
-    try {
-      // Здесь будет логика утверждения документа
-      console.log('Document approved:', documentId);
-    } catch (error) {
-      console.error('Error approving document:', error);
-    }
+    // Логика одобрения документа
+    console.log('Approving document:', documentId);
   }, [documentId]);
 
   const reject = useCallback(async () => {
-    try {
-      // Здесь будет логика отклонения документа
-      console.log('Document rejected:', documentId);
-    } catch (error) {
-      console.error('Error rejecting document:', error);
-    }
+    // Логика отклонения документа
+    console.log('Rejecting document:', documentId);
   }, [documentId]);
 
   return {

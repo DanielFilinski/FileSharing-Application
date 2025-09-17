@@ -2,14 +2,18 @@ import { Layout } from '@/components/Layout';
 import DmsMainScreen from '@/pages/documents/ui/DocumentsPage';
 import ApprovalSettingsForm from '@/pages/settings/approval/Approval';
 import OrganizationSettings from '@/pages/settings/organization/Organization';
-import StorageSettings from '@/pages/settings/storage/Storage';
 import ValidationSettingsForm from '@/pages/settings/validation/Validation';
 import { ToEndUser } from '@/app/pages/ToEndUser';
 import { FromEndUser } from '@/app/pages/FromEndUser';
-import { Users } from '@/app/pages/Users';
-import { Employees } from '@/app/pages/Employees';
+import { FirmUser } from '@/pages/settings/users/users-settings';
+import { StorageSettings} from '@/pages/settings/storage/storage-settings';
+import ClientSidePage from '@/pages/documents/ui/ClientSidePage';
+
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Leads } from '@/pages/leads/Leads';
+import FirmSidePage from '@/pages/documents/ui/FirmSidePage';
+import FirmSide2Page from '@/pages/documents/ui/FirmSide2Page';
 
 
 export const router = createBrowserRouter([
@@ -23,11 +27,19 @@ export const router = createBrowserRouter([
       },
       {
         path: 'client-side',
-        element: <DmsMainScreen />,
+        element: <ClientSidePage />,
       },
       {
         path: 'firm-side',
-        element: <DmsMainScreen/>,
+        element: <FirmSidePage/>,
+      },
+      {
+        path: 'firm-side-2',
+        element: <FirmSide2Page/>,
+      },
+      {
+        path: 'favorites',
+        element: <DmsMainScreen />,
       },
       {
         path: 'settings/organization',
@@ -47,20 +59,21 @@ export const router = createBrowserRouter([
       },
       {
         path: 'to-end-user',
-        element: <ToEndUser />,
+        element: <ClientSidePage />,
       },
       {
         path: 'from-end-user',
-        element: <FromEndUser />,
+        element: <ClientSidePage />,
       },
       {
-        path: 'users',
-        element: <Users />,
+        path: 'leads',
+        element: <Leads />,
       },
       {
-        path: 'employees',
-        element: <Employees />,
+        path: 'settings/users',
+        element: <FirmUser />,
       },
+
     ],
   },
 ]);

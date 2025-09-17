@@ -9,8 +9,15 @@ import {
   MenuItem,
   MenuPopover,
   MenuTrigger,
-  Text
+  Text,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogSurface,
+  DialogBody
 } from '@fluentui/react-components';
+import { Button as FluentButton } from '@fluentui/react-components';
 import { 
   AddRegular, 
   ArrowUploadRegular, 
@@ -19,11 +26,28 @@ import {
   MoreHorizontalRegular,
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
+import { UploadForm, DocumentMetadata } from './UploadForm';
 
-export const Toolbar: React.FC = () => {
+export const Toolbar: React.FC<{
+  selectedCount: number,
+  onAddItem: (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => void,
+  isGridView: boolean,
+  setIsGridView: (v: boolean) => void,
+  documentFilter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites',
+  onFilterChange: (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => void,
+  onUploadFiles: (files: FileList, metadata?: DocumentMetadata) => void,
+  showBulkActions?: boolean,
+  showAdvancedFilters?: boolean,
+  pageType?: 'firm' | 'client',
+  statusFilter?: string,
+  onStatusFilterChange?: (status: string) => void
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm', statusFilter = 'All', onStatusFilterChange }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal'>(null);
+  const [uploadFormOpen, setUploadFormOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -36,24 +60,64 @@ export const Toolbar: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const handleUploadFromDevice = () => {
+    setUploadFormOpen(true);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      onUploadFiles(files);
+    }
+  };
+
+  const handleUploadWithMetadata = (files: File[], metadata: DocumentMetadata) => {
+    // Создаем FileList из массива файлов для совместимости
+    const dataTransfer = new DataTransfer();
+    files.forEach(file => dataTransfer.items.add(file));
+    onUploadFiles(dataTransfer.files, metadata);
+  };
+
+  const handleOpenCloud = () => setDialogOpen('cloud');
+  const handleOpenPortal = () => setDialogOpen('portal');
+  const handleCloseDialog = () => setDialogOpen(null);
+
   const renderMainButtons = () => (
     <>
-      <Button
-        icon={<ArrowUploadRegular />}
-        iconPosition="before"
-        appearance="primary"
-        shape="rounded"
-        className={styles.uploadButton}
-      >
-        Upload
-      </Button>
+      <Menu>
+        <MenuTrigger>
+          <MenuButton
+            icon={<ArrowUploadRegular />}
+            appearance="primary"
+            shape="rounded"
+            className={styles.uploadButton}
+          >
+            Upload
+          </MenuButton>
+        </MenuTrigger>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem onClick={handleUploadFromDevice}>From Device</MenuItem>
+            <MenuItem onClick={handleOpenCloud}>From Cloud</MenuItem>
+            <MenuItem onClick={handleOpenPortal}>From Portal</MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        multiple
+        onChange={handleFileChange}
+      />
       <Button
         icon={<Table20Regular />}
         iconPosition="before"
         appearance="secondary"
         shape="rounded"
+        onClick={() => setIsGridView(!isGridView)}
       >
-        Edit in grid view
+        {isGridView ? 'Table view' : 'Edit in grid view'}
       </Button>
       <Menu>
         <MenuTrigger>
@@ -80,32 +144,54 @@ export const Toolbar: React.FC = () => {
       >
         Share
       </Button>
+      <Menu>
+        <MenuTrigger>
+          <MenuButton
+            icon={<MoreHorizontalRegular />}
+            appearance="secondary"
+            shape="rounded"
+          >
+          </MenuButton>
+        </MenuTrigger>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem onClick={() => { console.log('Delete document') }}>Delete</MenuItem>
+            <MenuItem onClick={() => { console.log('Rename document') }}>Rename</MenuItem>
+            <MenuItem onClick={() => { console.log('Move document') }}>Move</MenuItem>
+            <MenuItem onClick={() => { console.log('Copy document') }}>Copy</MenuItem>
+            <MenuItem onClick={() => { console.log('Download document') }}>Download</MenuItem>
+            <MenuItem onClick={() => { console.log('Print document') }}>Print</MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
     </>
   );
 
   return (
     <div className={styles.toolbar}>
       <div className={styles.toolbarLeft}>
-        <Menu>
-          <MenuTrigger>
-            <MenuButton
-              icon={<AddRegular />}
-              appearance="primary"
-              shape="rounded"
-              className={styles.primaryButton}
-            >
-              New
-            </MenuButton>
-          </MenuTrigger>
-          <MenuPopover>
-            <MenuList>
-              <MenuItem onClick={() => { console.log('Document') }}>Document</MenuItem>
-              <MenuItem onClick={() => { console.log('Spreadsheet') }}>Spreadsheet</MenuItem>
-              <MenuItem onClick={() => { console.log('Presentation') }}>Presentation</MenuItem>
-              <MenuItem onClick={() => { console.log('Form') }}>Form</MenuItem>
-            </MenuList>
-          </MenuPopover>
-        </Menu>
+        {pageType === 'firm' && (
+          <Menu>
+            <MenuTrigger>
+              <MenuButton
+                icon={<AddRegular />}
+                appearance="primary"
+                shape="rounded"
+                className={styles.primaryButton}
+              >
+                New
+              </MenuButton>
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItem onClick={() => onAddItem('document')}>Document</MenuItem>
+                <MenuItem onClick={() => onAddItem('spreadsheet')}>Spreadsheet</MenuItem>
+                <MenuItem onClick={() => onAddItem('presentation')}>Presentation</MenuItem>
+                <MenuItem onClick={() => onAddItem('form')}>Form</MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        )}
         {visibleButtons ? renderMainButtons() : (
           <Menu>
             <MenuTrigger>
@@ -127,7 +213,37 @@ export const Toolbar: React.FC = () => {
       </div>
       
       <div className={styles.toolbarRight}>
-        <Text className={styles.selectedText}>1 selected</Text>
+        {showAdvancedFilters && onStatusFilterChange && (
+          <Menu>
+            <MenuTrigger>
+              <MenuButton
+                appearance="secondary"
+                shape="rounded"
+              >
+                Status: {statusFilter}
+              </MenuButton>
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItem onClick={() => onStatusFilterChange('All')}>All Statuses</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('Active')}>Active</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('pending validation')}>Pending Validation</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('validation in process')}>Validation in Process</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('pending review')}>Pending Review</MenuItem>
+                <MenuItem onClick={() => onStatusFilterChange('Locked')}>Locked</MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        )}
+        <Text className={styles.selectedText}>
+          {selectedCount} selected
+        </Text>
+        {showBulkActions && selectedCount > 0 && (
+          <div className={styles.bulkActions}>
+            <Button appearance="secondary" size="small">Delete Selected</Button>
+            <Button appearance="secondary" size="small">Share Selected</Button>
+          </div>
+        )}
         <Menu>
           <MenuTrigger>
             <MenuButton
@@ -135,15 +251,23 @@ export const Toolbar: React.FC = () => {
               shape="rounded"
               className={styles.menuButton}
             >
-              All Documents
+              {documentFilter}
             </MenuButton>
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
-              <MenuItem>All Documents</MenuItem>
-              <MenuItem>My Documents</MenuItem>
-              <MenuItem>Shared Documents</MenuItem>
-              <MenuItem>Recent</MenuItem>
+              <MenuItem onClick={() => onFilterChange('All Documents')}>All Documents</MenuItem>
+              <MenuItem onClick={() => onFilterChange('My Documents')}>My Documents</MenuItem>
+              <MenuItem onClick={() => onFilterChange('Shared Documents')}>Shared Documents</MenuItem>
+              <MenuItem onClick={() => onFilterChange('Recent')}>Recent</MenuItem>
+              <MenuItem onClick={() => onFilterChange('Favorites')}>Favorites</MenuItem>
+              {showAdvancedFilters && (
+                <>
+                  <MenuItem onClick={() => onFilterChange('All Documents')}>By Date Range</MenuItem>
+                  <MenuItem onClick={() => onFilterChange('All Documents')}>By File Type</MenuItem>
+                  <MenuItem onClick={() => onFilterChange('All Documents')}>By Status</MenuItem>
+                </>
+              )}
             </MenuList>
           </MenuPopover>
         </Menu>
@@ -154,6 +278,30 @@ export const Toolbar: React.FC = () => {
           className={styles.helpButton}
         />
       </div>
+      {dialogOpen && (
+        <Dialog open onOpenChange={handleCloseDialog}>
+          <DialogSurface>
+            <DialogBody>
+              {/* <DialogTitle>
+                {dialogOpen === 'cloud' ? 'Cloud Upload' : 'Portal Upload'}
+              </DialogTitle> */}
+              <DialogContent>
+                <div style={{ minWidth: 320, minHeight: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ marginBottom: 24 }}>This interface will be available when the server is connected.</span>
+                  <FluentButton appearance="primary" onClick={handleCloseDialog}>Close</FluentButton>
+                </div>
+              </DialogContent>
+            </DialogBody>
+          </DialogSurface>
+        </Dialog>
+      )}
+      {uploadFormOpen && (
+        <UploadForm
+          isOpen={uploadFormOpen}
+          onClose={() => setUploadFormOpen(false)}
+          onUpload={handleUploadWithMetadata}
+        />
+      )}
     </div>
   );
 }; 
@@ -244,6 +392,11 @@ const useStyles = makeStyles({
       minWidth: '32px',
       minHeight: '32px',
       padding: 0
+    },
+    bulkActions: {
+      display: 'flex',
+      gap: '8px',
+      alignItems: 'center'
     }
   });
   

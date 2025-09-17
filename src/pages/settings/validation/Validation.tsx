@@ -142,10 +142,10 @@ const TeamsValidationSettings = () => {
             )}
 
             
-              <ApprovalToggle
+              {/* <ApprovalToggle
                 approvalNeeded={approvalNeeded}
                 onToggle={setApprovalNeeded}
-              />
+              /> */}
            
 
             <ValidationMessageBars

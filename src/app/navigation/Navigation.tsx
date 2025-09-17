@@ -217,15 +217,18 @@ const Navigation: React.FC<NavigationProps> = ({
     // Determine selected item from current route
     const path = location.pathname;
     if (path.includes('/client-side')) return 'dms';
+    if (path.includes('/firm-side-2')) return 'portal2';
     if (path.includes('/firm-side')) return 'portal';
+    if (path.includes('/favorites')) return 'favorites';
     if (path.includes('/settings/organization')) return 'org';
     if (path.includes('/settings/storage')) return 'storage';
     if (path.includes('/settings/validation')) return 'validation';
     if (path.includes('/settings/approval')) return 'approval';
     if (path.includes('/to-end-user')) return 'toenduser';
     if (path.includes('/from-end-user')) return 'fromenduser';
-    if (path.includes('/users')) return 'users';
     if (path.includes('/employees')) return 'employees';
+    if (path.includes('/leads')) return 'leads';
+    if (path.includes('/settings/users')) return 'users';
     return 'dms'; // Default
   };
 
@@ -246,6 +249,12 @@ const Navigation: React.FC<NavigationProps> = ({
       case 'portal':
         navigate('/firm-side');
         break;
+      case 'portal2':
+        navigate('/firm-side-2');
+        break;
+      case 'favorites':
+        navigate('/favorites');
+        break;
       case 'org':
         navigate('/settings/organization');
         break;
@@ -265,10 +274,13 @@ const Navigation: React.FC<NavigationProps> = ({
         navigate('/from-end-user');
         break;
       case 'users':
-        navigate('/users');
+        navigate('/settings/users');
         break;
       case 'employees':
         navigate('/employees');
+        break;
+      case 'leads':
+        navigate('/leads');
         break;
       default:
         navigate('/');

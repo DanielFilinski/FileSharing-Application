@@ -1,5 +1,4 @@
-import styled from "styled-components";
-import { tokens } from "@fluentui/react-theme";
+
 import { Title3 } from "@fluentui/react-components";
 
 type CardTitleProps = {
