@@ -1,0 +1,952 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 8px 16px 8px 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            width: 300px;
+            background: #f9fafb;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-icon {
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .nav-icon:hover {
+            background-color: #f3f4f6;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .user-profile:hover {
+            background-color: #f3f4f6;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .add-client-btn {
+            width: 100%;
+            padding: 10px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .add-client-btn:hover {
+            background: #2563eb;
+        }
+
+        .client-search {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .client-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #f9fafb;
+        }
+
+        .client-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .client-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 3px solid transparent;
+        }
+
+        .client-item:hover {
+            background-color: #f8fafc;
+        }
+
+        .client-item.active {
+            background-color: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+
+        .client-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .client-info p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .client-status {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            width: 73%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 12px;
+            border-radius: 6px;
+            background: #f8fafc;
+        }
+
+        .status-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .activity-list, .deadline-list, .document-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item, .deadline-item, .document-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .activity-item:last-child, .deadline-item:last-child, .document-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3b82f6;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .activity-content h5 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .activity-content p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .deadline-priority {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .priority-high { background: #ef4444; }
+        .priority-medium { background: #f59e0b; }
+        .priority-low { background: #10b981; }
+
+        .document-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-review { background: #dbeafe; color: #1e40af; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 350px;
+            background: white;
+            border-left: 1px solid #e2e8f0;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+
+        .document-meta {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .meta-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .meta-value {
+            font-size: 12px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .team-member:last-child {
+            border-bottom: none;
+        }
+
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .member-info h5 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .member-info p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .role-validator { background: #fef3c7; color: #92400e; }
+        .role-approver { background: #dbeafe; color: #1e40af; }
+        .role-signatory { background: #f3e8ff; color: #7c3aed; }
+
+        .workflow-checklist {
+            list-style: none;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            position: relative;
+        }
+
+        .step-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .step-pending {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .step-content {
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .security-info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .security-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .security-item:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .left-sidebar {
+                width: 250px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="logo">ClientPortal</div>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search documents, clients, tasks..." />
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="nav-icon">
+                🔔
+                <span class="notification-badge">3</span>
+            </div>
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-icon">❓</div>
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <span>John Doe</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Client Directory</h2>
+                <button class="add-client-btn">+ Add New Client</button>
+            </div>
+            <div class="client-search">
+                <input type="text" placeholder="Search clients..." />
+            </div>
+            <div class="client-list">
+                <div class="client-item active">
+                    <div class="client-info">
+                        <h4>TechCorp Solutions</h4>
+                        <p>Corporate Law</p>
+                    </div>
+                    <div class="client-status">3</div>
+                </div>
+                <div class="client-item">
+                    <div class="client-info">
+                        <h4>Smith Family Trust</h4>
+                        <p>Estate Planning</p>
+                    </div>
+                    <div class="client-status">1</div>
+                </div>
+                <div class="client-item">
+                    <div class="client-info">
+                        <h4>Green Energy LLC</h4>
+                        <p>Business Formation</p>
+                    </div>
+                </div>
+                <div class="client-item">
+                    <div class="client-info">
+                        <h4>Martinez Construction</h4>
+                        <p>Contract Review</p>
+                    </div>
+                    <div class="client-status">2</div>
+                </div>
+                <div class="client-item">
+                    <div class="client-info">
+                        <h4>Digital Marketing Inc</h4>
+                        <p>Intellectual Property</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-grid">
+                <!-- Project Status Summary -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Project Status Summary</h3>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="progress-text">73% Complete</div>
+                    </div>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-number">5</div>
+                            <div class="status-label">Pending Validation</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-number">3</div>
+                            <div class="status-label">Pending Signing</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-number">2</div>
+                            <div class="status-label">Pending Approval</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Deadlines -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Upcoming Deadlines</h3>
+                    </div>
+                    <div class="deadline-list">
+                        <div class="deadline-item">
+                            <div class="deadline-priority priority-high"></div>
+                            <div>
+                                <h5>Contract Amendment</h5>
+                                <p>Due in 2 days - Signature required</p>
+                            </div>
+                        </div>
+                        <div class="deadline-item">
+                            <div class="deadline-priority priority-medium"></div>
+                            <div>
+                                <h5>Tax Filing Documents</h5>
+                                <p>Due in 5 days - Approval needed</p>
+                            </div>
+                        </div>
+                        <div class="deadline-item">
+                            <div class="deadline-priority priority-low"></div>
+                            <div>
+                                <h5>Annual Report</h5>
+                                <p>Due in 12 days - Review pending</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Required Documents -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Action Required Documents</h3>
+                </div>
+                <div class="document-list">
+                    <div class="document-item">
+                        <div>
+                            <h5>Partnership Agreement - TechCorp Solutions</h5>
+                            <p>Uploaded 2 hours ago by Sarah Wilson</p>
+                        </div>
+                        <div class="document-status status-pending">Validation Required</div>
+                    </div>
+                    <div class="document-item">
+                        <div>
+                            <h5>Estate Plan Amendment - Smith Family Trust</h5>
+                            <p>Uploaded yesterday by Michael Smith</p>
+                        </div>
+                        <div class="document-status status-review">Signature Required</div>
+                    </div>
+                    <div class="document-item">
+                        <div>
+                            <h5>LLC Operating Agreement - Green Energy LLC</h5>
+                            <p>Uploaded 3 days ago by Jennifer Green</p>
+                        </div>
+                        <div class="document-status status-approved">Final Approval</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Feed -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Activity</h3>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <h5>Document validated by James Patterson</h5>
+                            <p>Contract Amendment for TechCorp Solutions - 15 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <h5>New document uploaded by client</h5>
+                            <p>Tax documents from Martinez Construction - 1 hour ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <h5>Document signed by client</h5>
+                            <p>Service Agreement for Digital Marketing Inc - 3 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <h5>Document approved by Lisa Chen</h5>
+                            <p>Business License Application - Yesterday</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Document Information -->
+            <div class="sidebar-section">
+                <h3 class="section-title">Document Information</h3>
+                <div class="document-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Document Type:</span>
+                        <span class="meta-value">Partnership Agreement</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Category:</span>
+                        <span class="meta-value">Business Documents</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Domain:</span>
+                        <span class="meta-value">Law</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Created:</span>
+                        <span class="meta-value">Jan 15, 2025</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Status:</span>
+                        <span class="meta-value">Under Review</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assigned Team -->
+            <div class="sidebar-section">
+                <h3 class="section-title">Assigned Team</h3>
+                <div class="team-member">
+                    <div class="member-avatar">JP</div>
+                    <div class="member-info">
+                        <h5>James Patterson</h5>
+                        <p>Lead Attorney</p>
+                    </div>
+                    <span class="role-badge role-validator">Validator</span>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">LC</div>
+                    <div class="member-info">
+                        <h5>Lisa Chen</h5>
+                        <p>Senior Associate</p>
+                    </div>
+                    <span class="role-badge role-approver">Approver</span>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">MR</div>
+                    <div class="member-info">
+                        <h5>Michael Rodriguez</h5>
+                        <p>Partner</p>
+                    </div>
+                    <span class="role-badge role-signatory">Signatory</span>
+                </div>
+            </div>
+
+            <!-- Workflow Checklist -->
+            <div class="sidebar-section">
+                <h3 class="section-title">Document Workflow</h3>
+                <ul class="workflow-checklist">
+                    <li class="workflow-step">
+                        <div class="step-indicator step-completed">✓</div>
+                        <div class="step-content">Initial Draft Review</div>
+                    </li>
+                    <li class="workflow-step">
+                        <div class="step-indicator step-active">2</div>
+                        <div class="step-content">Draft Validation</div>
+                    </li>
+                    <li class="workflow-step">
+                        <div class="step-indicator step-pending">3</div>
+                        <div class="step-content">Draft Approval</div>
+                    </li>
+                    <li class="workflow-step">
+                        <div class="step-indicator step-pending">4</div>
+                        <div class="step-content">Draft Signing</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Security Information -->
+            <div class="sidebar-section">
+                <h3 class="section-title">Security Information</h3>
+                <div class="security-info">
+                    <div class="security-item">
+                        <span class="meta-label">Validation Status:</span>
+                        <span class="meta-value">✓ Verified</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="meta-label">Retention Period:</span>
+                        <span class="meta-value">90 days</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="meta-label">Access Level:</span>
+                        <span class="meta-value">Team & Client</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="meta-label">Modifications:</span>
+                        <span class="meta-value">Restricted</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Client selection functionality
+        document.querySelectorAll('.client-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                document.querySelectorAll('.client-item').forEach(i => i.classList.remove('active'));
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Update main content based on selected client
+                updateDashboardContent(this.querySelector('h4').textContent);
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            // Here you would implement actual search functionality
+            console.log('Searching for:', searchTerm);
+        });
+
+        // Client search functionality
+        document.querySelector('.client-search input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const clients = document.querySelectorAll('.client-item');
+            
+            clients.forEach(client => {
+                const clientName = client.querySelector('h4').textContent.toLowerCase();
+                const clientType = client.querySelector('p').textContent.toLowerCase();
+                
+                if (clientName.includes(searchTerm) || clientType.includes(searchTerm)) {
+                    client.style.display = 'flex';
+                } else {
+                    client.style.display = 'none';
+                }
+            });
+        });
+
+        // Add new client functionality
+        document.querySelector('.add-client-btn').addEventListener('click', function() {
+            const clientName = prompt('Enter client name:');
+            if (clientName) {
+                const clientType = prompt('Enter client type:');
+                addNewClient(clientName, clientType || 'General');
+            }
+        });
+
+        function addNewClient(name, type) {
+            const clientList = document.querySelector('.client-list');
+            const newClient = document.createElement('div');
+            newClient.className = 'client-item';
+            newClient.innerHTML = `
+                <div class="client-info">
+                    <h4>${name}</h4>
+                    <p>${type}</p>
+                </div>
+            `;
+            
+            newClient.addEventListener('click', function() {
+                document.querySelectorAll('.client-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                updateDashboardContent(name);
+            });
+            
+            clientList.appendChild(newClient);
+        }
+
+        function updateDashboardContent(clientName) {
+            // Update dashboard content based on selected client
+            console.log('Updating dashboard for:', clientName);
+            
+            // Here you would make API calls to fetch client-specific data
+            // and update the main dashboard content accordingly
+            
+            // For demo purposes, just update the title
+            document.querySelector('.card-title').textContent = `${clientName} - Project Status`;
+        }
+
+        // Notification click handler
+        document.querySelector('.nav-icon').addEventListener('click', function() {
+            alert('You have 3 new notifications:\n• Document validation required\n• Client uploaded new files\n• Deadline approaching');
+        });
+
+        // Progress bar animation
+        window.addEventListener('load', function() {
+            const progressFill = document.querySelector('.progress-fill');
+            progressFill.style.width = '0%';
+            setTimeout(() => {
+                progressFill.style.width = '73%';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
