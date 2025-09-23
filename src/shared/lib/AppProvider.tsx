@@ -29,27 +29,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const initialize = async () => {
     try {
-      // Настраиваем глобальную обработку ошибок
+      // Set up global error handling
       errorHandler.setupGlobalErrorHandling();
 
-      // Инициализируем аутентификацию
+      // Initialize authentication
       await authService.initialize();
 
-      // Проверяем статус аутентификации
+      // Check authentication status
       const user = await authService.getUserInfo();
       if (user) {
         setCurrentUser(user);
         setIsAuthenticated(true);
         notificationService.success(
-          'Добро пожаловать',
-          `Вы вошли как ${user.displayName}`
+          'Welcome',
+          `You are logged in as ${user.displayName}`
         );
       }
 
       setIsInitialized(true);
     } catch (error) {
       console.error('Failed to initialize app:', error);
-      setIsInitialized(true); // Все равно помечаем как инициализированное
+      setIsInitialized(true); // Mark as initialized anyway
     }
   };
 
@@ -61,25 +61,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setCurrentUser(user);
         setIsAuthenticated(true);
         notificationService.success(
-          'Добро пожаловать',
-          `Вы вошли как ${user.displayName}`
+          'Welcome',
+          `You are logged in as ${user.displayName}`
         );
       } else {
-        // Если getUserInfo не вернул пользователя, но login прошел успешно
-        // (например, для браузерной аутентификации)
+        // If getUserInfo didn't return a user, but login was successful
+        // (e.g., for browser authentication)
         const currentUser = authService.getCurrentUser();
         if (currentUser) {
           setCurrentUser(currentUser);
           setIsAuthenticated(true);
           notificationService.success(
-            'Добро пожаловать',
-            `Вы вошли как ${currentUser.displayName}`
+            'Welcome',
+            `You are logged in as ${currentUser.displayName}`
           );
         }
       }
     } catch (error) {
       console.error('Login failed:', error);
-      notificationService.error('Ошибка входа', 'Не удалось войти в систему');
+      notificationService.error('Login Error', 'Failed to log into the system');
     }
   };
 
@@ -95,7 +95,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     handleLogin,
   };
 
-  // Показываем экран входа если не аутентифицированы
+  // Show login screen if not authenticated
   if (isInitialized && !isAuthenticated) {
     return (
       <AppContext.Provider value={contextValue}>

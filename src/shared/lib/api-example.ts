@@ -2,14 +2,14 @@ import { apiClient } from '../api';
 import { notificationService } from './notifications';
 import { errorHandler } from './errorHandler';
 
-// Примеры использования API клиента
+// API client usage examples
 
 export class ApiExamples {
-  // Получение профиля пользователя
+  // Get user profile
   static async getUserProfile() {
     try {
       const response = await apiClient.get('/getUserProfile');
-      notificationService.success('Профиль загружен', 'Данные пользователя успешно получены');
+      notificationService.success('Profile Loaded', 'User data successfully retrieved');
       return response.data;
     } catch (error) {
       await errorHandler.handleApiError(error, { showNotification: true });
@@ -17,11 +17,11 @@ export class ApiExamples {
     }
   }
 
-  // Загрузка файла
+  // Upload file
   static async uploadFile(file: File, onProgress?: (progress: number) => void) {
     try {
       const response = await apiClient.uploadFile('/uploadFile', file, onProgress);
-      notificationService.success('Файл загружен', `Файл ${file.name} успешно загружен`);
+      notificationService.success('File Uploaded', `File ${file.name} successfully uploaded`);
       return response.data;
     } catch (error) {
       await errorHandler.handleApiError(error, { showNotification: true });
@@ -29,7 +29,7 @@ export class ApiExamples {
     }
   }
 
-  // Проверка здоровья API
+  // Check API health
   static async checkHealth() {
     try {
       const response = await apiClient.get('/healthCheck');
@@ -40,11 +40,11 @@ export class ApiExamples {
     }
   }
 
-  // Пример POST запроса
+  // POST request example
   static async createDocument(documentData: any) {
     try {
       const response = await apiClient.post('/documents', documentData);
-      notificationService.success('Документ создан', 'Новый документ успешно создан');
+      notificationService.success('Document Created', 'New document successfully created');
       return response.data;
     } catch (error) {
       await errorHandler.handleApiError(error, { showNotification: true });
@@ -52,11 +52,11 @@ export class ApiExamples {
     }
   }
 
-  // Пример PUT запроса
+  // PUT request example
   static async updateDocument(id: string, documentData: any) {
     try {
       const response = await apiClient.put(`/documents/${id}`, documentData);
-      notificationService.success('Документ обновлен', 'Документ успешно обновлен');
+      notificationService.success('Document Updated', 'Document successfully updated');
       return response.data;
     } catch (error) {
       await errorHandler.handleApiError(error, { showNotification: true });
@@ -64,11 +64,11 @@ export class ApiExamples {
     }
   }
 
-  // Пример DELETE запроса
+  // DELETE request example
   static async deleteDocument(id: string) {
     try {
       const response = await apiClient.delete(`/documents/${id}`);
-      notificationService.success('Документ удален', 'Документ успешно удален');
+      notificationService.success('Document Deleted', 'Document successfully deleted');
       return response.data;
     } catch (error) {
       await errorHandler.handleApiError(error, { showNotification: true });
@@ -77,13 +77,13 @@ export class ApiExamples {
   }
 }
 
-// Пример использования в React компоненте
+// React component usage example
 export const useApiExamples = () => {
   const uploadFileWithProgress = async (file: File) => {
     try {
       const result = await ApiExamples.uploadFile(file, (progress) => {
         console.log(`Upload progress: ${progress}%`);
-        // Здесь можно обновить UI с прогрессом
+        // Here you can update UI with progress
       });
       return result;
     } catch (error) {

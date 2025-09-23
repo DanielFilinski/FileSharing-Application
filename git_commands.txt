@@ -1,0 +1,17 @@
+Commands to execute:
+
+1. git add -A
+2. git commit -m "Complete Russian to English translation
+
+Major translation work completed:
+- Authentication system (auth.ts, AppProvider.tsx, LoginScreen.tsx)  
+- API client and error handling (client.ts, errorHandler.ts, notifications.ts)
+- Document management (documentsApi.ts, useDocuments.ts)
+- Core documentation (technical_requirements.md, rules.md)
+- API examples and utilities
+
+Core functionality now fully in English for international use.
+Remaining UI components can be translated as needed."
+
+3. git push origin dev
+4. git push clieborate dev

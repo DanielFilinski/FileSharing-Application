@@ -27,7 +27,7 @@ export class AuthService {
     if (config) {
       this.config = config;
     } else {
-      // Используем значения из переменных окружения
+      // Use values from environment variables
       this.config = {
         clientId: (import.meta as any).env?.VITE_CLIENT_ID || '17479755-e076-41c8-8cfb-08518cbcd835',
         initiateLoginEndpoint: (import.meta as any).env?.VITE_START_LOGIN_PAGE_URL || window.location.origin + '/auth-start.html',
@@ -40,7 +40,7 @@ export class AuthService {
       throw new Error('Client ID is required for authentication');
     }
 
-    // Проверяем, запущено ли приложение в Teams
+    // Check if the application is running in Teams
     try {
       await microsoftTeams.app.initialize();
       this.isInTeams = true;
@@ -56,12 +56,12 @@ export class AuthService {
           clientId: this.config.clientId,
           initiateLoginEndpoint: this.config.initiateLoginEndpoint,
         });
-        // Настраиваем автоматическое обновление токена только для Teams
+        // Set up automatic token refresh only for Teams
         this.setupTokenRefresh();
       }
     } catch (error) {
       console.error('Failed to initialize authentication:', error);
-      // Не выбрасываем ошибку, если не в Teams - просто логируем
+      // Don't throw error if not in Teams - just log it
       if (this.isInTeams) {
         throw error;
       }
@@ -76,7 +76,7 @@ export class AuthService {
     try {
       const token = await this.credential.getToken([this.config!.apiScope]);
       if (token?.token) {
-        // Обновляем токен в API клиенте
+        // Update token in API client
         apiClient.setToken(token.token);
         return token.token;
       }
@@ -112,7 +112,7 @@ export class AuthService {
 
   async login(): Promise<void> {
     if (!this.isInTeams) {
-      // Если не в Teams, используем обычную аутентификацию через браузер
+      // If not in Teams, use regular browser authentication
       await this.browserLogin();
       return;
     }
@@ -124,7 +124,7 @@ export class AuthService {
     try {
       await this.credential.login([this.config!.apiScope]);
       
-      // Обновляем токен в API клиенте
+      // Update token in API client
       await this.getToken();
     } catch (error) {
       console.error('Login failed:', error);
@@ -133,7 +133,7 @@ export class AuthService {
   }
 
   private async browserLogin(): Promise<void> {
-    // Создаем URL для аутентификации через браузер
+    // Create URL for browser authentication
     const authUrl = new URL('https://login.microsoftonline.com/common/oauth2/v2.0/authorize');
     authUrl.searchParams.set('client_id', this.config!.clientId);
     authUrl.searchParams.set('response_type', 'code');
@@ -142,32 +142,32 @@ export class AuthService {
     authUrl.searchParams.set('response_mode', 'query');
     authUrl.searchParams.set('state', 'browser-auth');
 
-    // Открываем окно аутентификации
+    // Open authentication window
     const authWindow = window.open(authUrl.toString(), 'auth', 'width=500,height=600');
     
     if (!authWindow) {
-      throw new Error('Не удалось открыть окно аутентификации. Проверьте настройки блокировщика всплывающих окон.');
+      throw new Error('Failed to open authentication window. Please check your popup blocker settings.');
     }
 
-    // Ждем завершения аутентификации
+    // Wait for authentication completion
     return new Promise((resolve, reject) => {
       const checkClosed = setInterval(() => {
         if (authWindow.closed) {
           clearInterval(checkClosed);
-          // Проверяем, есть ли токен в localStorage
+          // Check if token exists in localStorage
           const token = localStorage.getItem('access_token');
           if (token) {
-            // Создаем фиктивного пользователя для демонстрации
+            // Create mock user for demonstration
             this.currentUser = {
               id: 'browser-user',
-              displayName: 'Пользователь браузера',
+              displayName: 'Browser User',
               email: 'user@example.com',
               tenantId: 'browser-tenant',
             };
             apiClient.setToken(token);
             resolve();
           } else {
-            reject(new Error('Аутентификация была отменена'));
+            reject(new Error('Authentication was cancelled'));
           }
         }
       }, 1000);
@@ -180,11 +180,11 @@ export class AuthService {
     }
 
     try {
-      // TeamsUserCredential не имеет метода logout, просто очищаем состояние
+      // TeamsUserCredential doesn't have logout method, just clear state
       this.currentUser = null;
       apiClient.setToken(null);
       
-      // Очищаем таймер обновления токена
+      // Clear token refresh timer
       if (this.tokenRefreshTimer) {
         clearTimeout(this.tokenRefreshTimer);
         this.tokenRefreshTimer = null;
@@ -204,15 +204,15 @@ export class AuthService {
   }
 
   private setupTokenRefresh(): void {
-    // Обновляем токен каждые 50 минут (токены обычно живут 1 час)
-    const REFRESH_INTERVAL = 50 * 60 * 1000; // 50 минут
+    // Refresh token every 50 minutes (tokens usually live for 1 hour)
+    const REFRESH_INTERVAL = 50 * 60 * 1000; // 50 minutes
 
     this.tokenRefreshTimer = setInterval(async () => {
       try {
         await this.getToken();
       } catch (error) {
         console.error('Failed to refresh token:', error);
-        // При ошибке обновления токена пытаемся перелогиниться
+        // On token refresh error, try to re-login
         try {
           await this.login();
         } catch (loginError) {
@@ -222,7 +222,7 @@ export class AuthService {
     }, REFRESH_INTERVAL);
   }
 
-  // Метод для ручного обновления токена
+  // Method for manual token refresh
   async refreshToken(): Promise<string | null> {
     try {
       return await this.getToken();
@@ -233,5 +233,5 @@ export class AuthService {
   }
 }
 
-// Создаем глобальный экземпляр сервиса аутентификации
+// Create global authentication service instance
 export const authService = new AuthService();

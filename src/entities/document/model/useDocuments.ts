@@ -19,7 +19,7 @@ export const useDocuments = () => {
       if (newFilters) setFilters(newFilters);
     } catch (e: any) {
       setError(e?.message || 'Failed to load documents');
-      showError('Загрузка документов', e?.message || 'Ошибка загрузки');
+      showError('Loading Documents', e?.message || 'Loading error');
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,7 @@ export const useDocuments = () => {
     try {
       const created = await documentsApi.createDocument(data);
       setDocuments(prev => [created, ...prev.filter(d => d.id !== optimistic.id)]);
-      showSuccess('Документ создан', created.name);
+      showSuccess('Document Created', created.name);
       return created;
     } catch (e) {
       setDocuments(prev => prev.filter(d => d.id !== optimistic.id));
@@ -46,7 +46,7 @@ export const useDocuments = () => {
       const updated = await documentsApi.updateDocument(id, updates);
       setDocuments(prev => prev.map(d => d.id === id ? updated : d));
       if (updates.status === 'Locked' || updates.status === 'Active') {
-        showInfo('Статус документа', updates.status === 'Locked' ? 'Документ заблокирован' : 'Документ разблокирован');
+        showInfo('Document Status', updates.status === 'Locked' ? 'Document locked' : 'Document unlocked');
       }
       setHistory(prev => ({
         ...prev,
@@ -119,7 +119,7 @@ export const useDocuments = () => {
   const uploadFiles = useCallback(async (files: File[], metadata?: DocumentMetadata, onProgress?: (p: number) => void) => {
     const results: Document[] = [];
     for (const file of files) {
-      // добавляем временный документ в список
+      // add temporary document to list
       const tmp: Document = {
         id: `upload_${file.name}_${Date.now()}`,
         name: file.name,
@@ -162,5 +162,3 @@ export const useDocuments = () => {
     uploadFiles,
   };
 };
-
-

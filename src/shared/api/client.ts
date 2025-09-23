@@ -77,7 +77,7 @@ export class ApiClient {
   }
 
   private shouldRetry(error: any): boolean {
-    // Повторяем запросы при сетевых ошибках и 5xx статусах
+    // Retry requests on network errors and 5xx status codes
     return !error.status || (error.status >= 500 && error.status < 600);
   }
 
@@ -123,7 +123,7 @@ export class ApiClient {
     const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     const headers = await this.getAuthHeaders();
     
-    // Убираем Content-Type для FormData
+    // Remove Content-Type for FormData
     delete headers['Content-Type'];
 
     const formData = new FormData();
@@ -169,7 +169,7 @@ export class ApiClient {
 
       xhr.open('POST', url);
       
-      // Устанавливаем заголовки
+      // Set headers
       Object.entries(headers).forEach(([key, value]) => {
         xhr.setRequestHeader(key, value);
       });

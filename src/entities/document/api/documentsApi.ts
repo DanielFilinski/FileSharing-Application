@@ -135,19 +135,19 @@ export const documentsApi = {
   },
 
   async downloadFile(id: string): Promise<Blob> {
-    // Заглушка: в бэкенде нет эндпоинта, можно расширить позже
+    // Stub: no endpoint in backend, can be extended later
     throw new Error('downloadFile endpoint is not implemented on server');
   },
 
   async previewFile(id: string): Promise<string> {
-    // Возвращаем URL для предпросмотра, если есть blobUrl
+    // Return preview URL if blobUrl exists
     const doc = await this.getDocument(id);
     if (doc.blobUrl) return doc.blobUrl;
     throw new Error('No preview available');
   },
 
   async lockDocument(id: string, partitionKey?: string): Promise<Document> {
-    // Оптимистично обновляем через update
+    // Optimistically update through update
     return this.updateDocument(id, { partitionKey, status: 'Locked', lock: true });
   },
 
@@ -173,5 +173,3 @@ export const documentsApi = {
     );
   },
 };
-
-

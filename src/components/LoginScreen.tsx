@@ -118,7 +118,7 @@ export const LoginScreen: React.FC = () => {
         <Logo>📁</Logo>
         <Title>File Sharing</Title>
         <Subtitle>
-          Войдите с помощью учётной записи Microsoft для доступа к приложению
+          Sign in with your Microsoft account to access the application
         </Subtitle>
         <LoginButton onClick={onLoginClick} disabled={isLoading}>
           {isLoading ? (
@@ -126,7 +126,7 @@ export const LoginScreen: React.FC = () => {
           ) : (
             <MicrosoftIcon />
           )}
-          {isLoading ? 'Вход...' : 'Войти с помощью учётной записи Microsoft'}
+          {isLoading ? 'Signing in...' : 'Sign in with Microsoft account'}
         </LoginButton>
       </LoginCard>
     </LoginContainer>
