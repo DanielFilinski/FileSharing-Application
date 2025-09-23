@@ -21,7 +21,7 @@ export class ErrorHandler {
     return ErrorHandler.instance;
   }
 
-  // Обработка API ошибок
+  // Handle API errors
   async handleApiError(
     error: any,
     options: ErrorHandlerOptions = {}
@@ -33,10 +33,10 @@ export class ErrorHandler {
       retryDelay = this.retryDelay,
     } = options;
 
-    // Логируем ошибку
+    // Log error
     console.error('API Error:', error);
 
-    // Проверяем тип ошибки
+    // Check error type
     if (this.isAuthError(error)) {
       await this.handleAuthError(error);
       return;
@@ -52,23 +52,23 @@ export class ErrorHandler {
       return;
     }
 
-    // Общая обработка ошибок
+    // General error handling
     if (showNotification) {
       notificationService.showApiError(error);
     }
   }
 
-  // Обработка ошибок аутентификации
+  // Handle authentication errors
   private async handleAuthError(_: any): Promise<void> {
     console.warn('Authentication error detected, attempting to refresh token...');
     
     try {
-      // Пытаемся обновить токен
+      // Try to refresh token
       const newToken = await authService.refreshToken();
       if (newToken) {
         notificationService.info(
-          'Сессия обновлена',
-          'Ваша сессия была автоматически обновлена'
+          'Session Updated',
+          'Your session has been automatically refreshed'
         );
         return;
       }
@@ -76,17 +76,17 @@ export class ErrorHandler {
       console.error('Token refresh failed:', refreshError);
     }
 
-    // Если обновление не удалось, пробуем интерактивный вход
+    // If refresh failed, try interactive login
     try {
       await authService.login();
-      notificationService.info('Выполнен вход', 'Сессия восстановлена после 401/403');
+      notificationService.info('Logged In', 'Session restored after 401/403');
       return;
     } catch (loginError) {
       console.error('Interactive login failed:', loginError);
     }
 
-    // Если и логин не удался — разлогиниваем и уведомляем
-    notificationService.error('Ошибка авторизации', 'Необходимо войти в систему заново');
+    // If login also failed - logout and notify
+    notificationService.error('Authorization Error', 'Please log in again');
     try {
       await authService.logout();
     } catch (logoutError) {
@@ -94,7 +94,7 @@ export class ErrorHandler {
     }
   }
 
-  // Обработка сетевых ошибок
+  // Handle network errors
   private async handleNetworkError(
     _error: any,
     options: { retry: boolean; maxRetries: number; retryDelay: number }
@@ -104,31 +104,31 @@ export class ErrorHandler {
       console.log(`Retrying request (${this.retryCount}/${options.maxRetries})...`);
       
       notificationService.info(
-        'Повторная попытка',
-        `Повторная попытка подключения (${this.retryCount}/${options.maxRetries})`
+        'Retry Attempt',
+        `Retrying connection (${this.retryCount}/${options.maxRetries})`
       );
 
-      // Ждем перед повторной попыткой
+      // Wait before retry
       await new Promise(resolve => setTimeout(resolve, options.retryDelay));
       return;
     }
 
     this.retryCount = 0;
     notificationService.error(
-      'Ошибка сети',
-      'Проверьте подключение к интернету и попробуйте снова'
+      'Network Error',
+      'Check your internet connection and try again'
     );
   }
 
-  // Обработка серверных ошибок
+  // Handle server errors
   private async handleServerError(_error: any): Promise<void> {
     notificationService.error(
-      'Ошибка сервера',
-      'Сервер временно недоступен. Попробуйте позже.'
+      'Server Error',
+      'Server is temporarily unavailable. Please try again later.'
     );
   }
 
-  // Определение типа ошибки
+  // Determine error type
   private isAuthError(error: any): boolean {
     return (
       error?.status === 401 ||
@@ -153,39 +153,39 @@ export class ErrorHandler {
     return error?.status >= 500 && error?.status < 600;
   }
 
-  // Глобальный обработчик необработанных ошибок
+  // Global unhandled error handler
   setupGlobalErrorHandling(): void {
-    // Обработка необработанных ошибок JavaScript
+    // Handle unhandled JavaScript errors
     window.addEventListener('error', (event) => {
       console.error('Unhandled error:', event.error);
       notificationService.error(
-        'Ошибка приложения',
-        'Произошла неожиданная ошибка. Обновите страницу.'
+        'Application Error',
+        'An unexpected error occurred. Please refresh the page.'
       );
     });
 
-    // Обработка необработанных отклонений промисов
+    // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
       console.error('Unhandled promise rejection:', event.reason);
       notificationService.error(
-        'Ошибка приложения',
-        'Произошла ошибка при выполнении операции.'
+        'Application Error',
+        'An error occurred while performing the operation.'
       );
-      event.preventDefault(); // Предотвращаем вывод в консоль браузера
+      event.preventDefault(); // Prevent browser console output
     });
   }
 
-  // Сброс счетчика повторных попыток
+  // Reset retry counter
   resetRetryCount(): void {
     this.retryCount = 0;
   }
 
-  // Установка конфигурации повторных попыток
+  // Set retry configuration
   setRetryConfig(maxRetries: number, retryDelay: number): void {
     this.maxRetries = maxRetries;
     this.retryDelay = retryDelay;
   }
 }
 
-// Экспортируем глобальный экземпляр
+// Export global instance
 export const errorHandler = ErrorHandler.getInstance();

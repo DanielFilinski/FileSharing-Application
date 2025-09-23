@@ -20,7 +20,7 @@ class NotificationService {
   private listeners: Set<(notifications: Notification[]) => void> = new Set();
   private nextId = 1;
 
-  // Добавить уведомление
+  // Add notification
   add(
     type: NotificationType,
     title: string,
@@ -41,7 +41,7 @@ class NotificationService {
     this.notifications.push(notification);
     this.notifyListeners();
 
-    // Автоматически удаляем уведомление через указанное время
+    // Automatically remove notification after specified time
     if (!notification.persistent && notification.duration) {
       setTimeout(() => {
         this.remove(id);
@@ -51,34 +51,34 @@ class NotificationService {
     return id;
   }
 
-  // Удалить уведомление
+  // Remove notification
   remove(id: string): void {
     this.notifications = this.notifications.filter(n => n.id !== id);
     this.notifyListeners();
   }
 
-  // Очистить все уведомления
+  // Clear all notifications
   clear(): void {
     this.notifications = [];
     this.notifyListeners();
   }
 
-  // Получить все уведомления
+  // Get all notifications
   getAll(): Notification[] {
     return [...this.notifications];
   }
 
-  // Подписаться на изменения
+  // Subscribe to changes
   subscribe(listener: (notifications: Notification[]) => void): () => void {
     this.listeners.add(listener);
     
-    // Возвращаем функцию для отписки
+    // Return unsubscribe function
     return () => {
       this.listeners.delete(listener);
     };
   }
 
-  // Уведомить всех подписчиков
+  // Notify all subscribers
   private notifyListeners(): void {
     this.listeners.forEach(listener => {
       try {
@@ -89,23 +89,23 @@ class NotificationService {
     });
   }
 
-  // Получить время по умолчанию для типа уведомления
+  // Get default duration for notification type
   private getDefaultDuration(type: NotificationType): number {
     switch (type) {
       case 'success':
-        return 3000; // 3 секунды
+        return 3000; // 3 seconds
       case 'error':
-        return 5000; // 5 секунд
+        return 5000; // 5 seconds
       case 'warning':
-        return 4000; // 4 секунды
+        return 4000; // 4 seconds
       case 'info':
-        return 3000; // 3 секунды
+        return 3000; // 3 seconds
       default:
         return 3000;
     }
   }
 
-  // Удобные методы для разных типов уведомлений
+  // Convenient methods for different notification types
   success(title: string, message: string, options?: NotificationOptions): string {
     return this.add('success', title, message, options);
   }
@@ -122,9 +122,9 @@ class NotificationService {
     return this.add('info', title, message, options);
   }
 
-  // Метод для обработки API ошибок
-  showApiError(error: any, title: string = 'Ошибка'): string {
-    let message = 'Произошла неизвестная ошибка';
+  // Method for handling API errors
+  showApiError(error: any, title: string = 'Error'): string {
+    let message = 'An unknown error occurred';
     
     if (error?.message) {
       message = error.message;
@@ -137,11 +137,11 @@ class NotificationService {
     return this.error(title, message, { persistent: true });
   }
 
-  // Метод для показа успешных операций
+  // Method for showing successful operations
   showSuccess(title: string, message: string): string {
     return this.success(title, message);
   }
 }
 
-// Создаем глобальный экземпляр сервиса уведомлений
+// Create global notification service instance
 export const notificationService = new NotificationService();

@@ -5,13 +5,13 @@ export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
-    // Подписываемся на изменения уведомлений
+    // Subscribe to notification changes
     const unsubscribe = notificationService.subscribe(setNotifications);
     
-    // Устанавливаем текущие уведомления
+    // Set current notifications
     setNotifications(notificationService.getAll());
 
-    // Отписываемся при размонтировании
+    // Unsubscribe on unmount
     return unsubscribe;
   }, []);
 
@@ -48,7 +48,7 @@ export const useNotifications = () => {
     return notificationService.info(title, message);
   };
 
-  const showApiError = (error: any, title: string = 'Ошибка') => {
+  const showApiError = (error: any, title: string = 'Error') => {
     return notificationService.showApiError(error, title);
   };
 

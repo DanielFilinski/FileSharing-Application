@@ -1,248 +1,248 @@
-# Техническое задание: Система управления документами для Microsoft Teams
+# Technical Requirements: Document Management System for Microsoft Teams
 
-## 1. Общее описание системы
+## 1. System Overview
 
-### 1.1 Назначение
-Система представляет собой интеграцию с Microsoft Teams для управления документами, включающую функционал хранения, валидации, утверждения и подписания документов.
+### 1.1 Purpose
+The system is a Microsoft Teams integration for document management, including functionality for storage, validation, approval, and document signing.
 
-### 1.2 Целевая аудитория
-- Поставщики услуг (SP)
-- Конечные пользователи (EU)
-- Администраторы системы
-- Техническая поддержка
+### 1.2 Target Audience
+- Service Providers (SP)
+- End Users (EU)
+- System Administrators
+- Technical Support
 
-## 2. Функциональные требования
+## 2. Functional Requirements
 
-### 2.1 Клиентский интерфейс
+### 2.1 Client Interface
 
-#### 2.1.1 Основные компоненты
-- Панель выбора конечного пользователя
-- Навигационная панель
-- Кнопка "Новый"
-- Кнопка "Загрузить"
-- Кнопка "Редактировать в режиме сетки"
-- Кнопка "Поделиться"
-- Раздел "Избранное"
+#### 2.1.1 Main Components
+- End user selection panel
+- Navigation panel
+- "New" button
+- "Upload" button
+- "Edit in grid mode" button
+- "Share" button
+- "Favorites" section
 
-#### 2.1.2 Функциональность документов
-- Открытие документов
-- Предварительный просмотр
-- Поделиться
-- Копирование
-- Создание вкладок
-- Удаление
-- Добавление в избранное
-- Создание ярлыков
-- Скачивание
-- Переименование
-- Открытие в SharePoint
-- Закрепление вверху
-- Перемещение
-- Копирование в
-- Редактирование в приложении
-- Открытие чата
+#### 2.1.2 Document Functionality
+- Open documents
+- Preview
+- Share
+- Copy
+- Create tabs
+- Delete
+- Add to favorites
+- Create shortcuts
+- Download
+- Rename
+- Open in SharePoint
+- Pin to top
+- Move
+- Copy to
+- Edit in application
+- Open chat
 
-### 2.2 Роли пользователей
+### 2.2 User Roles
 
-#### 2.2.1 Администратор
-- Полный доступ к системным настройкам
-- Управление организацией
-- Контроль хранилища
-- Управление пользователями
-- Настройка процессов проверки
-- Создание рабочих процессов
-- Доступ к настройкам подписи
-- Технические конфигурации
+#### 2.2.1 Administrator
+- Full access to system settings
+- Organization management
+- Storage control
+- User management
+- Validation process setup
+- Workflow creation
+- Access to signature settings
+- Technical configurations
 
-#### 2.2.2 Техническая поддержка
-- Аналогичные права с администратором
+#### 2.2.2 Technical Support
+- Similar rights as administrator
 
-#### 2.2.3 Поставщик услуг
-- Доступ к конфигурации настроек
-- Управление информацией о компании
-- Конфигурация хранилища
-- Управление пользователями
-- Настройка документооборота
+#### 2.2.3 Service Provider
+- Access to settings configuration
+- Company information management
+- Storage configuration
+- User management
+- Document workflow setup
 
-#### 2.2.4 Руководители групп отделов
-- Права на утверждение документов
-- Управление рабочими процессами
-- Назначение заданий
-- Просмотр показателей эффективности
+#### 2.2.4 Department Team Leaders
+- Document approval rights
+- Workflow management
+- Task assignment
+- Performance metrics viewing
 
-#### 2.2.5 Штатные сотрудники
-- Доступ к назначенным документам
-- Управление документами
-- Участие в процессах валидации
-- Выполнение заданий по утверждению
+#### 2.2.5 Staff Employees
+- Access to assigned documents
+- Document management
+- Participation in validation processes
+- Approval task execution
 
-#### 2.2.6 Клиенты (конечные пользователи)
-- Ограниченный доступ к документам
-- Просмотр и загрузка документов
-- Подписание документов
-- Ограниченный доступ к порталу
+#### 2.2.6 Clients (End Users)
+- Limited document access
+- Document viewing and download
+- Document signing
+- Limited portal access
 
-### 2.3 Настройки системы
+### 2.3 System Settings
 
-#### 2.3.1 Организация
-- Информация о компании
-- Информация о владельце
-- Информация об офисе
+#### 2.3.1 Organization
+- Company information
+- Owner information
+- Office information
 
-#### 2.3.2 Хранение
-- Тип хранения (облачное/физическое)
-- Конфигурация хранилища
-- Распределение хранилища
-- Сохранение хранилища
-- Структура хранения
+#### 2.3.2 Storage
+- Storage type (cloud/physical)
+- Storage configuration
+- Storage allocation
+- Storage preservation
+- Storage structure
 
-#### 2.3.3 Пользователи
-- Управление сотрудниками
-- Управление клиентами
-- Создание отделов
+#### 2.3.3 Users
+- Employee management
+- Client management
+- Department creation
 
-#### 2.3.4 Валидация
-- Настройка ручной/автоматической валидации
-- Назначение валидаторов
-- Настройка процессов проверки
+#### 2.3.4 Validation
+- Manual/automatic validation setup
+- Validator assignment
+- Validation process setup
 
-#### 2.3.5 Утверждение
-- Настройка необходимости утверждения
-- Назначение утверждающих лиц
-- Настройка рабочих процессов
+#### 2.3.5 Approval
+- Approval necessity setup
+- Approver assignment
+- Workflow setup
 
-#### 2.3.6 Подпись
-- Настройка методов подписи
-- Конфигурация внешнего вида
-- Настройка безопасности
-- Интеграция с рабочими процессами
+#### 2.3.6 Signature
+- Signature method setup
+- Appearance configuration
+- Security setup
+- Workflow integration
 
-### 2.4 Процессы документооборота
+### 2.4 Document Workflow Processes
 
-#### 2.4.1 Загрузка/выгрузка документов
-- Проверка доступного пространства
-- Назначение хранилища
-- Организация папок
-- Процесс скачивания
+#### 2.4.1 Document Upload/Download
+- Available space check
+- Storage assignment
+- Folder organization
+- Download process
 
-#### 2.4.2 Валидация документов
-- Определение требований
-- Назначение валидаторов
-- Распределение задач
-- Действия по проверке
+#### 2.4.2 Document Validation
+- Requirements determination
+- Validator assignment
+- Task distribution
+- Validation actions
 
-#### 2.4.3 Утверждение документов
-- Проверка требований
-- Назначение уполномоченных
-- Выполнение рабочего процесса
-- Решение об утверждении
+#### 2.4.3 Document Approval
+- Requirements check
+- Approver assignment
+- Workflow execution
+- Approval decision
 
-#### 2.4.4 Подписание документов
-- Определение требований
-- Назначение подписывающих лиц
-- Аутентификация и подписание
-- Завершение и проверка
+#### 2.4.4 Document Signing
+- Requirements determination
+- Signer assignment
+- Authentication and signing
+- Completion and verification
 
-### 2.5 Функциональность чата
+### 2.5 Chat Functionality
 
-#### 2.5.1 Основные функции
-- Потоки чата для документов
-- Идентификация пользователей
-- Ссылки на разделы документа
-- Интеграция с этапами документооборота
-- Система уведомлений
-- Обмен файлами
-- Форматирование сообщений
-- Поиск и фильтрация
+#### 2.5.1 Main Functions
+- Document chat streams
+- User identification
+- Document section links
+- Document workflow integration
+- Notification system
+- File sharing
+- Message formatting
+- Search and filtering
 
-#### 2.5.2 Безопасность
-- Шифрование сообщений
-- Протоколирование действий
-- Контроль доступа
-- Хранение данных
-- Экспорт журналов
+#### 2.5.2 Security
+- Message encryption
+- Action logging
+- Access control
+- Data storage
+- Log export
 
-## 3. Нефункциональные требования
+## 3. Non-Functional Requirements
 
-### 3.1 Производительность
-- Время обработки документов: не более 3.5 дней
-- Время отклика: не более 4 часов
-- Точность разрешения: не менее 95%
+### 3.1 Performance
+- Document processing time: no more than 3.5 days
+- Response time: no more than 4 hours
+- Resolution accuracy: at least 95%
 
-### 3.2 Безопасность
-- Сетевое шифрование
-- Контроль доступа
-- Аудит действий
-- Соответствие нормативным требованиям
+### 3.2 Security
+- Network encryption
+- Access control
+- Action auditing
+- Regulatory compliance
 
-### 3.3 Надежность
-- Резервное копирование данных
-- Восстановление после сбоев
-- Мониторинг системы
+### 3.3 Reliability
+- Data backup
+- Disaster recovery
+- System monitoring
 
-### 3.4 Масштабируемость
-- Поддержка роста количества пользователей
-- Расширение хранилища
-- Увеличение нагрузки
+### 3.4 Scalability
+- Support for user growth
+- Storage expansion
+- Load increase
 
-## 4. Интеграции
+## 4. Integrations
 
 ### 4.1 Microsoft Teams
-- Аутентификация
-- Система оповещений
-- Компоненты интерфейса
-- Хранение сообщений
-- Совместное использование файлов
+- Authentication
+- Notification system
+- Interface components
+- Message storage
+- File sharing
 
 ### 4.2 SharePoint
-- Хранение документов
-- Управление версиями
-- Контроль доступа
+- Document storage
+- Version management
+- Access control
 
-## 5. Метрики успеха
+## 5. Success Metrics
 
-### 5.1 Ключевые показатели
-- Время обработки документов
-- Объем электронной почты
-- Удовлетворенность клиентов
-- Время отклика
-- Точность разрешения
+### 5.1 Key Indicators
+- Document processing time
+- Email volume
+- Customer satisfaction
+- Response time
+- Resolution accuracy
 
-### 5.2 Бизнес-метрики
-- Снижение операционных расходов
-- Соответствие нормативным требованиям
-- Удержание клиентов
-- Удовлетворенность сотрудников
+### 5.2 Business Metrics
+- Operational cost reduction
+- Regulatory compliance
+- Customer retention
+- Employee satisfaction
 
-## 6. План внедрения
+## 6. Implementation Plan
 
-### 6.1 Этапы
-1. Основная функциональность (8 недель)
-2. Расширенные возможности (6 недель)
-3. Дополнительные функции (4 недели)
+### 6.1 Phases
+1. Core functionality (8 weeks)
+2. Extended capabilities (6 weeks)
+3. Additional features (4 weeks)
 
-### 6.2 Обучение
-- Обучение пользователей
-- Документация
-- Поддержка
+### 6.2 Training
+- User training
+- Documentation
+- Support
 
-### 6.3 Тестирование
-- Приемочное тестирование
-- Тестирование бизнес-сценариев
-- Критерии успеха
+### 6.3 Testing
+- Acceptance testing
+- Business scenario testing
+- Success criteria
 
-## 7. Риски и ограничения
+## 7. Risks and Limitations
 
-### 7.1 Риски
-- Сопротивление пользователей
-- Проблемы производительности
-- Пробелы в регистрации
-- Проблемы интеграции
-- Сложности миграции
+### 7.1 Risks
+- User resistance
+- Performance issues
+- Registration gaps
+- Integration problems
+- Migration complexities
 
-### 7.2 Ограничения
-- Доступность Microsoft Teams
-- Структуры документов
-- Сетевое подключение
-- Лицензирование
-- Доступность хранилища 
+### 7.2 Limitations
+- Microsoft Teams availability
+- Document structures
+- Network connectivity
+- Licensing
+- Storage availability

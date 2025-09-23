@@ -1,27 +1,27 @@
-Проект будет написан на ReactJS. Для реализации документооборота компании между сотрудниками, а так же клиентами
+The project will be written in ReactJS. For implementing company document workflow between employees and clients.
 
-Все элементы интерфейса необходимо реализовать в соответствии с Microsoft Teams. Все элементы должны быть реализованы на основе Fluent UI 
+All interface elements must be implemented in accordance with Microsoft Teams. All elements should be implemented based on Fluent UI.
 
-В базовый функционал входит следующее:
-1. Сформированная структура базы данных
-2. Сформированный интерфейс, в котором можно будет сделать следующее:
-2.1. Загрузить файл
-2.2. Удалить файл
-2.3. Переместить файл (из одной папки в другую)
-2.4. Предпросмотр файла
-3. Возможность валидации файла (При получении файла на портале, он попадет на определенного сотрудника, который сможет его просмотреть и либо: провалидировать на предмет корректности/отклонить)
-4. Возможность утверждения файла (После валидации руководители обозначенные в настройках должны просмотреть файл и отвердить его/либо отклонить)
-5. Возможность подписания файла (Здесь подразумевается загрузка подписанной версии файла поверх оригинала, это все)
-6. Возможность просмотра чата (Чат существует только в деталях документа и он будет между ответственным сотрудником, и клиентом который файл загрузил) - чат можно опустить
+The basic functionality includes the following:
+1. Formed database structure
+2. Formed interface where you can do the following:
+2.1. Upload file
+2.2. Delete file
+2.3. Move file (from one folder to another)
+2.4. File preview
+3. File validation capability (When receiving a file on the portal, it will go to a specific employee who can view it and either: validate it for correctness/reject it)
+4. File approval capability (After validation, managers designated in settings should review the file and approve it/or reject it)
+5. File signing capability (This implies uploading a signed version of the file over the original, that's all)
+6. Chat viewing capability (Chat exists only in document details and it will be between the responsible employee and the client who uploaded the file) - chat can be omitted
 
 
 
-Описание процесса.
-3.1. Разделы процесса:
-1.	Процесс загрузки/выгрузки документов
-2.	Процесс проверки документов
-3.	Процесс утверждения документов
-4.	Процесс подписания документов
+Process description.
+3.1. Process sections:
+1. Document upload/download process
+2. Document validation process
+3. Document approval process
+4. Document signing process
 
 3.2. Загрузка/выгрузка документов
 Этап 1.1. Начало загрузки

@@ -1,20 +1,20 @@
-# Требования к интерфейсу Microsoft Teams приложения
+# Microsoft Teams Application Interface Requirements
 
-## Общие требования
+## General Requirements
 
-### Цветовая схема
-- Использовать официальную цветовую палитру Microsoft Teams
-- Поддерживать светлую и темную темы
-- Основные цвета:
+### Color Scheme
+- Use official Microsoft Teams color palette
+- Support light and dark themes
+- Primary colors:
   - Primary: #0078d4
   - Secondary: #2b88d8
   - Success: #107c10
   - Warning: #ffb900
   - Error: #d13438
 
-### Типографика
-- Использовать шрифт Segoe UI
-- Размеры заголовков:
+### Typography
+- Use Segoe UI font
+- Header sizes:
   - H1: 28px
   - H2: 24px
   - H3: 20px
@@ -22,70 +22,70 @@
   - Body: 14px
   - Small: 12px
 
-## Компоненты Fluent UI
+## Fluent UI Components
 
-### Навигация
-- Использовать `Nav` компонент для боковой навигации
-- Применять `CommandBar` для верхней панели инструментов
-- Реализовать `Breadcrumb` для навигационной цепочки
+### Navigation
+- Use `Nav` component for sidebar navigation
+- Apply `CommandBar` for top toolbar
+- Implement `Breadcrumb` for navigation chain
 
-### Формы
-- Использовать `TextField` для текстовых полей
-- Применять `Dropdown` для выпадающих списков
-- Реализовать `DatePicker` для выбора дат
-- Использовать `Checkbox` и `Toggle` для переключателей
+### Forms
+- Use `TextField` for text fields
+- Apply `Dropdown` for dropdown lists
+- Implement `DatePicker` for date selection
+- Use `Checkbox` and `Toggle` for switches
 
-### Таблицы и списки
-- Применять `DetailsList` для таблиц
-- Использовать `List` для простых списков
-- Реализовать `Pagination` для постраничной навигации
+### Tables and Lists
+- Apply `DetailsList` for tables
+- Use `List` for simple lists
+- Implement `Pagination` for page navigation
 
-### Модальные окна
-- Использовать `Dialog` для модальных окон
-- Применять `Panel` для боковых панелей
-- Реализовать `MessageBar` для уведомлений
+### Modal Windows
+- Use `Dialog` for modal windows
+- Apply `Panel` for side panels
+- Implement `MessageBar` for notifications
 
-### Кнопки и действия
-- Использовать `PrimaryButton` для основных действий
-- Применять `DefaultButton` для второстепенных действий
-- Реализовать `IconButton` для действий с иконками
+### Buttons and Actions
+- Use `PrimaryButton` for primary actions
+- Apply `DefaultButton` for secondary actions
+- Implement `IconButton` for icon actions
 
-## Адаптивность
-- Поддерживать разрешения от 320px до 1920px
-- Использовать `Stack` для адаптивной верстки
-- Применять `ResponsiveLayout` для адаптивных компонентов
+## Responsiveness
+- Support resolutions from 320px to 1920px
+- Use `Stack` for responsive layout
+- Apply `ResponsiveLayout` for adaptive components
 
-## Доступность
-- Обеспечить поддержку клавиатурной навигации
-- Добавить ARIA-атрибуты
-- Поддерживать высокий контраст
-- Обеспечить поддержку скринридеров
+## Accessibility
+- Ensure keyboard navigation support
+- Add ARIA attributes
+- Support high contrast
+- Ensure screen reader support
 
-## Анимации
-- Использовать стандартные анимации Fluent UI
-- Длительность анимаций: 200-300ms
-- Применять плавные переходы для изменения состояний
+## Animations
+- Use standard Fluent UI animations
+- Animation duration: 200-300ms
+- Apply smooth transitions for state changes
 
-## Иконки
-- Использовать `FluentIcons` из библиотеки Fluent UI
-- Размеры иконок:
+## Icons
+- Use `FluentIcons` from Fluent UI library
+- Icon sizes:
   - Small: 16px
   - Medium: 20px
   - Large: 24px
 
-## Состояния компонентов
-- Hover: изменение прозрачности или цвета
-- Focus: четкая обводка
-- Active: изменение цвета фона
-- Disabled: снижение прозрачности
+## Component States
+- Hover: opacity or color change
+- Focus: clear outline
+- Active: background color change
+- Disabled: reduced opacity
 
-## Отступы и выравнивание
-- Базовый отступ: 8px
-- Использовать сетку 8px для всех отступов
-- Выравнивание по левому краю для текста
-- Центрирование для кнопок и действий
+## Spacing and Alignment
+- Base spacing: 8px
+- Use 8px grid for all spacing
+- Left alignment for text
+- Centering for buttons and actions
 
-## Загрузка и обработка ошибок
-- Использовать `Spinner` для индикации загрузки
-- Применять `MessageBar` для отображения ошибок
-- Реализовать `ProgressIndicator` для длительных операций 
+## Loading and Error Handling
+- Use `Spinner` for loading indication
+- Apply `MessageBar` for error display
+- Implement `ProgressIndicator` for long operations
