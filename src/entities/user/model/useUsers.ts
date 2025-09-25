@@ -5,9 +5,11 @@ import type { Employee, Client, Department } from './types';
 
 export const useUsers = () => {
   const [employees, setEmployees] = useState<Employee[]>([
-    { id: 1, firstName: 'John', lastName: 'Smith', classification: 'Manager', office: 'New York', role: 'Operations Manager', department: 'Operations' },
-    { id: 2, firstName: 'Sarah', lastName: 'Johnson', classification: 'Senior', office: 'Chicago', role: 'Senior Analyst', department: 'Finance' },
-    { id: 3, firstName: 'Mike', lastName: 'Davis', classification: 'Associate', office: 'Los Angeles', role: 'Developer', department: 'IT' }
+    { id: 1, firstName: 'John', lastName: 'Doe', classification: 'Manager', office: 'New York', role: 'Engineering Manager', department: 'Engineering' },
+    { id: 2, firstName: 'Jane', lastName: 'Smith', classification: 'Manager', office: 'Chicago', role: 'Marketing Manager', department: 'Marketing' },
+    { id: 3, firstName: 'Bob', lastName: 'Johnson', classification: 'Manager', office: 'Los Angeles', role: 'Finance Manager', department: 'Finance' },
+    { id: 4, firstName: 'Sarah', lastName: 'Wilson', classification: 'Senior', office: 'New York', role: 'Senior Developer', department: 'Engineering' },
+    { id: 5, firstName: 'Mike', lastName: 'Davis', classification: 'Associate', office: 'Chicago', role: 'Marketing Analyst', department: 'Marketing' }
   ]);
 
   const [clients, setClients] = useState<Client[]>([
@@ -16,10 +18,9 @@ export const useUsers = () => {
   ]);
 
   const [departments, setDepartments] = useState<Department[]>([
-    { id: 1, name: 'Operations', description: 'Operations department' },
-    { id: 2, name: 'Finance', description: 'Finance department' },
-    { id: 3, name: 'IT', description: 'Information Technology department' },
-    { id: 4, name: 'HR', description: 'Human Resources department' }
+    { id: 1, name: 'Engineering', description: 'Software development and technical operations', manager: 'John Doe', managerId: 1 },
+    { id: 2, name: 'Marketing', description: 'Brand management and customer acquisition', manager: 'Jane Smith', managerId: 2 },
+    { id: 3, name: 'Finance', description: 'Financial planning and accounting', manager: 'Bob Johnson', managerId: 3 }
   ]);
 
   const nextId = useMemo(() => ({

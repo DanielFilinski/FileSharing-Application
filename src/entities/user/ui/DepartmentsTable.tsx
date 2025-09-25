@@ -64,9 +64,9 @@ export const DepartmentsTable: React.FC<DepartmentsTableProps> = ({
         <Text>{department.description || 'No description'}</Text>
       </TableCell>
       
-      {/* Manager column - placeholder for future implementation */}
+      {/* Manager column */}
       <TableCell className={styles.mobileHidden}>
-        <Caption1>Not assigned</Caption1>
+        <Text>{department.manager || 'Not assigned'}</Text>
       </TableCell>
       
       {/* Actions menu column */}

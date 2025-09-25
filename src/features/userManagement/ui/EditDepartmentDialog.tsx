@@ -11,10 +11,12 @@ import {
   Input,
   Field,
   Textarea,
+  Dropdown,
+  Option,
   makeStyles,
   tokens
 } from '@fluentui/react-components';
-import type { Department } from '@/entities/user';
+import type { Department, Employee } from '@/entities/user';
 
 // Props interface for the edit department dialog
 interface EditDepartmentDialogProps {
@@ -22,6 +24,7 @@ interface EditDepartmentDialogProps {
   onOpenChange: (event: any, data: { open: boolean }) => void;
   onSubmit: (department: Department) => void;
   department: Department | null;
+  employees: Employee[];
 }
 
 // Styles for the dialog layout
@@ -47,20 +50,27 @@ export const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
   open,
   onOpenChange,
   onSubmit,
-  department
+  department,
+  employees
 }) => {
   const styles = useStyles();
   
   // Form state for department data
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
+    managerId: 0
   });
   
   // Validation state
   const [errors, setErrors] = useState({
     name: ''
   });
+
+  // Filter managers from employees list
+  const managerEmployees = employees.filter(emp => 
+    emp.classification === 'Manager' || emp.role.toLowerCase().includes('manager')
+  );
 
   /**
    * Populate form with department data when dialog opens
@@ -69,7 +79,8 @@ export const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
     if (department) {
       setFormData({
         name: department.name,
-        description: department.description || ''
+        description: department.description || '',
+        managerId: department.managerId || 0
       });
       // Clear any previous validation errors
       setErrors({ name: '' });
@@ -105,10 +116,19 @@ export const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
       return;
     }
 
+    const selectedManager = formData.managerId ? employees.find(emp => emp.id === formData.managerId) : null;
+    
     const updatedDepartment: Department = {
       ...department,
       name: formData.name.trim(),
-      description: formData.description.trim()
+      description: formData.description.trim(),
+      ...(selectedManager ? {
+        manager: `${selectedManager.firstName} ${selectedManager.lastName}`,
+        managerId: selectedManager.id
+      } : {
+        manager: undefined,
+        managerId: undefined
+      })
     };
 
     onSubmit(updatedDepartment);
@@ -155,6 +175,23 @@ export const EditDepartmentDialog: React.FC<EditDepartmentDialogProps> = ({
                 value={formData.description}
                 onChange={(e, data) => handleInputChange('description', data.value)}
               />
+            </Field>
+            <Field label="Manager">
+              <Dropdown
+                placeholder="Select manager (optional)"
+                value={formData.managerId ? formData.managerId.toString() : ''}
+                onOptionSelect={(e, data) => setFormData(prev => ({ 
+                  ...prev, 
+                  managerId: data.optionValue ? parseInt(data.optionValue) : 0 
+                }))}
+              >
+                <Option value="">No manager</Option>
+                {managerEmployees.map(emp => (
+                  <Option key={emp.id} value={emp.id.toString()}>
+                    {emp.firstName} {emp.lastName} - {emp.role}
+                  </Option>
+                ))}
+              </Dropdown>
             </Field>
           </DialogContent>
           <DialogActions>

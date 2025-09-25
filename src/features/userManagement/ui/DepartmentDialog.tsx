@@ -11,14 +11,18 @@ import {
   Input,
   Field,
   Textarea,
+  Dropdown,
+  Option,
   makeStyles,
   tokens
 } from '@fluentui/react-components';
+import type { Employee } from '@/entities/user';
 
 interface DepartmentDialogProps {
   open: boolean;
   onOpenChange: (event: any, data: { open: boolean }) => void;
-  onSubmit: (department: { name: string; description: string }) => void;
+  onSubmit: (department: { name: string; description: string; manager?: string; managerId?: number }) => void;
+  employees: Employee[];
 }
 
 const useStyles = makeStyles({
@@ -38,17 +42,34 @@ const useStyles = makeStyles({
 export const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
   open,
   onOpenChange,
-  onSubmit
+  onSubmit,
+  employees
 }) => {
   const styles = useStyles();
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
+    managerId: 0
   });
 
+  // Filter managers from employees list
+  const managerEmployees = employees.filter(emp => 
+    emp.classification === 'Manager' || emp.role.toLowerCase().includes('manager')
+  );
+
   const handleSubmit = () => {
-    onSubmit(formData);
-    setFormData({ name: '', description: '' });
+    const selectedManager = employees.find(emp => emp.id === formData.managerId);
+    const departmentData = {
+      name: formData.name,
+      description: formData.description,
+      ...(selectedManager && {
+        manager: `${selectedManager.firstName} ${selectedManager.lastName}`,
+        managerId: selectedManager.id
+      })
+    };
+    
+    onSubmit(departmentData);
+    setFormData({ name: '', description: '', managerId: 0 });
     onOpenChange(null, { open: false });
   };
 
@@ -72,6 +93,23 @@ export const DepartmentDialog: React.FC<DepartmentDialogProps> = ({
                 value={formData.description}
                 onChange={(e, data) => setFormData(prev => ({ ...prev, description: data.value }))}
               />
+            </Field>
+            <Field label="Manager">
+              <Dropdown
+                placeholder="Select manager (optional)"
+                value={formData.managerId ? formData.managerId.toString() : ''}
+                onOptionSelect={(e, data) => setFormData(prev => ({ 
+                  ...prev, 
+                  managerId: data.optionValue ? parseInt(data.optionValue) : 0 
+                }))}
+              >
+                <Option value="">No manager</Option>
+                {managerEmployees.map(emp => (
+                  <Option key={emp.id} value={emp.id.toString()}>
+                    {emp.firstName} {emp.lastName} - {emp.role}
+                  </Option>
+                ))}
+              </Dropdown>
             </Field>
           </DialogContent>
           <DialogActions>

@@ -34,6 +34,8 @@ export interface Department {
   id: number;
   name: string;
   description?: string;
+  manager?: string; // Manager name (can be expanded to Employee reference later)
+  managerId?: number; // Reference to Employee ID who manages this department
 }
 
 // Офис

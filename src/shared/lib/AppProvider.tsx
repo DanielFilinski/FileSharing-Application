@@ -4,7 +4,7 @@ import { authService } from './auth';
 import { errorHandler } from './errorHandler';
 import { notificationService } from './notifications';
 import { RBACProvider } from './rbac';
-import NotificationContainer from '../ui/NotificationContainer';
+import { NotificationContainer } from '../ui/NotificationContainer';
 import { LoginScreen } from '../../components/LoginScreen';
 
 interface AppContextType {

@@ -302,7 +302,7 @@ export const UserManagementWidget: React.FC = () => {
     }
   };
 
-  const handleAddDepartment = (departmentData: { name: string; description: string }) => {
+  const handleAddDepartment = (departmentData: { name: string; description: string; manager?: string; managerId?: number }) => {
     addDepartment(departmentData);
     closeDepartmentDialog();
   };
@@ -616,6 +616,7 @@ export const UserManagementWidget: React.FC = () => {
         open={showDepartmentDialog}
         onOpenChange={(event: any, data: { open: boolean }) => data.open ? openDepartmentDialog() : closeDepartmentDialog()}
         onSubmit={handleAddDepartment}
+        employees={employees}
       />
       
       <EditDepartmentDialog
@@ -623,6 +624,7 @@ export const UserManagementWidget: React.FC = () => {
         onOpenChange={(event: any, data: { open: boolean }) => data.open ? openEditDepartmentDialog(editingDepartment!) : closeEditDepartmentDialog()}
         onSubmit={handleEditDepartment}
         department={editingDepartment}
+        employees={employees}
       />
       
       <ConfirmationDialog
