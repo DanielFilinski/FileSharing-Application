@@ -87,7 +87,10 @@ export default function BaseDocumentsPage({
     lockDocument,
     unlockDocument,
     moveToClientSide,
-    moveToFirmSide
+    moveToFirmSide,
+    deleteDocument,
+    updateDocument,
+    bulkDelete
   } = useDocuments();
   const [isGridView, setIsGridView] = useState(false);
   const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites'>('All Documents');
@@ -139,6 +142,61 @@ export default function BaseDocumentsPage({
   const handleDrawerClose = () => {
     setIsDrawerOpen(false);
     // setSelectedDoc(null);
+  };
+
+  // Handle document operations from toolbar
+  const handleDocumentOperation = async (operation: string, documentIds: string[], data?: any) => {
+    try {
+      switch (operation) {
+        case 'delete':
+          if (documentIds.length === 1) {
+            await deleteDocument(documentIds[0]);
+          } else {
+            await bulkDelete(documentIds);
+          }
+          setSelectedItems(new Set());
+          break;
+          
+        case 'rename':
+          if (documentIds.length === 1 && data?.newName) {
+            await updateDocument(documentIds[0], { name: data.newName });
+          }
+          break;
+          
+        case 'move':
+          // Implementation for move operation
+          console.log('Moving documents to:', data?.targetFolder);
+          break;
+          
+        case 'copy':
+          // Implementation for copy operation  
+          console.log('Copying documents to:', data?.targetLocation);
+          break;
+          
+        case 'download':
+          // Implementation for download operation
+          console.log('Downloading documents:', documentIds);
+          break;
+          
+        case 'print':
+          // Implementation for print operation
+          console.log('Printing documents:', documentIds);
+          break;
+          
+        case 'share':
+          // Implementation for share operation
+          console.log('Sharing documents:', documentIds, 'with:', data);
+          break;
+      }
+    } catch (error) {
+      console.error(`Error during ${operation}:`, error);
+      throw error;
+    }
+  };
+
+  // Get selected documents objects
+  const getSelectedDocuments = () => {
+    return filteredDocuments.filter(doc => selectedItems.has(doc.key));
   };
 
   let filteredDocuments = documents.map(d => ({
@@ -195,6 +253,9 @@ export default function BaseDocumentsPage({
           pageType={getPageType()}
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilter}
+          selectedDocuments={getSelectedDocuments()}
+          onDocumentOperation={handleDocumentOperation}
+          onRefresh={fetchDocuments}
           {...customToolbarProps}
         />
         <Breadcrumbs /> 

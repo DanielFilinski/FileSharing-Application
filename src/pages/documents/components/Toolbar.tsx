@@ -29,6 +29,12 @@ import { oneDriveService, OneDriveUploadResult } from '@/shared/api/oneDriveServ
 import { CloudUploadDialog } from './CloudUploadDialog';
 import { PortalUploadDialog } from './PortalUploadDialog';
 import { FilePicker } from './FilePicker';
+import { OpenDialog } from './OpenDialog';
+import { ShareDialog } from './ShareDialog';
+import { HelpDialog } from './HelpDialog';
+import { DocumentOperations } from './DocumentOperations';
+import { type Document } from '@/entities/document/api/documentsApi';
+import { useNotifications } from '@/shared/lib/useNotifications';
 
 interface FilePickerFile {
   id: string;
@@ -51,16 +57,26 @@ export const Toolbar: React.FC<{
   showAdvancedFilters?: boolean,
   pageType?: 'firm' | 'client',
   statusFilter?: string,
-  onStatusFilterChange?: (status: string) => void
-}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm', statusFilter = 'All', onStatusFilterChange }) => {
+  onStatusFilterChange?: (status: string) => void,
+  selectedDocuments?: Document[],
+  onDocumentOperation?: (operation: string, documentIds: string[], data?: any) => void,
+  onRefresh?: () => void
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm', statusFilter = 'All', onStatusFilterChange, selectedDocuments = [], onDocumentOperation, onRefresh }) => {
   const styles = useStyles();
+  const { showError, showSuccess, showInfo } = useNotifications();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [, setWindowWidth] = useState<number>(window.innerWidth);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal' | 'cloud-upload' | 'portal-upload' | 'cloud-picker' | 'portal-picker'>(null);
+  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal' | 'cloud-upload' | 'portal-upload' | 'cloud-picker' | 'portal-picker' | 'open' | 'share' | 'help'>(null);
   const [uploadFormOpen, setUploadFormOpen] = useState(false);
   const [selectedCloudFiles, setSelectedCloudFiles] = useState<FilePickerFile[]>([]);
   const [selectedPortalFiles, setSelectedPortalFiles] = useState<FilePickerFile[]>([]);
+  const [documentOperationDialog, setDocumentOperationDialog] = useState<{
+    isOpen: boolean;
+    operation: 'delete' | 'rename' | 'move' | 'copy' | 'download' | 'print' | null;
+    documentNames: string[];
+    documentIds: string[];
+  }>({ isOpen: false, operation: null, documentNames: [], documentIds: [] });
 
   useEffect(() => {
     const handleResize = () => {
@@ -113,6 +129,128 @@ export const Toolbar: React.FC<{
     setDialogOpen(null);
     setSelectedCloudFiles([]);
     setSelectedPortalFiles([]);
+  };
+
+  // Open dialog handlers
+  const handleOpenFromDevice = () => {
+    setDialogOpen('open');
+  };
+
+  const handleOpenFile = (file: File) => {
+    // Open file in viewer/editor
+    console.log('Opening file:', file.name);
+    showInfo('File Opening', `Opening ${file.name}`);
+    // In a real app, this would open the file in an appropriate viewer
+  };
+
+  const handleOpenUrl = (url: string) => {
+    // Open URL in new tab or embedded viewer
+    console.log('Opening URL:', url);
+    window.open(url, '_blank');
+    showInfo('URL Opening', 'Opening document from URL');
+  };
+
+  const handleOpenRecent = (item: any) => {
+    // Navigate to recent document
+    console.log('Opening recent:', item.name);
+    showInfo('Recent Document', `Opening ${item.name}`);
+    // In a real app, this would navigate to the document
+  };
+
+  // Share dialog handlers
+  const handleShareClick = () => {
+    setDialogOpen('share');
+  };
+
+  const handleShareDocuments = async (userEmails: string[], permissions: Record<string, string>, linkSettings: { enabled: boolean; permission: string }) => {
+    try {
+      console.log('Sharing documents:', { userEmails, permissions, linkSettings });
+      
+      if (selectedDocuments.length > 0 && onDocumentOperation) {
+        await onDocumentOperation('share', selectedDocuments.map(d => d.id), {
+          userEmails,
+          permissions,
+          linkSettings
+        });
+      }
+      
+      showSuccess('Documents Shared', `Shared ${selectedDocuments.length} document(s) successfully`);
+    } catch (error) {
+      console.error('Error sharing documents:', error);
+      showError('Share Error', 'Failed to share documents');
+    }
+  };
+
+  // Help dialog handler
+  const handleHelpClick = () => {
+    setDialogOpen('help');
+  };
+
+  // Document operations handlers
+  const handleDocumentOperation = (operation: 'delete' | 'rename' | 'move' | 'copy' | 'download' | 'print') => {
+    const documentNames = selectedDocuments.map(d => d.name);
+    const documentIds = selectedDocuments.map(d => d.id);
+    
+    setDocumentOperationDialog({
+      isOpen: true,
+      operation,
+      documentNames,
+      documentIds
+    });
+  };
+
+  const handleOperationConfirm = async (operation: string, data?: any) => {
+    try {
+      if (onDocumentOperation) {
+        await onDocumentOperation(operation, documentOperationDialog.documentIds, data);
+      }
+      
+      switch (operation) {
+        case 'delete':
+          showSuccess('Documents Deleted', `${documentOperationDialog.documentNames.length} document(s) deleted`);
+          break;
+        case 'rename':
+          showSuccess('Document Renamed', `Document renamed to "${data?.newName}"`);
+          break;
+        case 'move':
+          showSuccess('Documents Moved', `${documentOperationDialog.documentNames.length} document(s) moved to ${data?.targetFolder}`);
+          break;
+        case 'copy':
+          showSuccess('Documents Copied', `${documentOperationDialog.documentNames.length} document(s) copied to ${data?.targetLocation}`);
+          break;
+        case 'download':
+          showSuccess('Download Started', `Downloading ${documentOperationDialog.documentNames.length} document(s)`);
+          break;
+        case 'print':
+          showSuccess('Print Started', `Printing ${documentOperationDialog.documentNames.length} document(s)`);
+          break;
+      }
+      
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error(`Error during ${operation}:`, error);
+      showError(`${operation} Error`, `Failed to ${operation} document(s)`);
+    }
+  };
+
+  const handleOperationClose = () => {
+    setDocumentOperationDialog({
+      isOpen: false,
+      operation: null,
+      documentNames: [],
+      documentIds: []
+    });
+  };
+
+  // Bulk actions handlers
+  const handleBulkDelete = () => {
+    handleDocumentOperation('delete');
+  };
+
+  const handleBulkShare = () => {
+    handleShareClick();
   };
 
   // Функция для сохранения метаданных документа в базе данных
@@ -238,9 +376,9 @@ export const Toolbar: React.FC<{
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
-            <MenuItem onClick={() => { console.log('Open from device') }}>Open from device</MenuItem>
-            <MenuItem onClick={() => { console.log('Open from URL') }}>Open from URL</MenuItem>
-            <MenuItem onClick={() => { console.log('Open recent') }}>Open recent</MenuItem>
+            <MenuItem onClick={handleOpenFromDevice}>Open from device</MenuItem>
+            <MenuItem onClick={handleOpenFromDevice}>Open from URL</MenuItem>
+            <MenuItem onClick={handleOpenFromDevice}>Open recent</MenuItem>
           </MenuList>
         </MenuPopover>
       </Menu>
@@ -249,6 +387,8 @@ export const Toolbar: React.FC<{
         iconPosition="before"
         appearance="secondary"
         shape="rounded"
+        onClick={handleShareClick}
+        disabled={selectedDocuments.length === 0}
       >
         Share
       </Button>
@@ -263,12 +403,12 @@ export const Toolbar: React.FC<{
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
-            <MenuItem onClick={() => { console.log('Delete document') }}>Delete</MenuItem>
-            <MenuItem onClick={() => { console.log('Rename document') }}>Rename</MenuItem>
-            <MenuItem onClick={() => { console.log('Move document') }}>Move</MenuItem>
-            <MenuItem onClick={() => { console.log('Copy document') }}>Copy</MenuItem>
-            <MenuItem onClick={() => { console.log('Download document') }}>Download</MenuItem>
-            <MenuItem onClick={() => { console.log('Print document') }}>Print</MenuItem>
+            <MenuItem onClick={() => handleDocumentOperation('delete')} disabled={selectedDocuments.length === 0}>Delete</MenuItem>
+            <MenuItem onClick={() => handleDocumentOperation('rename')} disabled={selectedDocuments.length !== 1}>Rename</MenuItem>
+            <MenuItem onClick={() => handleDocumentOperation('move')} disabled={selectedDocuments.length === 0}>Move</MenuItem>
+            <MenuItem onClick={() => handleDocumentOperation('copy')} disabled={selectedDocuments.length === 0}>Copy</MenuItem>
+            <MenuItem onClick={() => handleDocumentOperation('download')} disabled={selectedDocuments.length === 0}>Download</MenuItem>
+            <MenuItem onClick={() => handleDocumentOperation('print')} disabled={selectedDocuments.length === 0}>Print</MenuItem>
           </MenuList>
         </MenuPopover>
       </Menu>
@@ -348,8 +488,8 @@ export const Toolbar: React.FC<{
         </Text>
         {showBulkActions && selectedCount > 0 && (
           <div className={styles.bulkActions}>
-            <Button appearance="secondary" size="small">Delete Selected</Button>
-            <Button appearance="secondary" size="small">Share Selected</Button>
+            <Button appearance="secondary" size="small" onClick={handleBulkDelete}>Delete Selected</Button>
+            <Button appearance="secondary" size="small" onClick={handleBulkShare}>Share Selected</Button>
           </div>
         )}
         <Menu>
@@ -384,6 +524,7 @@ export const Toolbar: React.FC<{
           appearance="transparent"
           shape="circular"
           className={styles.helpButton}
+          onClick={handleHelpClick}
         />
       </div>
       {dialogOpen && (
@@ -448,6 +589,45 @@ export const Toolbar: React.FC<{
           multiSelect={true}
         />
       )}
+
+      {/* Open Dialog */}
+      {dialogOpen === 'open' && (
+        <OpenDialog
+          isOpen={true}
+          onClose={handleCloseDialog}
+          onOpenFile={handleOpenFile}
+          onOpenUrl={handleOpenUrl}
+          onOpenRecent={handleOpenRecent}
+        />
+      )}
+
+      {/* Share Dialog */}
+      {dialogOpen === 'share' && (
+        <ShareDialog
+          isOpen={true}
+          onClose={handleCloseDialog}
+          onShare={handleShareDocuments}
+          documentNames={selectedDocuments.map(d => d.name)}
+          isBulk={selectedDocuments.length > 1}
+        />
+      )}
+
+      {/* Help Dialog */}
+      {dialogOpen === 'help' && (
+        <HelpDialog
+          isOpen={true}
+          onClose={handleCloseDialog}
+        />
+      )}
+
+      {/* Document Operations Dialog */}
+      <DocumentOperations
+        isOpen={documentOperationDialog.isOpen}
+        operation={documentOperationDialog.operation}
+        documentNames={documentOperationDialog.documentNames}
+        onClose={handleOperationClose}
+        onConfirm={handleOperationConfirm}
+      />
     </div>
   );
 }; 

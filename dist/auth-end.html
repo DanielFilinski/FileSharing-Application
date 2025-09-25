@@ -21,39 +21,59 @@
     <script type="text/javascript">
       var currentURL = new URL(window.location);
       var clientId = currentURL.searchParams.get("clientId");
+      var state = currentURL.searchParams.get("state");
 
-      microsoftTeams.app.initialize().then(() => {
-        microsoftTeams.app.getContext().then(async (context) => {
-          const msalConfig = {
-            auth: {
-              clientId: clientId,
-              authority: `https://login.microsoftonline.com/${context.tid}`,
-              navigateToLoginRequestUrl: false,
-            },
-            cache: {
-              cacheLocation: "sessionStorage",
-            },
-          };
+      // Проверяем, это аутентификация через браузер или Teams
+      if (state === 'browser-auth') {
+        // Обработка аутентификации через браузер
+        const code = currentURL.searchParams.get("code");
+        if (code) {
+          // Сохраняем код в localStorage для демонстрации
+          localStorage.setItem('access_token', 'browser-auth-token-' + Date.now());
+          localStorage.setItem('auth_code', code);
+          
+          // Закрываем окно
+          window.close();
+        } else {
+          // Ошибка аутентификации
+          localStorage.removeItem('access_token');
+          window.close();
+        }
+      } else {
+        // Обработка аутентификации через Teams
+        microsoftTeams.app.initialize().then(() => {
+          microsoftTeams.app.getContext().then(async (context) => {
+            const msalConfig = {
+              auth: {
+                clientId: clientId,
+                authority: `https://login.microsoftonline.com/${context.tid}`,
+                navigateToLoginRequestUrl: false,
+              },
+              cache: {
+                cacheLocation: "sessionStorage",
+              },
+            };
 
-          const msalInstance = new window.msal.PublicClientApplication(msalConfig);
-          msalInstance
-            .handleRedirectPromise()
-            .then((tokenResponse) => {
-              if (tokenResponse !== null) {
-                microsoftTeams.authentication.notifySuccess(
-                  JSON.stringify({
-                    sessionStorage: sessionStorage,
-                  })
-                );
-              } else {
-                microsoftTeams.authentication.notifyFailure("Get empty response.");
-              }
-            })
-            .catch((error) => {
-              microsoftTeams.authentication.notifyFailure(JSON.stringify(error));
-            });
+            const msalInstance = new window.msal.PublicClientApplication(msalConfig);
+            msalInstance
+              .handleRedirectPromise()
+              .then((tokenResponse) => {
+                if (tokenResponse !== null) {
+                  microsoftTeams.authentication.notifySuccess(
+                    JSON.stringify({
+                      sessionStorage: sessionStorage,
+                    })
+                  );
+                } else {
+                  microsoftTeams.authentication.notifyFailure("Get empty response.");
+                }
+              })
+              .catch((error) => {
+                microsoftTeams.authentication.notifyFailure(JSON.stringify(error));
+              });
+          });
         });
-      });
+      }
     </script>
   </body>
 </html>
