@@ -10,15 +10,20 @@ import {
   Save24Regular,
 } from '@fluentui/react-icons';
 import { useStorageSettings } from '@/entities/storage/model/useStorageSettings';
+import { useStorageValidation } from './hooks/useStorageValidation';
+import { apiClient } from '@/shared/api';
+import { notificationService } from '@/shared/lib/notifications';
 import {
   StorageTypeSelector,
   SharePointCredentials,
   DeviceSelector,
+  NetworkDeviceSelector,
   StorageAllocation,
   DataRetention,
   FolderStructure,
   TemplateManagerModal,
   NotEnoughSpaceModal,
+  NavigationButtons,
 } from './components';
 
 export const StorageSettings = () => {
@@ -31,6 +36,26 @@ export const StorageSettings = () => {
   const [showTemplateManager, setShowTemplateManager] = useState(false);
   const [showNotEnoughSpace, setShowNotEnoughSpace] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
+  const [selectedNetworkDevice, setSelectedNetworkDevice] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Validation
+  const validation = useStorageValidation({
+    storageType: storageSettings.storageType,
+    sharePointEmail: storageSettings.sharePointEmail,
+    sharePointPassword: storageSettings.sharePointPassword,
+    connectionStatus: storageSettings.connectionStatus,
+    deviceType: storageSettings.deviceType,
+    selectedDeviceId: selectedNetworkDevice?.id,
+    storageAmount: storageSettings.storageAmount,
+    storageUnit: storageSettings.storageUnit,
+    retentionPeriod: storageSettings.retentionPeriod,
+    retentionUnit: storageSettings.retentionUnit,
+    firmType: storageSettings.firmType,
+    timeStructure: storageSettings.timeStructure,
+    clientTypes: storageSettings.clientTypes,
+    binderStructure: storageSettings.binderStructure,
+  });
 
   // Обработчики для модальных окон
   const handleSaveTemplate = () => {
@@ -41,10 +66,68 @@ export const StorageSettings = () => {
     }
   };
 
-  const handleStorageAllocation = () => {
+  const handleStorageAllocation = async () => {
     const amount = parseInt(storageSettings.storageAmount);
-    if (amount > 1000) {
-      setShowNotEnoughSpace(true);
+    try {
+      // Try to allocate storage via API to check if there's enough space
+      const response = await apiClient.post('/allocateStorage', {
+        amount,
+        unit: storageSettings.storageUnit,
+        storageType: storageSettings.storageType,
+      });
+
+      if (!response.data.success && response.data.error === 'insufficient_space') {
+        setShowNotEnoughSpace(true);
+      }
+    } catch (error: any) {
+      if (error.response?.data?.error === 'insufficient_space') {
+        setShowNotEnoughSpace(true);
+      } else {
+        console.error('Storage allocation check failed:', error);
+      }
+    }
+  };
+
+  // Save all storage settings
+  const handleSaveSettings = async () => {
+    if (!validation.isValid) {
+      notificationService.warning(
+        'Validation Failed',
+        'Please fix all validation errors before saving.'
+      );
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await apiClient.post('/saveStorageSettings', {
+        storageType: storageSettings.storageType,
+        sharePointEmail: storageSettings.sharePointEmail,
+        connectionStatus: storageSettings.connectionStatus,
+        deviceType: storageSettings.deviceType,
+        selectedDeviceId: selectedNetworkDevice?.id,
+        selectedDeviceName: selectedNetworkDevice?.name,
+        storageAmount: storageSettings.storageAmount,
+        storageUnit: storageSettings.storageUnit,
+        retentionPeriod: storageSettings.retentionPeriod,
+        retentionUnit: storageSettings.retentionUnit,
+        firmType: storageSettings.firmType,
+        selectedTemplate: storageSettings.selectedTemplate,
+        timeStructure: storageSettings.timeStructure,
+        clientTypes: storageSettings.clientTypes,
+        binderStructure: storageSettings.binderStructure,
+        customStructure: storageSettings.customStructure,
+      });
+
+      notificationService.success('Settings Saved', 'Storage settings have been saved successfully.');
+    } catch (error: any) {
+      console.error('Save failed:', error);
+      notificationService.error(
+        'Save Failed', 
+        error.response?.data?.error || 'Failed to save storage settings.'
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -59,9 +142,11 @@ export const StorageSettings = () => {
         <Button 
           appearance="primary" 
           icon={<Save24Regular />}
+          onClick={handleSaveSettings}
+          disabled={!validation.isValid || isSaving}
           style={{ backgroundColor: tokens.colorBrandBackground }}
         >
-          Save changes
+          {isSaving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
 
@@ -86,10 +171,20 @@ export const StorageSettings = () => {
               )}
 
               {storageSettings.storageType === 'physical' && (
-                <DeviceSelector
-                  deviceType={storageSettings.deviceType}
-                  onDeviceTypeChange={storageSettings.setDeviceType}
-                />
+                <>
+                  <DeviceSelector
+                    deviceType={storageSettings.deviceType}
+                    onDeviceTypeChange={storageSettings.setDeviceType}
+                  />
+                  
+                  {storageSettings.deviceType === 'network' && (
+                    <NetworkDeviceSelector
+                      selectedDeviceId={selectedNetworkDevice?.id}
+                      onDeviceSelect={setSelectedNetworkDevice}
+                      isVisible={true}
+                    />
+                  )}
+                </>
               )}
 
               {storageSettings.storageType && (
@@ -158,9 +253,13 @@ export const StorageSettings = () => {
 
       <NotEnoughSpaceModal
         isOpen={showNotEnoughSpace}
+        requestedAmount={parseInt(storageSettings.storageAmount)}
+        requestedUnit={storageSettings.storageUnit}
+        availableAmount={1000}
+        storageType={storageSettings.storageType}
         onClose={() => setShowNotEnoughSpace(false)}
         onEscalate={() => {
-          console.log('Escalating case...');
+          console.log('Case escalated...');
           setShowNotEnoughSpace(false);
         }}
       />

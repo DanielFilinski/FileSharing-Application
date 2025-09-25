@@ -5,4 +5,7 @@ export { StorageAllocation } from './StorageAllocation';
 export { DataRetention } from './DataRetention';
 export { FolderStructure } from './FolderStructure';
 export { TemplateManagerModal } from './TemplateManagerModal';
-export { NotEnoughSpaceModal } from './NotEnoughSpaceModal'; 
+export { NotEnoughSpaceModal } from './NotEnoughSpaceModal';
+export { NetworkDeviceSelector } from './NetworkDeviceSelector';
+export { NavigationButtons } from './NavigationButtons';
+export { SetupWizard } from './SetupWizard'; 
