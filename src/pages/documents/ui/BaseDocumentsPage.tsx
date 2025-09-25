@@ -90,7 +90,8 @@ export default function BaseDocumentsPage({
     moveToFirmSide,
     deleteDocument,
     updateDocument,
-    bulkDelete
+    bulkDelete,
+    createDocument
   } = useDocuments();
   const [isGridView, setIsGridView] = useState(false);
   const [documentFilter, setDocumentFilter] = useState<'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites'>('All Documents');
@@ -186,6 +187,19 @@ export default function BaseDocumentsPage({
         case 'share':
           // Implementation for share operation
           console.log('Sharing documents:', documentIds, 'with:', data);
+          break;
+          
+        case 'create':
+          // Implementation for document creation
+          const documentData = {
+            name: data.name,
+            status: 'Active' as const,
+            documentType: data.metadata?.documentType,
+            documentSubtype: data.metadata?.documentSubtype,
+            period: data.metadata?.period,
+            description: data.description
+          };
+          await createDocument(documentData);
           break;
       }
     } catch (error) {

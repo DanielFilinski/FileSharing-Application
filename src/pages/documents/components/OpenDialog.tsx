@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
   Dialog,
   DialogSurface,
   DialogBody,
@@ -11,6 +11,9 @@ import {
   Tab,
   TabList,
   Text,
+  RadioGroup,
+  Radio,
+  Field,
   makeStyles,
   tokens
 } from '@fluentui/react-components';
@@ -58,6 +61,8 @@ interface OpenDialogProps {
   onOpenFile: (file: File) => void;
   onOpenUrl: (url: string) => void;
   onOpenRecent: (item: any) => void;
+  selectedDocuments?: any[];
+  onOpenDocument?: (documentId: string, mode: 'local' | 'online') => void;
 }
 
 // Mock recent files data
@@ -73,10 +78,15 @@ export const OpenDialog: React.FC<OpenDialogProps> = ({
   onClose,
   onOpenFile,
   onOpenUrl,
-  onOpenRecent
+  onOpenRecent,
+  selectedDocuments = [],
+  onOpenDocument
 }) => {
   const styles = useStyles();
-  const [activeTab, setActiveTab] = useState<'device' | 'url' | 'recent'>('device');
+  const [activeTab, setActiveTab] = useState<'selected' | 'device' | 'url' | 'recent'>(
+    selectedDocuments.length > 0 ? 'selected' : 'device'
+  );
+  const [openMode, setOpenMode] = useState<'local' | 'online'>('online');
   const [url, setUrl] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -104,6 +114,13 @@ export const OpenDialog: React.FC<OpenDialogProps> = ({
     fileInputRef.current?.click();
   };
 
+  const handleOpenSelectedDocument = (documentId: string) => {
+    if (onOpenDocument) {
+      onOpenDocument(documentId, openMode);
+      onClose();
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(_, data) => !data.open && onClose()}>
       <DialogSurface className={styles.dialog}>
@@ -112,14 +129,53 @@ export const OpenDialog: React.FC<OpenDialogProps> = ({
           <DialogContent>
             <TabList
               selectedValue={activeTab}
-              onTabSelect={(_, data) => setActiveTab(data.value as 'device' | 'url' | 'recent')}
+              onTabSelect={(_, data) => setActiveTab(data.value as 'selected' | 'device' | 'url' | 'recent')}
             >
+              {selectedDocuments.length > 0 && (
+                <Tab value="selected">Selected ({selectedDocuments.length})</Tab>
+              )}
               <Tab value="device">From Device</Tab>
               <Tab value="url">From URL</Tab>
               <Tab value="recent">Recent</Tab>
             </TabList>
 
             <div className={styles.tab}>
+              {activeTab === 'selected' && selectedDocuments.length > 0 && (
+                <div>
+                  <Text>Open selected documents:</Text>
+                  
+                  <Field label="Open Mode" style={{ marginTop: '12px', marginBottom: '16px' }}>
+                    <RadioGroup
+                      value={openMode}
+                      onChange={(_, data) => setOpenMode(data.value as 'local' | 'online')}
+                    >
+                      <Radio value="online" label="Online Editor (Collaborative editing, auto-save)" />
+                      <Radio value="local" label="Local Editor (Download and open with desktop app)" />
+                    </RadioGroup>
+                  </Field>
+
+                  <div style={{ marginTop: '12px' }}>
+                    {selectedDocuments.slice(0, 5).map(doc => (
+                      <div
+                        key={doc.id || doc.key}
+                        className={styles.recentItem}
+                        onClick={() => handleOpenSelectedDocument(doc.id || doc.key)}
+                      >
+                        <Text weight="semibold">{doc.name}</Text>
+                        <br />
+                        <Text size={200}>
+                          Status: {doc.status} | 
+                          Modified: {doc.modified ? new Date(doc.modified).toLocaleDateString() : 'Unknown'}
+                        </Text>
+                      </div>
+                    ))}
+                    {selectedDocuments.length > 5 && (
+                      <Text size={200}>... and {selectedDocuments.length - 5} more documents</Text>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {activeTab === 'device' && (
                 <div>
                   <input
@@ -179,6 +235,19 @@ export const OpenDialog: React.FC<OpenDialogProps> = ({
             <Button appearance="secondary" onClick={onClose}>
               Cancel
             </Button>
+            {activeTab === 'selected' && selectedDocuments.length === 1 && (
+              <Button 
+                appearance="primary" 
+                onClick={() => handleOpenSelectedDocument(selectedDocuments[0].id || selectedDocuments[0].key)}
+              >
+                Open in {openMode === 'online' ? 'Online' : 'Local'} Editor
+              </Button>
+            )}
+            {activeTab === 'selected' && selectedDocuments.length > 1 && (
+              <Button appearance="primary" onClick={onClose}>
+                Click individual documents to open
+              </Button>
+            )}
             {activeTab === 'url' && (
               <Button appearance="primary" onClick={handleUrlOpen} disabled={!url.trim()}>
                 Open URL

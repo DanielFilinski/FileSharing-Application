@@ -33,6 +33,7 @@ import { OpenDialog } from './OpenDialog';
 import { ShareDialog } from './ShareDialog';
 import { HelpDialog } from './HelpDialog';
 import { DocumentOperations } from './DocumentOperations';
+import { NewDocumentDialog } from './NewDocumentDialog';
 import { type Document } from '@/entities/document/api/documentsApi';
 import { useNotifications } from '@/shared/lib/useNotifications';
 
@@ -67,7 +68,7 @@ export const Toolbar: React.FC<{
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [, setWindowWidth] = useState<number>(window.innerWidth);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal' | 'cloud-upload' | 'portal-upload' | 'cloud-picker' | 'portal-picker' | 'open' | 'share' | 'help'>(null);
+  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal' | 'cloud-upload' | 'portal-upload' | 'cloud-picker' | 'portal-picker' | 'open' | 'share' | 'help' | 'new'>(null);
   const [uploadFormOpen, setUploadFormOpen] = useState(false);
   const [selectedCloudFiles, setSelectedCloudFiles] = useState<FilePickerFile[]>([]);
   const [selectedPortalFiles, setSelectedPortalFiles] = useState<FilePickerFile[]>([]);
@@ -131,9 +132,58 @@ export const Toolbar: React.FC<{
     setSelectedPortalFiles([]);
   };
 
+  // New document handlers
+  const handleNewDocument = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
+    setDialogOpen('new');
+  };
+
+  const handleCreateDocument = async (type: 'document' | 'spreadsheet' | 'presentation' | 'form', data: any) => {
+    try {
+      console.log('Creating new document:', { type, data });
+      
+      if (onDocumentOperation) {
+        await onDocumentOperation('create', [], { type, ...data });
+      }
+      
+      showSuccess('Document Created', `New ${type} created successfully`);
+      
+      // Simulate opening the document
+      const documentId = `new-${type}-${Date.now()}`;
+      if (data.openMode === 'local') {
+        showInfo('Opening Locally', 'Document will open in your default desktop application');
+        // In real app, trigger download and local opening
+      } else {
+        showInfo('Opening Online', 'Opening document in collaborative online editor');
+        // In real app, navigate to online editor
+        window.open(`/editor/${documentId}`, '_blank');
+      }
+      
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error('Error creating document:', error);
+      showError('Creation Error', 'Failed to create document');
+    }
+  };
+
   // Open dialog handlers
   const handleOpenFromDevice = () => {
     setDialogOpen('open');
+  };
+
+  const handleOpenDocument = (documentId: string, mode: 'local' | 'online') => {
+    console.log('Opening document:', documentId, 'in', mode, 'mode');
+    
+    if (mode === 'local') {
+      showInfo('Opening Locally', 'Document will download and open in your default application');
+      // In real app, trigger download and local opening
+      window.open(`/api/documents/${documentId}/download`, '_blank');
+    } else {
+      showInfo('Opening Online', 'Opening document in collaborative online editor');
+      // In real app, navigate to online editor
+      window.open(`/editor/${documentId}`, '_blank');
+    }
   };
 
   const handleOpenFile = (file: File) => {
@@ -432,10 +482,10 @@ export const Toolbar: React.FC<{
             </MenuTrigger>
             <MenuPopover>
               <MenuList>
-                <MenuItem onClick={() => onAddItem('document')}>Document</MenuItem>
-                <MenuItem onClick={() => onAddItem('spreadsheet')}>Spreadsheet</MenuItem>
-                <MenuItem onClick={() => onAddItem('presentation')}>Presentation</MenuItem>
-                <MenuItem onClick={() => onAddItem('form')}>Form</MenuItem>
+                <MenuItem onClick={() => handleNewDocument('document')}>Document</MenuItem>
+                <MenuItem onClick={() => handleNewDocument('spreadsheet')}>Spreadsheet</MenuItem>
+                <MenuItem onClick={() => handleNewDocument('presentation')}>Presentation</MenuItem>
+                <MenuItem onClick={() => handleNewDocument('form')}>Form</MenuItem>
               </MenuList>
             </MenuPopover>
           </Menu>
@@ -598,6 +648,17 @@ export const Toolbar: React.FC<{
           onOpenFile={handleOpenFile}
           onOpenUrl={handleOpenUrl}
           onOpenRecent={handleOpenRecent}
+          selectedDocuments={selectedDocuments}
+          onOpenDocument={handleOpenDocument}
+        />
+      )}
+
+      {/* New Document Dialog */}
+      {dialogOpen === 'new' && (
+        <NewDocumentDialog
+          isOpen={true}
+          onClose={handleCloseDialog}
+          onCreate={handleCreateDocument}
         />
       )}
 
