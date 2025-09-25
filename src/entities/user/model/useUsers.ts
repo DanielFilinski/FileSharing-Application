@@ -131,6 +131,30 @@ export const useUsers = () => {
     }
   };
 
+  // Update existing department
+  const updateDepartment = async (id: number, updates: Partial<Department>) => {
+    const prevSnapshot = departments;
+    setDepartments(prev => prev.map(dept => dept.id === id ? { ...dept, ...updates } : dept));
+    try {
+      await apiClient.put<Department>(`/users/departments/${id}`, updates);
+    } catch (error) {
+      setDepartments(prevSnapshot);
+      notificationService.showApiError(error, 'Failed to update department');
+    }
+  };
+
+  // Delete department
+  const deleteDepartment = async (id: number) => {
+    const prevSnapshot = departments;
+    setDepartments(prev => prev.filter(dept => dept.id !== id));
+    try {
+      await apiClient.delete<void>(`/users/departments/${id}`);
+    } catch (error) {
+      setDepartments(prevSnapshot);
+      notificationService.showApiError(error, 'Failed to delete department');
+    }
+  };
+
   return {
     employees,
     clients,
@@ -141,6 +165,8 @@ export const useUsers = () => {
     addClient,
     updateClient,
     deleteClient,
-    addDepartment
+    addDepartment,
+    updateDepartment,
+    deleteDepartment
   };
 }; 
