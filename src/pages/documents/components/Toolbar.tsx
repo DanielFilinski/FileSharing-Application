@@ -36,6 +36,8 @@ import { DocumentOperations } from './DocumentOperations';
 import { NewDocumentDialog } from './NewDocumentDialog';
 import { type Document } from '@/entities/document/api/documentsApi';
 import { useNotifications } from '@/shared/lib/useNotifications';
+import { DocumentsService } from '@/shared/api/documentsService';
+import { apiClient } from '@/shared/api';
 
 interface FilePickerFile {
   id: string;
@@ -61,10 +63,13 @@ export const Toolbar: React.FC<{
   onStatusFilterChange?: (status: string) => void,
   selectedDocuments?: Document[],
   onDocumentOperation?: (operation: string, documentIds: string[], data?: any) => void,
-  onRefresh?: () => void
-}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm', statusFilter = 'All', onStatusFilterChange, selectedDocuments = [], onDocumentOperation, onRefresh }) => {
+  onRefresh?: () => void,
+  onDocumentOpen?: (documentId: string, mode: 'local' | 'online') => Promise<any>,
+  onDocumentClose?: (documentId: string) => Promise<void>
+}> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm', statusFilter = 'All', onStatusFilterChange, selectedDocuments = [], onDocumentOperation, onRefresh, onDocumentOpen, onDocumentClose }) => {
   const styles = useStyles();
   const { showError, showSuccess, showInfo } = useNotifications();
+  const documentsService = new DocumentsService(apiClient);
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [, setWindowWidth] = useState<number>(window.innerWidth);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -139,31 +144,47 @@ export const Toolbar: React.FC<{
 
   const handleCreateDocument = async (type: 'document' | 'spreadsheet' | 'presentation' | 'form', data: any) => {
     try {
-      console.log('Creating new document:', { type, data });
+      showInfo('Creating Document', 'Please wait while we create your document...');
       
-      if (onDocumentOperation) {
-        await onDocumentOperation('create', [], { type, ...data });
-      }
+      // Create document using Azure Functions
+      const response = await documentsService.createDocument({
+        name: data.name,
+        type: type,
+        template: data.template,
+        description: data.description,
+        metadata: data.metadata,
+        openMode: data.openMode
+      });
       
-      showSuccess('Document Created', `New ${type} created successfully`);
+      showSuccess('Document Created', `${response.document.name} created successfully`);
       
-      // Simulate opening the document
-      const documentId = `new-${type}-${Date.now()}`;
+      // Open the document in the requested mode
       if (data.openMode === 'local') {
-        showInfo('Opening Locally', 'Document will open in your default desktop application');
-        // In real app, trigger download and local opening
+        showInfo('Opening Locally', 'Document will download and open in your default application');
+        // Open download URL in new tab
+        window.open(response.editorUrls.local, '_blank');
       } else {
         showInfo('Opening Online', 'Opening document in collaborative online editor');
-        // In real app, navigate to online editor
-        window.open(`/editor/${documentId}`, '_blank');
+        // Open online editor in new tab
+        window.open(response.editorUrls.online, '_blank');
       }
       
+      // Refresh the document list
       if (onRefresh) {
         onRefresh();
       }
-    } catch (error) {
+      
+      // Also call the document operation callback for consistency
+      if (onDocumentOperation) {
+        await onDocumentOperation('create', [response.document.id], { 
+          type, 
+          document: response.document 
+        });
+      }
+      
+    } catch (error: any) {
       console.error('Error creating document:', error);
-      showError('Creation Error', 'Failed to create document');
+      showError('Creation Error', error.message || 'Failed to create document');
     }
   };
 
@@ -172,17 +193,52 @@ export const Toolbar: React.FC<{
     setDialogOpen('open');
   };
 
-  const handleOpenDocument = (documentId: string, mode: 'local' | 'online') => {
-    console.log('Opening document:', documentId, 'in', mode, 'mode');
-    
-    if (mode === 'local') {
-      showInfo('Opening Locally', 'Document will download and open in your default application');
-      // In real app, trigger download and local opening
-      window.open(`/api/documents/${documentId}/download`, '_blank');
-    } else {
-      showInfo('Opening Online', 'Opening document in collaborative online editor');
-      // In real app, navigate to online editor
-      window.open(`/editor/${documentId}`, '_blank');
+  const handleOpenDocument = async (documentId: string, mode: 'local' | 'online') => {
+    try {
+      showInfo('Opening Document', 'Please wait while we prepare your document...');
+      
+      // Use the passed onDocumentOpen function if available, otherwise use service directly
+      if (onDocumentOpen) {
+        const response = await onDocumentOpen(documentId, mode);
+        if (response) {
+          showSuccess('Document Opened', `${response.document.name} is ready for ${mode} editing`);
+          
+          // Check if document is locked
+          if (response.document.isLocked && response.document.lockedBy) {
+            showInfo('Document Status', `Document locked for editing by ${response.document.lockedBy}`);
+          }
+        }
+      } else {
+        // Fallback to direct service call
+        const response = await documentsService.openDocument({
+          documentId: documentId,
+          mode: mode,
+          action: 'edit'
+        });
+        
+        showSuccess('Document Opened', `${response.document.name} is ready for ${mode} editing`);
+        
+        // Open in the appropriate editor
+        if (mode === 'local') {
+          showInfo('Downloading Document', 'Your document is downloading for local editing');
+          window.open(response.access.downloadUrl, '_blank');
+        } else {
+          showInfo('Opening Online Editor', 'Opening collaborative online editor');
+          window.open(response.access.editorUrl, '_blank');
+        }
+      }
+      
+    } catch (error: any) {
+      console.error('Error opening document:', error);
+      
+      // Handle specific error cases with user-friendly messages
+      if (error.message.includes('locked by another user')) {
+        showError('Document Locked', 'This document is currently being edited by another user. Please try again later.');
+      } else if (error.message.includes('permission')) {
+        showError('Access Denied', 'You do not have permission to edit this document.');
+      } else {
+        showError('Open Error', error.message || 'Failed to open document');
+      }
     }
   };
 
@@ -301,6 +357,45 @@ export const Toolbar: React.FC<{
 
   const handleBulkShare = () => {
     handleShareClick();
+  };
+
+  // Handle bulk open documents
+  const handleBulkOpenDocuments = async (mode: 'local' | 'online' = 'online') => {
+    if (selectedDocuments.length === 0) {
+      showError('No Selection', 'Please select documents to open');
+      return;
+    }
+
+    try {
+      showInfo('Opening Documents', `Opening ${selectedDocuments.length} document(s) in ${mode} mode...`);
+      
+      const documentIds = selectedDocuments.map(doc => doc.id);
+      const responses = await documentsService.openMultipleDocuments(documentIds, mode, 'edit');
+      
+      const successCount = responses.length;
+      const failedCount = selectedDocuments.length - successCount;
+      
+      if (successCount > 0) {
+        showSuccess('Documents Opened', `${successCount} document(s) opened successfully`);
+        
+        // Open all documents in tabs
+        responses.forEach(response => {
+          if (mode === 'local') {
+            window.open(response.access.downloadUrl, '_blank');
+          } else {
+            window.open(response.access.editorUrl, '_blank');
+          }
+        });
+      }
+      
+      if (failedCount > 0) {
+        showError('Partial Success', `${failedCount} document(s) could not be opened. Check permissions and try again.`);
+      }
+      
+    } catch (error: any) {
+      console.error('Error opening multiple documents:', error);
+      showError('Bulk Open Error', error.message || 'Failed to open documents');
+    }
   };
 
   // Функция для сохранения метаданных документа в базе данных

@@ -6,6 +6,9 @@ import { DocumentsTable } from '../components/DocumentsTable';
 import { DocumentDetailsDrawer } from '../components/DocumentDetailsDrawer';
 import { useFavorites } from '@/features/favorites';
 import { useDocuments } from '@/entities/document';
+import { DocumentsService } from '@/shared/api/documentsService';
+import { apiClient } from '@/shared/api';
+import { useDocumentCleanup } from '@/shared/hooks/useDocumentCleanup';
 import { useLocation } from 'react-router-dom';
 
 
@@ -68,6 +71,8 @@ export default function BaseDocumentsPage({
   const styles = useStyles();
   const location = useLocation();
   const { getFavorites } = useFavorites();
+  const documentsService = new DocumentsService(apiClient);
+  const { addOpenDocument, removeOpenDocument, cleanupDocuments } = useDocumentCleanup();
   
   // Определяем тип страницы на основе пути
   const getPageType = (): 'firm' | 'client' => {
@@ -190,16 +195,27 @@ export default function BaseDocumentsPage({
           break;
           
         case 'create':
-          // Implementation for document creation
-          const documentData = {
-            name: data.name,
-            status: 'Active' as const,
-            documentType: data.metadata?.documentType,
-            documentSubtype: data.metadata?.documentSubtype,
-            period: data.metadata?.period,
-            description: data.description
-          };
-          await createDocument(documentData);
+          // Implementation for document creation using Azure Functions
+          if (data.document) {
+            // Document was already created by the Azure Function
+            // Just update local state and track for cleanup
+            addOpenDocument(data.document.id);
+            console.log('Document created successfully:', data.document.name);
+          } else {
+            // Fallback: create using local API
+            const documentData = {
+              name: data.name,
+              status: 'Active' as const,
+              documentType: data.metadata?.documentType,
+              documentSubtype: data.metadata?.documentSubtype,
+              period: data.metadata?.period,
+              description: data.description
+            };
+            const newDoc = await createDocument(documentData);
+            if (newDoc?.id) {
+              addOpenDocument(newDoc.id);
+            }
+          }
           break;
       }
     } catch (error) {
@@ -211,6 +227,44 @@ export default function BaseDocumentsPage({
   // Get selected documents objects
   const getSelectedDocuments = () => {
     return filteredDocuments.filter(doc => selectedItems.has(doc.key));
+  };
+
+  // Handle document opening with tracking
+  const handleDocumentOpen = async (documentId: string, mode: 'local' | 'online') => {
+    try {
+      // Use the documents service to open the document
+      const response = await documentsService.openDocument({
+        documentId,
+        mode,
+        action: 'edit'
+      });
+
+      // Track opened document for cleanup
+      addOpenDocument(documentId);
+      
+      // Open in appropriate editor
+      if (mode === 'local') {
+        window.open(response.access.downloadUrl, '_blank');
+      } else {
+        window.open(response.access.editorUrl, '_blank');
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Error opening document:', error);
+      throw error;
+    }
+  };
+
+  // Handle document close/unlock
+  const handleDocumentClose = async (documentId: string) => {
+    try {
+      await documentsService.unlockDocument({ documentId });
+      removeOpenDocument(documentId);
+    } catch (error) {
+      console.error('Error closing document:', error);
+      // Don't throw - closing should be best effort
+    }
   };
 
   let filteredDocuments = documents.map(d => ({
@@ -270,6 +324,8 @@ export default function BaseDocumentsPage({
           selectedDocuments={getSelectedDocuments()}
           onDocumentOperation={handleDocumentOperation}
           onRefresh={fetchDocuments}
+          onDocumentOpen={handleDocumentOpen}
+          onDocumentClose={handleDocumentClose}
           {...customToolbarProps}
         />
         <Breadcrumbs /> 
