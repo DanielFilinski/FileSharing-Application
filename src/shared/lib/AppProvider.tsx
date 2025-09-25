@@ -3,6 +3,7 @@ import { TeamsProvider } from './teams';
 import { authService } from './auth';
 import { errorHandler } from './errorHandler';
 import { notificationService } from './notifications';
+import { RBACProvider } from './rbac';
 import NotificationContainer from '../ui/NotificationContainer';
 import { LoginScreen } from '../../components/LoginScreen';
 
@@ -110,8 +111,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider value={contextValue}>
       <TeamsProvider>
-        {children}
-        <NotificationContainer />
+        <RBACProvider authService={authService}>
+          {children}
+          <NotificationContainer />
+        </RBACProvider>
       </TeamsProvider>
     </AppContext.Provider>
   );

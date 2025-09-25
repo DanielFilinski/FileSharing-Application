@@ -1,3 +1,5 @@
+import { UserRole } from '@/shared/lib/rbac';
+
 export interface User {
   id: number;
   firstName: string;
@@ -11,6 +13,11 @@ export interface Employee extends User {
   office: string;
   role: string;
   department: string;
+  // RBAC роли
+  userRoles?: UserRole[];
+  organizationId?: string;
+  departmentId?: string;
+  officeId?: string;
 }
 
 export interface Client extends User {
@@ -18,10 +25,22 @@ export interface Client extends User {
   email: string;
   firmName: string;
   firmAddress: string;
+  // RBAC роли (для клиентов обычно CLIENT_END_USER)
+  userRoles?: UserRole[];
+  organizationId?: string;
 }
 
 export interface Department {
   id: number;
   name: string;
   description?: string;
+}
+
+// Офис
+export interface Office {
+  id: number;
+  name: string;
+  address?: string;
+  city?: string;
+  country?: string;
 } 
