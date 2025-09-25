@@ -1,6 +1,6 @@
 import { COLORS } from "@/app/theme/color-pallete";
 import { Plus } from "lucide-react";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 type ButtonAccentProps = {
     text: string;

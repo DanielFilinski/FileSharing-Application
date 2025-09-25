@@ -1,4 +1,4 @@
-import { styled } from "styled-components";
+import styled from "styled-components";
 import { Card, tokens } from "@fluentui/react-components";
 
 const CONTENT_MAX_WIDTH = 1000;

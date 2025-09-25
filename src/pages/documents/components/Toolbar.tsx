@@ -11,9 +11,7 @@ import {
   MenuTrigger,
   Text,
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
   DialogSurface,
   DialogBody
 } from '@fluentui/react-components';
@@ -27,6 +25,19 @@ import {
   QuestionCircle20Regular
 } from '@fluentui/react-icons';
 import { UploadForm, DocumentMetadata } from './UploadForm';
+import { oneDriveService, OneDriveUploadResult } from '@/shared/api/oneDriveService';
+import { CloudUploadDialog } from './CloudUploadDialog';
+import { PortalUploadDialog } from './PortalUploadDialog';
+import { FilePicker } from './FilePicker';
+
+interface FilePickerFile {
+  id: string;
+  name: string;
+  url?: string;
+  downloadUrl?: string;
+  size?: number;
+  driveId?: string;
+}
 
 export const Toolbar: React.FC<{
   selectedCount: number,
@@ -44,10 +55,12 @@ export const Toolbar: React.FC<{
 }> = ({ selectedCount, onAddItem, isGridView, setIsGridView, documentFilter, onFilterChange, onUploadFiles, showBulkActions = false, showAdvancedFilters = false, pageType = 'firm', statusFilter = 'All', onStatusFilterChange }) => {
   const styles = useStyles();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
-  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  const [, setWindowWidth] = useState<number>(window.innerWidth);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal'>(null);
+  const [dialogOpen, setDialogOpen] = useState<null | 'cloud' | 'portal' | 'cloud-upload' | 'portal-upload' | 'cloud-picker' | 'portal-picker'>(null);
   const [uploadFormOpen, setUploadFormOpen] = useState(false);
+  const [selectedCloudFiles, setSelectedCloudFiles] = useState<FilePickerFile[]>([]);
+  const [selectedPortalFiles, setSelectedPortalFiles] = useState<FilePickerFile[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,16 +84,111 @@ export const Toolbar: React.FC<{
     }
   };
 
-  const handleUploadWithMetadata = (files: File[], metadata: DocumentMetadata) => {
-    // Создаем FileList из массива файлов для совместимости
-    const dataTransfer = new DataTransfer();
-    files.forEach(file => dataTransfer.items.add(file));
-    onUploadFiles(dataTransfer.files, metadata);
+  const handleUploadWithMetadata = async (files: File[], metadata: DocumentMetadata) => {
+    try {
+      // Загружаем файлы в OneDrive пользователя
+      const uploadResults = await oneDriveService.uploadFromDevice(files, metadata);
+      
+      // Сохраняем метаданные в базе данных проекта
+      for (const result of uploadResults) {
+        await saveDocumentMetadata(result);
+      }
+      
+      // Обновляем список документов
+      window.location.reload(); // Простое обновление, можно заменить на более элегантное
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      alert('Ошибка при загрузке файлов. Попробуйте еще раз.');
+    }
   };
 
-  const handleOpenCloud = () => setDialogOpen('cloud');
-  const handleOpenPortal = () => setDialogOpen('portal');
-  const handleCloseDialog = () => setDialogOpen(null);
+  const handleOpenCloud = () => {
+    setDialogOpen('cloud-picker');
+  };
+
+  const handleOpenPortal = () => {
+    setDialogOpen('portal-picker');
+  };
+  const handleCloseDialog = () => {
+    setDialogOpen(null);
+    setSelectedCloudFiles([]);
+    setSelectedPortalFiles([]);
+  };
+
+  // Функция для сохранения метаданных документа в базе данных
+  const saveDocumentMetadata = async (uploadResult: OneDriveUploadResult) => {
+    try {
+      const { api } = await import('@/shared/api');
+      await api.uploadDocument({
+        oneDriveId: uploadResult.id,
+        name: uploadResult.name,
+        size: uploadResult.size,
+        webUrl: uploadResult.webUrl,
+        downloadUrl: uploadResult.downloadUrl,
+        source: uploadResult.source,
+        metadata: uploadResult.metadata,
+        originalUrl: uploadResult.originalUrl,
+        originalFileId: uploadResult.originalFileId,
+      });
+    } catch (error) {
+      console.error('Error saving document metadata:', error);
+      throw error;
+    }
+  };
+
+  // Удалено: функция getAccessToken не используется
+
+  // Обработчик выбора файлов из облака
+  const handleCloudFilesSelected = (files: FilePickerFile[]) => {
+    setSelectedCloudFiles(files);
+    setDialogOpen('cloud-upload');
+  };
+
+  // Обработчик загрузки из облака
+  const handleCloudUpload = async (metadata: DocumentMetadata) => {
+    try {
+      for (const file of selectedCloudFiles) {
+        const uploadResult = await oneDriveService.uploadFromCloud(
+          file.downloadUrl || file.url || '', 
+          file.name, 
+          metadata
+        );
+        await saveDocumentMetadata(uploadResult);
+      }
+      
+      setSelectedCloudFiles([]);
+      
+      // Обновляем список документов
+      window.location.reload();
+    } catch (error) {
+      console.error('Error uploading files from cloud:', error);
+      alert('Ошибка при загрузке файлов из облака. Попробуйте еще раз.');
+    }
+  };
+
+  // Обработчик выбора файлов с портала
+  const handlePortalFilesSelected = (files: FilePickerFile[]) => {
+    setSelectedPortalFiles(files);
+    setDialogOpen('portal-upload');
+  };
+
+  // Обработчик загрузки с портала
+  const handlePortalUpload = async (metadata: DocumentMetadata) => {
+    try {
+      for (const file of selectedPortalFiles) {
+        const uploadResult = await oneDriveService.uploadFromPortal(file.id, file.name, metadata);
+        await saveDocumentMetadata(uploadResult);
+      }
+      
+      setSelectedPortalFiles([]);
+      
+      // Обновляем список документов
+      window.location.reload();
+    } catch (error) {
+      console.error('Error uploading files from portal:', error);
+      alert('Ошибка при загрузке файлов с портала. Попробуйте еще раз.');
+    }
+  };
 
   const renderMainButtons = () => (
     <>
@@ -286,10 +394,26 @@ export const Toolbar: React.FC<{
                 {dialogOpen === 'cloud' ? 'Cloud Upload' : 'Portal Upload'}
               </DialogTitle> */}
               <DialogContent>
-                <div style={{ minWidth: 320, minHeight: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ marginBottom: 24 }}>This interface will be available when the server is connected.</span>
-                  <FluentButton appearance="primary" onClick={handleCloseDialog}>Close</FluentButton>
-                </div>
+                {(dialogOpen === 'cloud' || dialogOpen === 'portal') && (
+                  <div style={{ minWidth: 320, minHeight: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ marginBottom: 24 }}>This interface will be available when the server is connected.</span>
+                    <FluentButton appearance="primary" onClick={handleCloseDialog}>Close</FluentButton>
+                  </div>
+                )}
+                {dialogOpen === 'cloud-upload' && (
+                  <CloudUploadDialog 
+                    onClose={handleCloseDialog} 
+                    onUpload={handleCloudUpload}
+                    selectedFiles={selectedCloudFiles}
+                  />
+                )}
+                {dialogOpen === 'portal-upload' && (
+                  <PortalUploadDialog 
+                    onClose={handleCloseDialog} 
+                    onUpload={handlePortalUpload}
+                    selectedFiles={selectedPortalFiles}
+                  />
+                )}
               </DialogContent>
             </DialogBody>
           </DialogSurface>
@@ -300,6 +424,28 @@ export const Toolbar: React.FC<{
           isOpen={uploadFormOpen}
           onClose={() => setUploadFormOpen(false)}
           onUpload={handleUploadWithMetadata}
+        />
+      )}
+      
+      {/* File Picker for Cloud */}
+      {dialogOpen === 'cloud-picker' && (
+        <FilePicker
+          isOpen={true}
+          onClose={handleCloseDialog}
+          onFilesSelected={handleCloudFilesSelected}
+          type="cloud"
+          multiSelect={true}
+        />
+      )}
+      
+      {/* File Picker for Portal */}
+      {dialogOpen === 'portal-picker' && (
+        <FilePicker
+          isOpen={true}
+          onClose={handleCloseDialog}
+          onFilesSelected={handlePortalFilesSelected}
+          type="portal"
+          multiSelect={true}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import { apiClient, type ApiResponse } from '@/shared/api';
+import { apiClient, api, type ApiResponse } from '@/shared/api';
 
 export type DocumentStatus = 'Active' | 'pending validation' | 'validation in process' | 'pending review' | 'Locked' | 'Access Closed';
 
@@ -78,18 +78,34 @@ const mapServerDocToClient = (d: any): Document => {
 
 export const documentsApi = {
   async getDocuments(filters?: DocumentFilters): Promise<Document[]> {
-    const params = new URLSearchParams();
-    if (filters?.status && filters.status !== 'All') params.set('status', filters.status);
-    if (filters?.search) params.set('search', filters.search);
-    if (filters?.owner && filters.owner !== 'all') params.set('owner', filters.owner);
-    if (typeof filters?.shared === 'boolean') params.set('shared', String(filters.shared));
-    if (filters?.documentType) params.set('documentType', filters.documentType);
-    if (filters?.clientEmail) params.set('clientEmail', filters.clientEmail);
-    if (filters?.dateFrom) params.set('dateFrom', filters.dateFrom);
-    if (filters?.dateTo) params.set('dateTo', filters.dateTo);
-    if (filters?.favorites) params.set('favorites', 'true');
-    const res = await apiClient.get<any[]>(`/documents${params.toString() ? `?${params.toString()}` : ''}`);
-    return (res.data || []).map(mapServerDocToClient);
+    try {
+      const res = await api.getDocuments();
+      let documents = (res.data?.documents || res.data || []).map(mapServerDocToClient);
+      
+      // Применяем фильтры на клиенте для mock данных
+      if (filters?.status && filters.status !== 'All') {
+        documents = documents.filter(d => d.status === filters.status);
+      }
+      if (filters?.owner && filters.owner !== 'all') {
+        documents = documents.filter(d => d.owner === filters.owner);
+      }
+      if (typeof filters?.shared === 'boolean') {
+        documents = documents.filter(d => d.shared === filters.shared);
+      }
+      if (filters?.search) {
+        const search = filters.search.toLowerCase();
+        documents = documents.filter(d => 
+          d.name.toLowerCase().includes(search) ||
+          d.description?.toLowerCase().includes(search) ||
+          d.documentType?.toLowerCase().includes(search)
+        );
+      }
+      
+      return documents;
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      return [];
+    }
   },
 
   async getDocument(id: string, partitionKey?: string): Promise<Document> {

@@ -1,13 +1,64 @@
 import { ApiClient } from './client';
 import { errorHandler } from '../lib/errorHandler';
+import { mockDocuments, mockApiResponse } from './mockData';
 
 // Base URL for API - get from environment variables or use local
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-                     'https://your-function-app.azurewebsites.net/api' ||
                      'http://localhost:7071/api';
+
+// Development mode flag
+const isDevelopment = import.meta.env.DEV;
 
 // Create API client instance
 export const apiClient = new ApiClient(API_BASE_URL);
+
+// Mock API для разработки
+export const mockApi = {
+  async getDocuments() {
+    console.log('🔧 Using mock API for documents');
+    return mockApiResponse({ documents: mockDocuments });
+  },
+  
+  async uploadDocument(data: any) {
+    console.log('🔧 Using mock API for upload:', data);
+    return mockApiResponse({ 
+      message: 'File uploaded successfully (mock)',
+      document: {
+        id: `mock-${Date.now()}`,
+        ...data,
+        status: 'Active',
+        createdAt: new Date().toISOString()
+      }
+    });
+  }
+};
+
+// Wrapper для автоматического переключения между реальным API и mock
+export const api = {
+  async getDocuments() {
+    if (isDevelopment) {
+      try {
+        return await apiClient.get('/documents');
+      } catch (error) {
+        console.warn('API server not available, using mock data:', error);
+        return await mockApi.getDocuments();
+      }
+    }
+    return await apiClient.get('/documents');
+  },
+  
+  async uploadDocument(data: any) {
+    if (isDevelopment) {
+      try {
+        return await apiClient.post('/saveOneDriveDocument', data);
+      } catch (error) {
+        console.warn('API server not available, using mock upload:', error);
+        return await mockApi.uploadDocument(data);
+      }
+    }
+    return await apiClient.post('/saveOneDriveDocument', data);
+  }
+};
 
 // Update API client for integration with error handler
 const originalRequest = apiClient['request'].bind(apiClient);
