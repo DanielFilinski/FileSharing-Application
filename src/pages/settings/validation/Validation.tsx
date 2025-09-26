@@ -1,24 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ValidationHeader } from './components/ValidationHeader';
 import { ManualValidationToggle } from './components/ManualValidationToggle';
 import { ValidationTypeSelector } from './components/ValidationTypeSelector';
 import { EmployeeValidators } from './components/EmployeeValidators';
 import { OfficeValidators } from './components/OfficeValidators';
-import { ApprovalToggle } from './components/ApprovalToggle';
+import { DepartmentValidators } from './components/DepartmentValidators';
+import { DocumentValidators } from './components/DocumentValidators';
 import { ValidationMessageBars } from './components/ValidationMessageBars';
 import { EmployeeSelectionDialog } from './components/EmployeeSelectionDialog';
-import { Employee, Department, Office, OfficeValidators as OfficeValidatorsType } from './types';
+import { 
+  Employee, 
+  Department, 
+  Office, 
+  DocumentType,
+  OfficeValidators as OfficeValidatorsType, 
+  DepartmentValidators as DepartmentValidatorsType,
+  DocumentValidators as DocumentValidatorsType,
+  ValidationType
+} from './types';
 import { ContentContainer, RowCardContainer, ScreenContainer } from '@/app/styles/layouts';
 
 const TeamsValidationSettings = () => {
   const [manualValidation, setManualValidation] = useState(false);
-  const [approvalNeeded, setApprovalNeeded] = useState(false);
-  const [validationType, setValidationType] = useState<'employee' | 'office'>('employee');
+  const [validationType, setValidationType] = useState<ValidationType>('employee');
   const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
   const [officeValidators, setOfficeValidators] = useState<OfficeValidatorsType>({});
+  const [departmentValidators, setDepartmentValidators] = useState<DepartmentValidatorsType>({});
+  const [documentValidators, setDocumentValidators] = useState<DocumentValidatorsType>({});
   const [showEmployeeDialog, setShowEmployeeDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentOfficeId, setCurrentOfficeId] = useState<string>('');
+  const [currentDepartmentId, setCurrentDepartmentId] = useState<string>('');
+  const [currentDocumentTypeId, setCurrentDocumentTypeId] = useState<string>('');
 
   // Mock data
   const departments: Department[] = [
@@ -42,12 +55,30 @@ const TeamsValidationSettings = () => {
     { id: 'off3', name: 'Satellite Office' },
   ];
 
+  const documentTypes: DocumentType[] = [
+    { id: 'doc1', name: 'Tax Documents' },
+    { id: 'doc2', name: 'Legal Contracts' },
+    { id: 'doc3', name: 'Government Forms' },
+  ];
+
   useEffect(() => {
     const initialOfficeValidators: OfficeValidatorsType = {};
     offices.forEach(office => {
       initialOfficeValidators[office.id] = [];
     });
     setOfficeValidators(initialOfficeValidators);
+
+    const initialDepartmentValidators: DepartmentValidatorsType = {};
+    departments.forEach(department => {
+      initialDepartmentValidators[department.id] = [];
+    });
+    setDepartmentValidators(initialDepartmentValidators);
+
+    const initialDocumentValidators: DocumentValidatorsType = {};
+    documentTypes.forEach(documentType => {
+      initialDocumentValidators[documentType.id] = [];
+    });
+    setDocumentValidators(initialDocumentValidators);
   }, []);
 
   const getDepartmentName = (deptId: string) => {
@@ -74,24 +105,69 @@ const TeamsValidationSettings = () => {
         updatedValidators[currentOfficeId] = [...updatedValidators[currentOfficeId], employee];
       }
       setOfficeValidators(updatedValidators);
+    } else if (validationType === 'department' && currentDepartmentId) {
+      const updatedValidators = { ...departmentValidators };
+      if (updatedValidators[currentDepartmentId].find((emp: Employee) => emp.id === employee.id)) {
+        updatedValidators[currentDepartmentId] = updatedValidators[currentDepartmentId].filter((emp: Employee) => emp.id !== employee.id);
+      } else {
+        updatedValidators[currentDepartmentId] = [...updatedValidators[currentDepartmentId], employee];
+      }
+      setDepartmentValidators(updatedValidators);
+    } else if (validationType === 'document' && currentDocumentTypeId) {
+      const updatedValidators = { ...documentValidators };
+      if (updatedValidators[currentDocumentTypeId].find((emp: Employee) => emp.id === employee.id)) {
+        updatedValidators[currentDocumentTypeId] = updatedValidators[currentDocumentTypeId].filter((emp: Employee) => emp.id !== employee.id);
+      } else {
+        updatedValidators[currentDocumentTypeId] = [...updatedValidators[currentDocumentTypeId], employee];
+      }
+      setDocumentValidators(updatedValidators);
     }
   };
 
-  const openEmployeeDialog = (officeId?: string) => {
-    if (officeId) {
-      setCurrentOfficeId(officeId);
+  const openEmployeeDialog = (contextId?: string) => {
+    if (validationType === 'office' && contextId) {
+      setCurrentOfficeId(contextId);
+    } else if (validationType === 'department' && contextId) {
+      setCurrentDepartmentId(contextId);
+    } else if (validationType === 'document' && contextId) {
+      setCurrentDocumentTypeId(contextId);
     }
     setShowEmployeeDialog(true);
   };
 
-  const removeEmployee = (empId: string, officeId?: string) => {
+  const removeEmployee = (empId: string, contextId?: string) => {
     if (validationType === 'employee') {
       setSelectedEmployees(selectedEmployees.filter((emp: Employee) => emp.id !== empId));
-    } else if (officeId) {
+    } else if (validationType === 'office' && contextId) {
       const updatedValidators = { ...officeValidators };
-      updatedValidators[officeId] = updatedValidators[officeId].filter((emp: Employee) => emp.id !== empId);
+      updatedValidators[contextId] = updatedValidators[contextId].filter((emp: Employee) => emp.id !== empId);
       setOfficeValidators(updatedValidators);
+    } else if (validationType === 'department' && contextId) {
+      const updatedValidators = { ...departmentValidators };
+      updatedValidators[contextId] = updatedValidators[contextId].filter((emp: Employee) => emp.id !== empId);
+      setDepartmentValidators(updatedValidators);
+    } else if (validationType === 'document' && contextId) {
+      const updatedValidators = { ...documentValidators };
+      updatedValidators[contextId] = updatedValidators[contextId].filter((emp: Employee) => emp.id !== empId);
+      setDocumentValidators(updatedValidators);
     }
+  };
+
+  const handleAddDocumentType = () => {
+    // В реальном приложении здесь был бы диалог для ввода названия
+    const newId = `doc${documentTypes.length + 1}`;
+    const newDocumentType: DocumentType = {
+      id: newId,
+      name: `New Document Type ${documentTypes.length + 1}`
+    };
+    
+    // Добавляем новый тип документа в локальные данные (в реальном приложении это было бы API-вызов)
+    documentTypes.push(newDocumentType);
+    
+    // Инициализируем пустой массив валидаторов для нового типа
+    const updatedValidators = { ...documentValidators };
+    updatedValidators[newId] = [];
+    setDocumentValidators(updatedValidators);
   };
 
   const handleSave = () => {
@@ -141,6 +217,29 @@ const TeamsValidationSettings = () => {
               
             )}
 
+            {validationType === 'department' && (
+             
+                <DepartmentValidators
+                  departments={departments}
+                  departmentValidators={departmentValidators}
+                  onAddClick={openEmployeeDialog}
+                  onRemoveEmployee={removeEmployee}
+                />
+              
+            )}
+
+            {validationType === 'document' && (
+             
+                <DocumentValidators
+                  documentTypes={documentTypes}
+                  documentValidators={documentValidators}
+                  onAddClick={openEmployeeDialog}
+                  onRemoveEmployee={removeEmployee}
+                  onAddDocumentType={handleAddDocumentType}
+                />
+              
+            )}
+
             
               {/* <ApprovalToggle
                 approvalNeeded={approvalNeeded}
@@ -150,7 +249,7 @@ const TeamsValidationSettings = () => {
 
             <ValidationMessageBars
               manualValidation={manualValidation}
-              approvalNeeded={approvalNeeded}
+              approvalNeeded={false}
             />
           </>
         )}
@@ -158,7 +257,7 @@ const TeamsValidationSettings = () => {
         {!manualValidation && (
           <ValidationMessageBars
             manualValidation={manualValidation}
-            approvalNeeded={approvalNeeded}
+            approvalNeeded={false}
           />
         )}
 
@@ -171,7 +270,17 @@ const TeamsValidationSettings = () => {
         open={showEmployeeDialog}
         onOpenChange={setShowEmployeeDialog}
         employees={filteredEmployees}
-        selectedEmployees={validationType === 'employee' ? selectedEmployees : currentOfficeId ? officeValidators[currentOfficeId] : []}
+        selectedEmployees={
+          validationType === 'employee' 
+            ? selectedEmployees 
+            : validationType === 'office' && currentOfficeId 
+            ? officeValidators[currentOfficeId] || []
+            : validationType === 'department' && currentDepartmentId
+            ? departmentValidators[currentDepartmentId] || []
+            : validationType === 'document' && currentDocumentTypeId
+            ? documentValidators[currentDocumentTypeId] || []
+            : []
+        }
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         onEmployeeSelect={handleEmployeeSelect}

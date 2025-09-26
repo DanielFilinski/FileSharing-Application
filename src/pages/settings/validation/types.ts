@@ -17,4 +17,19 @@ export interface Office {
 
 export interface OfficeValidators {
   [key: string]: Employee[];
-} 
+}
+
+export interface DocumentType {
+  id: string;
+  name: string;
+}
+
+export interface DepartmentValidators {
+  [key: string]: Employee[];
+}
+
+export interface DocumentValidators {
+  [key: string]: Employee[];
+}
+
+export type ValidationType = 'employee' | 'office' | 'department' | 'document';
