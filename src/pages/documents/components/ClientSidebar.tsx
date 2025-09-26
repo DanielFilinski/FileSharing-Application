@@ -12,7 +12,7 @@ import {
   AddRegular,
   SearchRegular,
 } from '@fluentui/react-icons';
-import { Client } from '../ui/FirmSide2Page';
+import { Client } from '../ui/Dashboard';
 
 const useStyles = makeStyles({
   leftSidebar: {

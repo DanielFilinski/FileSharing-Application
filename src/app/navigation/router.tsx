@@ -13,7 +13,7 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Leads } from '@/pages/leads/Leads';
 import FirmSidePage from '@/pages/documents/ui/FirmSidePage';
-import FirmSide2Page from '@/pages/documents/ui/FirmSide2Page';
+import Dashboard from '@/pages/documents/ui/Dashboard';
 import { TestRBACDemo } from '@/pages/settings/TestRBACDemo';
 import { SettingsMain } from '@/pages/settings/SettingsMain';
 import { SettingsMainWithDebug } from '@/pages/settings/SettingsMainWithDebug';
@@ -38,7 +38,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'firm-side-2',
-        element: <FirmSide2Page/>,
+        element: <Dashboard/>,
       },
       {
         path: 'favorites',

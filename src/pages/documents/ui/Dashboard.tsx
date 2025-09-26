@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles } from '@fluentui/react-components';
 import {
   Button,
   Input,
-  Avatar,
-  Badge,
-  Card,
-  CardHeader,
-  Text,
-  Divider,
-  Menu,
-  MenuTrigger,
-  MenuPopover,
-  MenuList,
-  MenuItem,
   Dialog,
-  DialogTrigger,
   DialogSurface,
   DialogTitle,
   DialogBody,
@@ -24,25 +12,7 @@ import {
   Label,
   Select,
   Option,
-  ProgressBar,
-  Tab,
-  TabList,
-  TabValue,
 } from '@fluentui/react-components';
-import {
-  SearchRegular,
-  AlertRegular,
-  SettingsRegular,
-  QuestionCircleRegular,
-  AddRegular,
-  PersonRegular,
-  DocumentRegular,
-  CheckmarkRegular,
-  ClockRegular,
-  WarningRegular,
-  InfoRegular,
-  ChevronRightRegular,
-} from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
   root: {
@@ -54,110 +24,9 @@ const useStyles = makeStyles({
     color: '#334155',
     lineHeight: 1.5,
   },
-  topNav: {
-    background: 'white',
-    borderBottom: '1px solid #e2e8f0',
-    padding: '0 24px',
-    height: '64px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-  },
-  navLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '24px',
-  },
-  logo: {
-    fontSize: '20px',
-    fontWeight: '700',
-    color: '#3b82f6',
-  },
-  searchContainer: {
-    position: 'relative',
-  },
-  searchInput: {
-    padding: '8px 16px 8px 40px',
-    borderRadius: '8px',
-    width: '300px',
-    background: '#f9fafb',
-    border: 'none',
-    outline: 'none',
-    '&:focus': {
-      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
-    },
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: '12px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    color: '#6b7280',
-  },
-  navRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  navIcon: {
-    padding: '8px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    position: 'relative',
-    transition: 'background-color 0.2s',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '&:hover': {
-      backgroundColor: '#f3f4f6',
-    },
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: '4px',
-    right: '4px',
-    background: '#ef4444',
-    color: 'white',
-    borderRadius: '50%',
-    width: '18px',
-    height: '18px',
-    fontSize: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: '600',
-  },
-  userProfile: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '6px 12px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s',
-    '&:hover': {
-      backgroundColor: '#f3f4f6',
-    },
-  },
-  userAvatar: {
-    width: '32px',
-    height: '32px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'white',
-    fontWeight: '600',
-    fontSize: '14px',
-  },
   mainContainer: {
     display: 'flex',
-    height: 'calc(100vh - 64px)',
+    height: '100vh',
   },
   leftSidebar: {
     width: '300px',
@@ -250,6 +119,15 @@ const useStyles = makeStyles({
     fontSize: '10px',
     fontWeight: '600',
   },
+  clientStatusIndicator: {
+    borderRadius: '50%',
+    width: '8px',
+    height: '8px',
+    marginRight: '4px',
+  },
+  statusUrgent: { background: '#ef4444' },
+  statusAttention: { background: '#f59e0b' },
+  statusNormal: { background: 'transparent' },
   mainContent: {
     flex: 1,
     padding: '24px',
@@ -565,6 +443,7 @@ export interface Client {
   name: string;
   type: string;
   notifications?: number;
+  status?: 'urgent' | 'attention' | 'normal';
 }
 
 export interface Document {
@@ -609,53 +488,53 @@ export interface Activity {
 
 // Данные из HTML макета
 const mockClients: Client[] = [
-  { id: '1', name: 'TechCorp Solutions', type: 'Corporate Law', notifications: 3 },
-  { id: '2', name: 'Smith Family Trust', type: 'Estate Planning', notifications: 1 },
-  { id: '3', name: 'Green Energy LLC', type: 'Business Formation' },
-  { id: '4', name: 'Martinez Construction', type: 'Contract Review', notifications: 2 },
-  { id: '5', name: 'Digital Marketing Inc', type: 'Intellectual Property' },
+  { id: '1', name: 'XYZ Accounting LLP', type: 'Tax Preparation Services', notifications: 3, status: 'urgent' },
+  { id: '2', name: 'ABC Legal Services', type: 'Legal Consulting', notifications: 1, status: 'urgent' },
+  { id: '3', name: 'Johnson & Associates LLP', type: 'Business Law', status: 'normal' },
+  { id: '4', name: 'Smith Dental Clinic', type: 'Healthcare Services', notifications: 2, status: 'attention' },
+  { id: '5', name: 'Carter Investments', type: 'Financial Services', status: 'normal' },
 ];
 
 const mockDocuments: Document[] = [
   {
     id: '1',
-    name: 'Partnership Agreement - TechCorp Solutions',
-    type: 'Partnership Agreement',
+    name: 'Service Agreement',
+    type: 'Service Agreement',
     category: 'Business Documents',
     domain: 'Law',
-    created: 'Jan 15, 2025',
-    status: 'Validation Required',
-    uploadedBy: 'Sarah Wilson',
-    uploadedTime: '2 hours ago'
+    created: 'May 20, 2025',
+    status: 'Review & Sign',
+    uploadedBy: 'Robert Chen',
+    uploadedTime: 'May 20, 2025'
   },
   {
     id: '2',
-    name: 'Estate Plan Amendment - Smith Family Trust',
-    type: 'Estate Plan Amendment',
-    category: 'Estate Documents',
-    domain: 'Law',
-    created: 'Jan 14, 2025',
-    status: 'Signature Required',
-    uploadedBy: 'Michael Smith',
-    uploadedTime: 'yesterday'
+    name: 'Financial Statement Questionnaire',
+    type: 'Financial Statement',
+    category: 'Financial Documents',
+    domain: 'Accounting',
+    created: 'May 19, 2025',
+    status: 'Complete',
+    uploadedBy: 'Anna Martinez',
+    uploadedTime: 'May 19, 2025'
   },
   {
     id: '3',
-    name: 'LLC Operating Agreement - Green Energy LLC',
-    type: 'LLC Operating Agreement',
-    category: 'Business Documents',
-    domain: 'Law',
-    created: 'Jan 12, 2025',
-    status: 'Final Approval',
-    uploadedBy: 'Jennifer Green',
-    uploadedTime: '3 days ago'
+    name: 'Board Meeting Minutes',
+    type: 'Meeting Minutes',
+    category: 'Corporate Documents',
+    domain: 'Corporate',
+    created: 'May 18, 2025',
+    status: 'Review',
+    uploadedBy: 'John Doe',
+    uploadedTime: 'May 18, 2025'
   }
 ];
 
 const mockTeamMembers: TeamMember[] = [
-  { id: '1', name: 'James Patterson', role: 'Lead Attorney', avatar: 'JP' },
-  { id: '2', name: 'Lisa Chen', role: 'Senior Associate', avatar: 'LC' },
-  { id: '3', name: 'Michael Rodriguez', role: 'Partner', avatar: 'MR' },
+  { id: '1', name: 'Robert Chen', role: 'Validator', avatar: 'RC' },
+  { id: '2', name: 'Anna Martinez', role: 'Signatory', avatar: 'AM' },
+  { id: '3', name: 'John Doe', role: 'Approver', avatar: 'JD' },
 ];
 
 const mockWorkflowSteps: WorkflowStep[] = [
@@ -666,24 +545,23 @@ const mockWorkflowSteps: WorkflowStep[] = [
 ];
 
 const mockDeadlines: Deadline[] = [
-  { id: '1', title: 'Contract Amendment', priority: 'high', dueIn: '2 days', action: 'Signature required' },
-  { id: '2', title: 'Tax Filing Documents', priority: 'medium', dueIn: '5 days', action: 'Approval needed' },
-  { id: '3', title: 'Annual Report', priority: 'low', dueIn: '12 days', action: 'Review pending' },
+  { id: '1', title: 'Service Agreement Signature', priority: 'high', dueIn: '2 days', action: 'Signature required' },
+  { id: '2', title: 'Tax Return Authorization', priority: 'medium', dueIn: '5 days', action: 'Approval needed' },
+  { id: '3', title: 'Financial Statement Approval', priority: 'low', dueIn: '12 days', action: 'Review pending' },
 ];
 
 const mockActivities: Activity[] = [
-  { id: '1', title: 'Document validated by James Patterson', description: 'Contract Amendment for TechCorp Solutions', time: '15 minutes ago' },
-  { id: '2', title: 'New document uploaded by client', description: 'Tax documents from Martinez Construction', time: '1 hour ago' },
-  { id: '3', title: 'Document signed by client', description: 'Service Agreement for Digital Marketing Inc', time: '3 hours ago' },
-  { id: '4', title: 'Document approved by Lisa Chen', description: 'Business License Application', time: 'Yesterday' },
+  { id: '1', title: 'Khalil Salehi uploaded a new document "Service Agreement"', description: 'Service Agreement for XYZ Accounting LLP', time: 'May 20 1:00 PM' },
+  { id: '2', title: 'Gary Hussein commented on "Financial Statement"', description: 'Financial Statement for ABC Legal Services', time: 'Today at 4:47 PM' },
+  { id: '3', title: 'Robert Chavez completed review of "Initial Draft"', description: 'Board Meeting Minutes review completed', time: 'Yesterday' },
+  { id: '4', title: 'Anna Martinez uploaded documents', description: 'Tax documents for Smith Dental Clinic', time: 'May 18 9:30 AM' },
 ];
 
-export default function FirmSide2Page() {
+export default function Dashboard() {
   const styles = useStyles();
   const [selectedClient, setSelectedClient] = useState<Client>(mockClients[0]);
   const [selectedDocument, setSelectedDocument] = useState<Document>(mockDocuments[0]);
   const [clientSearchTerm, setClientSearchTerm] = useState('');
-  const [globalSearchTerm, setGlobalSearchTerm] = useState('');
   const [progressWidth, setProgressWidth] = useState(0);
   const [isAddClientDialogOpen, setIsAddClientDialogOpen] = useState(false);
   const [newClientName, setNewClientName] = useState('');
@@ -692,7 +570,7 @@ export default function FirmSide2Page() {
   // Анимация прогресс-бара
   useEffect(() => {
     const timer = setTimeout(() => {
-      setProgressWidth(73);
+      setProgressWidth(75);
     }, 500);
     return () => clearTimeout(timer);
   }, []);
@@ -727,6 +605,9 @@ export default function FirmSide2Page() {
 
   const getStatusClass = (status: string) => {
     switch (status) {
+      case 'Review & Sign': return styles.statusPending;
+      case 'Review': return styles.statusReview;
+      case 'Complete': return styles.statusApproved;
       case 'Validation Required': return styles.statusPending;
       case 'Signature Required': return styles.statusReview;
       case 'Final Approval': return styles.statusApproved;
@@ -736,6 +617,9 @@ export default function FirmSide2Page() {
 
   const getRoleClass = (role: string) => {
     switch (role) {
+      case 'Validator': return styles.roleValidator;
+      case 'Approver': return styles.roleApprover;
+      case 'Signatory': return styles.roleSignatory;
       case 'Lead Attorney': return styles.roleValidator;
       case 'Senior Associate': return styles.roleApprover;
       case 'Partner': return styles.roleSignatory;
@@ -761,37 +645,17 @@ export default function FirmSide2Page() {
     }
   };
 
+  const getClientStatusClass = (status?: string) => {
+    switch (status) {
+      case 'urgent': return styles.statusUrgent;
+      case 'attention': return styles.statusAttention;
+      case 'normal': return styles.statusNormal;
+      default: return styles.statusNormal;
+    }
+  };
+
   return (
     <div className={styles.root}>
-      {/* Top Navigation */}
-      <nav className={styles.topNav}>
-        <div className={styles.navLeft}>
-          <div className={styles.logo}>ClientPortal</div>
-          <div className={styles.searchContainer}>
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Search documents, clients, tasks..."
-              value={globalSearchTerm}
-              onChange={(e) => setGlobalSearchTerm(e.target.value)}
-            />
-            <span className={styles.searchIcon}>🔍</span>
-          </div>
-        </div>
-        <div className={styles.navRight}>
-          <div className={styles.navIcon} onClick={() => alert('You have 3 new notifications:\n• Document validation required\n• Client uploaded new files\n• Deadline approaching')}>
-            🔔
-            <span className={styles.notificationBadge}>3</span>
-          </div>
-          <div className={styles.navIcon} onClick={() => alert('Settings clicked')}>⚙️</div>
-          <div className={styles.navIcon} onClick={() => alert('Help clicked')}>❓</div>
-          <div className={styles.userProfile} onClick={() => alert('User profile clicked')}>
-            <div className={styles.userAvatar}>JD</div>
-            <span>John Doe</span>
-          </div>
-        </div>
-      </nav>
-
       <div className={styles.mainContainer}>
         {/* Left Sidebar */}
         <aside className={styles.leftSidebar}>
@@ -820,9 +684,14 @@ export default function FirmSide2Page() {
                 className={`${styles.clientItem} ${selectedClient.id === client.id ? styles.clientItemActive : ''}`}
                 onClick={() => handleClientSelect(client)}
               >
-                <div className={styles.clientInfo}>
-                  <h4>{client.name}</h4>
-                  <p>{client.type}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {client.status && client.status !== 'normal' && (
+                    <div className={`${styles.clientStatusIndicator} ${getClientStatusClass(client.status)}`}></div>
+                  )}
+                  <div className={styles.clientInfo}>
+                    <h4>{client.name}</h4>
+                    <p>{client.type}</p>
+                  </div>
                 </div>
                 {client.notifications && (
                   <div className={styles.clientStatus}>{client.notifications}</div>
@@ -847,7 +716,7 @@ export default function FirmSide2Page() {
                     style={{ width: `${progressWidth}%` }}
                   ></div>
                 </div>
-                <div className={styles.progressText}>73% Complete</div>
+                <div className={styles.progressText}>75% Complete</div>
               </div>
               <div className={styles.statusGrid}>
                 <div className={styles.statusItem}>
@@ -967,8 +836,7 @@ export default function FirmSide2Page() {
                   <p>{member.role}</p>
                 </div>
                 <span className={`${styles.roleBadge} ${getRoleClass(member.role)}`}>
-                  {member.role.includes('Attorney') ? 'Validator' : 
-                   member.role.includes('Associate') ? 'Approver' : 'Signatory'}
+                  {member.role}
                 </span>
               </div>
             ))}
@@ -1015,7 +883,7 @@ export default function FirmSide2Page() {
       </div>
 
       {/* Add Client Dialog */}
-      <Dialog open={isAddClientDialogOpen} onOpenChange={(e, data) => setIsAddClientDialogOpen(data.open)}>
+      <Dialog open={isAddClientDialogOpen} onOpenChange={(_, data) => setIsAddClientDialogOpen(data.open)}>
         <DialogSurface>
           <DialogBody>
             <DialogTitle>Add New Client</DialogTitle>
@@ -1034,7 +902,7 @@ export default function FirmSide2Page() {
                 <Select
                   id="clientType"
                   value={newClientType}
-                  onChange={(e, data) => setNewClientType(data.value)}
+                  onChange={(_, data) => setNewClientType(data.value)}
                 >
                   <Option value="Corporate Law">Corporate Law</Option>
                   <Option value="Estate Planning">Estate Planning</Option>
@@ -1058,4 +926,4 @@ export default function FirmSide2Page() {
       </Dialog>
     </div>
   );
-} 
+}

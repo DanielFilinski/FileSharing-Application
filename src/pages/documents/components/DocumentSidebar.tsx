@@ -14,7 +14,7 @@ import {
   PersonRegular,
   ShieldRegular,
 } from '@fluentui/react-icons';
-import { Document, TeamMember, WorkflowStep } from '../ui/FirmSide2Page';
+import { Document, TeamMember, WorkflowStep } from '../ui/Dashboard';
 
 const useStyles = makeStyles({
   rightSidebar: {

@@ -1,1 +1,1 @@
-export { FirmSide2Page } from './ui';
+export { Dashboard } from './ui';

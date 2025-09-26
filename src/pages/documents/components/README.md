@@ -1,8 +1,8 @@
-# FirmSide2Page Components
+# Dashboard Components
 
 ## Описание
 
-FirmSide2Page - это точная копия интерфейса из HTML макета "Firm Side 2.html", преобразованная в React компоненты с использованием Fluent UI Design System. Страница полностью соответствует оригинальному дизайну и функциональности.
+Dashboard - это точная копия интерфейса из HTML макета "Firm Side 2.html", преобразованная в React компоненты с использованием Fluent UI Design System. Страница полностью соответствует оригинальному дизайну и функциональности.
 
 ## Соответствие HTML макету
 
@@ -23,7 +23,7 @@ FirmSide2Page - это точная копия интерфейса из HTML м
 
 ### Основные компоненты
 
-1. **FirmSide2Page** (`../ui/FirmSide2Page.tsx`)
+1. **Dashboard** (`../ui/Dashboard.tsx`)
    - Главный компонент страницы
    - Управляет состоянием выбранного клиента и документа
    - Оркестрирует взаимодействие между компонентами
@@ -102,10 +102,10 @@ interface WorkflowStep {
 ## Использование
 
 ```typescript
-import { FirmSide2Page } from '@/pages/documents';
+import { Dashboard } from '@/pages/documents';
 
 // В роутере
-<Route path="/firm-side-2" element={<FirmSide2Page />} />
+<Route path="/firm-side-2" element={<Dashboard />} />
 ```
 
 ## Особенности

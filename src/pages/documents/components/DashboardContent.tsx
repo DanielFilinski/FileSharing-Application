@@ -14,7 +14,7 @@ import {
   ClockRegular,
   AlertRegular,
 } from '@fluentui/react-icons';
-import { Client, Document } from '../ui/FirmSide2Page';
+import { Client, Document } from '../ui/Dashboard';
 
 const useStyles = makeStyles({
   mainContent: {
