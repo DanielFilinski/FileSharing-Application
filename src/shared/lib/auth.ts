@@ -175,12 +175,8 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    if (!this.credential) {
-      return;
-    }
-
     try {
-      // TeamsUserCredential doesn't have logout method, just clear state
+      // Clear user state
       this.currentUser = null;
       apiClient.setToken(null);
       
@@ -189,8 +185,28 @@ export class AuthService {
         clearTimeout(this.tokenRefreshTimer);
         this.tokenRefreshTimer = null;
       }
+
+      // Clear browser authentication data
+      if (!this.isInTeams) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
+        sessionStorage.clear();
+      }
+
+      // For Teams environment, we can't force actual logout from Teams,
+      // but we clear our application state
+      if (this.isInTeams && this.credential) {
+        // Teams credential doesn't have explicit logout, so we just clear our state
+        this.credential = null;
+      }
+
+      console.log('Logout completed successfully');
     } catch (error) {
       console.error('Logout failed:', error);
+      // Even if logout fails, clear local state to prevent stuck authentication
+      this.currentUser = null;
+      apiClient.setToken(null);
       throw error;
     }
   }

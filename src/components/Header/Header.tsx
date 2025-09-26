@@ -15,15 +15,12 @@ import {
 } from '@fluentui/react-components';
 import { 
   ChevronDownRegular, 
-  PersonRegular,
   SignOutRegular,
   SettingsRegular
 } from '@fluentui/react-icons';
 import { useApp } from '@/shared/lib/AppProvider';
 import { UserAvatar } from '@/entities/user/ui/UserAvatar';
-import { authService } from '@/shared/lib/auth';
 import { COMPANY_CONFIG } from '@/config/company';
-import { useNavigate } from 'react-router-dom';
 import { SettingsMenu } from './SettingsMenu';
 
 const useStyles = makeStyles({
@@ -126,12 +123,11 @@ const Header: React.FC<HeaderProps> = ({
   companyName = COMPANY_CONFIG.name 
 }) => {
   const styles = useStyles();
-  const { currentUser } = useApp();
-  const navigate = useNavigate();
+  const { currentUser, handleLogout: appLogout } = useApp();
 
   const handleLogout = async () => {
     try {
-      await authService.logout();
+      await appLogout();
     } catch (error) {
       console.error('Logout failed:', error);
     }

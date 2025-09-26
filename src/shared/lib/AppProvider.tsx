@@ -13,6 +13,7 @@ interface AppContextType {
   currentUser: any;
   initialize: () => Promise<void>;
   handleLogin: () => Promise<void>;
+  handleLogout: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -21,6 +22,7 @@ const AppContext = createContext<AppContextType>({
   currentUser: null,
   initialize: async () => {},
   handleLogin: async () => {},
+  handleLogout: async () => {},
 });
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -84,6 +86,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      
+      // Update local state to trigger re-render and show login screen
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+      
+      notificationService.success(
+        'Logout Successful',
+        'You have been logged out successfully'
+      );
+    } catch (error) {
+      console.error('Logout failed:', error);
+      notificationService.error('Logout Error', 'Failed to logout properly');
+      
+      // Even if logout fails, force local state reset
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+    }
+  };
+
   useEffect(() => {
     initialize();
   }, []);
@@ -94,6 +118,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     currentUser,
     initialize,
     handleLogin,
+    handleLogout,
   };
 
   // Show login screen if not authenticated
