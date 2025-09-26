@@ -83,3 +83,18 @@ apiClient['request'] = async function<T>(
 // Export types for use in other modules
 export type { ApiResponse, ApiError } from './client';
 export { ApiClient };
+
+// Dashboard Service
+export { 
+  dashboardService,
+  type DashboardClient,
+  type DashboardDocument, 
+  type UserProfile,
+  type DashboardStats,
+  type ActivityItem,
+  type DeadlineItem
+} from './dashboardService';
+
+// Legacy services
+export { documentsService } from './documentsService';
+export { oneDriveService } from './oneDriveService';

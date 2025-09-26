@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { makeStyles } from '@fluentui/react-components';
 import {
   Button,
@@ -12,7 +12,16 @@ import {
   Label,
   Select,
   Option,
+  Spinner,
 } from '@fluentui/react-components';
+import { 
+  dashboardService, 
+  type DashboardClient, 
+  type DashboardDocument, 
+  type DashboardStats,
+  type ActivityItem,
+  type DeadlineItem 
+} from '@/shared/api';
 
 const useStyles = makeStyles({
   root: {
@@ -438,25 +447,11 @@ const useStyles = makeStyles({
   },
 });
 
-export interface Client {
-  id: string;
-  name: string;
-  type: string;
-  notifications?: number;
-  status?: 'urgent' | 'attention' | 'normal';
-}
-
-export interface Document {
-  id: string;
-  name: string;
-  type: string;
-  category: string;
-  domain: string;
-  created: string;
-  status: string;
-  uploadedBy: string;
-  uploadedTime: string;
-}
+// Re-export types from API for backward compatibility
+export type Client = DashboardClient;
+export type Document = DashboardDocument;
+export type Activity = ActivityItem;
+export type Deadline = DeadlineItem;
 
 export interface TeamMember {
   id: string;
@@ -471,63 +466,82 @@ export interface WorkflowStep {
   status: 'completed' | 'active' | 'pending';
 }
 
-export interface Deadline {
-  id: string;
-  title: string;
-  priority: 'high' | 'medium' | 'low';
-  dueIn: string;
-  action: string;
-}
 
-export interface Activity {
-  id: string;
-  title: string;
-  description: string;
-  time: string;
-}
-
-// Данные из HTML макета
+// Data from HTML mockup
 const mockClients: Client[] = [
-  { id: '1', name: 'XYZ Accounting LLP', type: 'Tax Preparation Services', notifications: 3, status: 'urgent' },
-  { id: '2', name: 'ABC Legal Services', type: 'Legal Consulting', notifications: 1, status: 'urgent' },
-  { id: '3', name: 'Johnson & Associates LLP', type: 'Business Law', status: 'normal' },
-  { id: '4', name: 'Smith Dental Clinic', type: 'Healthcare Services', notifications: 2, status: 'attention' },
-  { id: '5', name: 'Carter Investments', type: 'Financial Services', status: 'normal' },
+  { Id: '1', FirstName: 'XYZ', LastName: 'Accounting', Email: 'xyz@accounting.com', FirmName: 'XYZ Accounting LLP', IsActive: true, name: 'XYZ Accounting LLP', type: 'Tax Preparation Services', notifications: 3, status: 'urgent' },
+  { Id: '2', FirstName: 'ABC', LastName: 'Legal', Email: 'abc@legal.com', FirmName: 'ABC Legal Services', IsActive: true, name: 'ABC Legal Services', type: 'Legal Consulting', notifications: 1, status: 'urgent' },
+  { Id: '3', FirstName: 'Johnson', LastName: 'Associates', Email: 'johnson@law.com', FirmName: 'Johnson & Associates LLP', IsActive: true, name: 'Johnson & Associates LLP', type: 'Business Law', status: 'normal' },
+  { Id: '4', FirstName: 'Smith', LastName: 'Dental', Email: 'smith@dental.com', FirmName: 'Smith Dental Clinic', IsActive: true, name: 'Smith Dental Clinic', type: 'Healthcare Services', notifications: 2, status: 'attention' },
+  { Id: '5', FirstName: 'Carter', LastName: 'Investments', Email: 'carter@invest.com', FirmName: 'Carter Investments', IsActive: true, name: 'Carter Investments', type: 'Financial Services', status: 'normal' },
 ];
 
 const mockDocuments: Document[] = [
   {
     id: '1',
+    partitionKey: 'documents',
     name: 'Service Agreement',
+    fileName: 'service-agreement.pdf',
+    contentType: 'application/pdf',
+    size: 1024000,
+    uploadDate: 'May 20, 2025',
+    lastModified: 'May 20, 2025',
     type: 'Service Agreement',
     category: 'Business Documents',
     domain: 'Law',
     created: 'May 20, 2025',
-    status: 'Review & Sign',
+    status: 'pending',
     uploadedBy: 'Robert Chen',
-    uploadedTime: 'May 20, 2025'
+    uploadedTime: 'May 20, 2025',
+    metadata: {
+      createdAt: 'May 20, 2025',
+      createdBy: 'Robert Chen',
+      priority: 'High'
+    }
   },
   {
     id: '2',
+    partitionKey: 'documents',
     name: 'Financial Statement Questionnaire',
+    fileName: 'financial-statement.pdf',
+    contentType: 'application/pdf',
+    size: 512000,
+    uploadDate: 'May 19, 2025',
+    lastModified: 'May 19, 2025',
     type: 'Financial Statement',
     category: 'Financial Documents',
     domain: 'Accounting',
     created: 'May 19, 2025',
-    status: 'Complete',
+    status: 'approved',
     uploadedBy: 'Anna Martinez',
-    uploadedTime: 'May 19, 2025'
+    uploadedTime: 'May 19, 2025',
+    metadata: {
+      createdAt: 'May 19, 2025',
+      createdBy: 'Anna Martinez',
+      priority: 'Medium'
+    }
   },
   {
     id: '3',
+    partitionKey: 'documents',
     name: 'Board Meeting Minutes',
+    fileName: 'board-meeting-minutes.docx',
+    contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    size: 256000,
+    uploadDate: 'May 18, 2025',
+    lastModified: 'May 18, 2025',
     type: 'Meeting Minutes',
     category: 'Corporate Documents',
     domain: 'Corporate',
     created: 'May 18, 2025',
-    status: 'Review',
+    status: 'draft',
     uploadedBy: 'John Doe',
-    uploadedTime: 'May 18, 2025'
+    uploadedTime: 'May 18, 2025',
+    metadata: {
+      createdAt: 'May 18, 2025',
+      createdBy: 'John Doe',
+      priority: 'Low'
+    }
   }
 ];
 
@@ -545,20 +559,35 @@ const mockWorkflowSteps: WorkflowStep[] = [
 ];
 
 const mockDeadlines: Deadline[] = [
-  { id: '1', title: 'Service Agreement Signature', priority: 'high', dueIn: '2 days', action: 'Signature required' },
-  { id: '2', title: 'Tax Return Authorization', priority: 'medium', dueIn: '5 days', action: 'Approval needed' },
-  { id: '3', title: 'Financial Statement Approval', priority: 'low', dueIn: '12 days', action: 'Review pending' },
+  { id: '1', title: 'Service Agreement Signature', priority: 'high', dueDate: 'March 15, 2024', action: 'Signature required' },
+  { id: '2', title: 'Tax Return Authorization', priority: 'medium', dueDate: 'February 28, 2024', action: 'Approval needed' },
+  { id: '3', title: 'Financial Statement Approval', priority: 'low', dueDate: 'March 5, 2024', action: 'Review pending' },
 ];
 
 const mockActivities: Activity[] = [
-  { id: '1', title: 'Khalil Salehi uploaded a new document "Service Agreement"', description: 'Service Agreement for XYZ Accounting LLP', time: 'May 20 1:00 PM' },
-  { id: '2', title: 'Gary Hussein commented on "Financial Statement"', description: 'Financial Statement for ABC Legal Services', time: 'Today at 4:47 PM' },
-  { id: '3', title: 'Robert Chavez completed review of "Initial Draft"', description: 'Board Meeting Minutes review completed', time: 'Yesterday' },
-  { id: '4', title: 'Anna Martinez uploaded documents', description: 'Tax documents for Smith Dental Clinic', time: 'May 18 9:30 AM' },
+  { id: '1', title: 'Khalil Salehi uploaded a new document "Service Agreement"', description: 'Service Agreement for XYZ Accounting LLP', time: 'May 20 1:00 PM', type: 'upload', userId: 'user1' },
+  { id: '2', title: 'Gary Hussein commented on "Financial Statement"', description: 'Financial Statement for ABC Legal Services', time: 'Today at 4:47 PM', type: 'comment', userId: 'user2' },
+  { id: '3', title: 'Robert Chavez completed review of "Initial Draft"', description: 'Board Meeting Minutes review completed', time: 'Yesterday', type: 'review', userId: 'user3' },
+  { id: '4', title: 'Anna Martinez uploaded documents', description: 'Tax documents for Smith Dental Clinic', time: 'May 18 9:30 AM', type: 'upload', userId: 'user4' },
 ];
 
 export default function Dashboard() {
   const styles = useStyles();
+  
+  // State for data - initialize with mock data immediately
+  const [clients, setClients] = useState<Client[]>(mockClients);
+  const [documents, setDocuments] = useState<Document[]>(mockDocuments);
+  const [activities, setActivities] = useState<Activity[]>(mockActivities);
+  const [deadlines, setDeadlines] = useState<Deadline[]>(mockDeadlines);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats>({
+    totalDocuments: mockDocuments.length,
+    pendingValidation: 5,
+    pendingSigning: 3,
+    pendingApproval: 2,
+    completionPercentage: 75
+  });
+  
+  // State for UI
   const [selectedClient, setSelectedClient] = useState<Client>(mockClients[0]);
   const [selectedDocument, setSelectedDocument] = useState<Document>(mockDocuments[0]);
   const [clientSearchTerm, setClientSearchTerm] = useState('');
@@ -566,19 +595,167 @@ export default function Dashboard() {
   const [isAddClientDialogOpen, setIsAddClientDialogOpen] = useState(false);
   const [newClientName, setNewClientName] = useState('');
   const [newClientType, setNewClientType] = useState('');
+  
+  // Loading states for individual sections
+  const [isClientsLoading, setIsClientsLoading] = useState(true);
+  const [isDocumentsLoading, setIsDocumentsLoading] = useState(true);
+  const [isActivitiesLoading, setIsActivitiesLoading] = useState(true);
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
+  const [isAddClientLoading, setIsAddClientLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<'mock' | 'api'>('mock');
 
-  // Анимация прогресс-бара
+  // Load initial data progressively
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setProgressWidth(75);
-    }, 500);
-    return () => clearTimeout(timer);
+    loadAllData();
   }, []);
 
-  // Фильтрация клиентов
-  const filteredClients = mockClients.filter(client =>
-    client.name.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
-    client.type.toLowerCase().includes(clientSearchTerm.toLowerCase())
+  // Progress bar animation
+  useEffect(() => {
+    if (dashboardStats) {
+      const timer = setTimeout(() => {
+        setProgressWidth(dashboardStats.completionPercentage);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [dashboardStats]);
+
+  // Helper function to create timeout promise
+  const createTimeoutPromise = <T,>(promise: Promise<T>, timeout: number = 8000): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), timeout)
+      )
+    ]);
+  };
+
+  // Load clients data
+  const loadClientsData = async () => {
+    console.log('🔄 Loading clients data...');
+    setIsClientsLoading(true);
+    
+    try {
+      const clientsData = await createTimeoutPromise(dashboardService.getClients(), 8000);
+      if (clientsData.length > 0) {
+        setClients(clientsData);
+        setSelectedClient(clientsData[0]);
+        setDataSource('api');
+        console.log('✅ Clients loaded from API:', clientsData.length);
+      } else {
+        throw new Error('No clients data');
+      }
+    } catch (error) {
+      console.warn('⚠️ Clients API failed, using mock data:', error);
+      // Keep mock data that's already set
+    } finally {
+      setIsClientsLoading(false);
+    }
+  };
+
+  // Load documents data
+  const loadDocumentsData = async () => {
+    console.log('🔄 Loading documents data...');
+    setIsDocumentsLoading(true);
+    
+    try {
+      const documentsData = await createTimeoutPromise(dashboardService.getDocuments(), 8000);
+      if (documentsData.length > 0) {
+        setDocuments(documentsData);
+        setSelectedDocument(documentsData[0]);
+        setDataSource('api');
+        console.log('✅ Documents loaded from API:', documentsData.length);
+      } else {
+        throw new Error('No documents data');
+      }
+    } catch (error) {
+      console.warn('⚠️ Documents API failed, using mock data:', error);
+      // Keep mock data that's already set
+    } finally {
+      setIsDocumentsLoading(false);
+    }
+  };
+
+  // Load activities and deadlines
+  const loadActivitiesData = async () => {
+    console.log('🔄 Loading activities data...');
+    setIsActivitiesLoading(true);
+    
+    try {
+      const [activitiesData, deadlinesData] = await Promise.all([
+        createTimeoutPromise(dashboardService.getRecentActivities(4), 5000).catch(() => []),
+        createTimeoutPromise(dashboardService.getUpcomingDeadlines(3), 5000).catch(() => [])
+      ]);
+      
+      if (activitiesData.length > 0 || deadlinesData.length > 0) {
+        if (activitiesData.length > 0) {
+          setActivities(activitiesData);
+        }
+        if (deadlinesData.length > 0) {
+          setDeadlines(deadlinesData);
+        }
+        setDataSource('api');
+        console.log('✅ Activities/Deadlines loaded from API');
+      }
+    } catch (error) {
+      console.warn('⚠️ Activities API failed, using mock data:', error);
+    } finally {
+      setIsActivitiesLoading(false);
+    }
+  };
+
+  // Load dashboard stats
+  const loadStatsData = async () => {
+    console.log('🔄 Loading stats data...');
+    setIsStatsLoading(true);
+    
+    try {
+      const statsData = await createTimeoutPromise(dashboardService.getDashboardStats(), 5000);
+      if (statsData) {
+        setDashboardStats(statsData);
+        setDataSource('api');
+        console.log('✅ Stats loaded from API');
+      }
+    } catch (error) {
+      console.warn('⚠️ Stats API failed, using mock data:', error);
+    } finally {
+      setIsStatsLoading(false);
+    }
+  };
+
+  // Load all data progressively
+  const loadAllData = async () => {
+    console.log('🔄 Starting progressive data loading...');
+    setError(null);
+    
+    // Start loading all data in parallel, but each section handles its own loading state
+    const promises = [
+      loadClientsData(),
+      loadDocumentsData(), 
+      loadActivitiesData(),
+      loadStatsData()
+    ];
+
+    try {
+      await Promise.allSettled(promises);
+      console.log('✅ All data loading completed');
+      
+      // Show success message only if we got API data
+      if (dataSource === 'api') {
+        setError('✅ Connected to Azure Functions - showing live data');
+        setTimeout(() => setError(null), 3000); // Clear message after 3 seconds
+      } else {
+        setError('Using offline data. Azure Functions may be unavailable.');
+      }
+    } catch (error) {
+      console.error('❌ Error during data loading:', error);
+    }
+  };
+
+  // Client filtering
+  const filteredClients = clients.filter(client =>
+    (client.name || '').toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+    (client.type || '').toLowerCase().includes(clientSearchTerm.toLowerCase())
   );
 
   const handleClientSelect = (client: Client) => {
@@ -589,17 +766,42 @@ export default function Dashboard() {
     setSelectedDocument(document);
   };
 
-  const handleAddClient = () => {
-    if (newClientName.trim()) {
-      const newClient: Client = {
-        id: Date.now().toString(),
-        name: newClientName,
-        type: newClientType || 'General',
+  const handleAddClient = async () => {
+    if (!newClientName.trim()) return;
+
+    setIsAddClientLoading(true);
+    try {
+      const [firstName, ...lastNameParts] = newClientName.trim().split(' ');
+      const lastName = lastNameParts.join(' ') || 'Client';
+      
+      const newClientData: Partial<DashboardClient> = {
+        FirstName: firstName,
+        LastName: lastName,
+        Email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+        FirmName: newClientType === 'General' ? undefined : newClientName,
+        IsActive: true
       };
-      mockClients.push(newClient);
+
+      const createdClient = await dashboardService.createClient(newClientData);
+      
+      // Add to local state
+      setClients(prev => [...prev, createdClient]);
+      
+      // Reset form
       setNewClientName('');
       setNewClientType('');
       setIsAddClientDialogOpen(false);
+      
+      // Select the new client
+      setSelectedClient(createdClient);
+      
+      setDataSource('api');
+      console.log('✅ Client created successfully');
+    } catch (error) {
+      console.error('Error adding client:', error);
+      setError('Failed to add client. Please try again.');
+    } finally {
+      setIsAddClientLoading(false);
     }
   };
 
@@ -656,11 +858,61 @@ export default function Dashboard() {
 
   return (
     <div className={styles.root}>
+      {error && (
+        <div style={{ 
+          background: error.startsWith('✅') ? '#d1edff' : '#fff3cd', 
+          border: `1px solid ${error.startsWith('✅') ? '#0078d4' : '#ffeaa7'}`, 
+          padding: '12px 16px', 
+          color: error.startsWith('✅') ? '#0078d4' : '#856404',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <span>{error}</span>
+          {!error.startsWith('✅') && (
+            <Button 
+              size="small" 
+              onClick={loadAllData}
+              disabled={isClientsLoading || isDocumentsLoading || isActivitiesLoading || isStatsLoading}
+            >
+              {(isClientsLoading || isDocumentsLoading || isActivitiesLoading || isStatsLoading) ? 'Loading...' : 'Try Again'}
+            </Button>
+          )}
+        </div>
+      )}
+      
+      {/* Data source indicator */}
+      <div style={{ 
+        position: 'fixed', 
+        bottom: '20px', 
+        right: '20px', 
+        background: dataSource === 'api' ? '#d1edff' : '#f8f9fa',
+        border: `1px solid ${dataSource === 'api' ? '#0078d4' : '#dee2e6'}`,
+        borderRadius: '20px',
+        padding: '8px 12px',
+        fontSize: '12px',
+        color: dataSource === 'api' ? '#0078d4' : '#6c757d',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px'
+      }}>
+        <div style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          backgroundColor: dataSource === 'api' ? '#0078d4' : '#6c757d'
+        }}></div>
+        {dataSource === 'api' ? '🌐 Live Data' : '📱 Offline Data'}
+      </div>
       <div className={styles.mainContainer}>
         {/* Left Sidebar */}
         <aside className={styles.leftSidebar}>
           <div className={styles.sidebarHeader}>
-            <h2 className={styles.sidebarTitle}>Client Directory</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <h2 className={styles.sidebarTitle} style={{ margin: 0 }}>Client Directory</h2>
+              {isClientsLoading && <Spinner size="tiny" />}
+            </div>
             <button 
               className={styles.addClientBtn}
               onClick={() => setIsAddClientDialogOpen(true)}
@@ -678,22 +930,22 @@ export default function Dashboard() {
             />
           </div>
           <div className={styles.clientList}>
-            {filteredClients.map((client) => (
+            {filteredClients.map((client, index) => (
               <div
-                key={client.id}
-                className={`${styles.clientItem} ${selectedClient.id === client.id ? styles.clientItemActive : ''}`}
+                key={client?.id || `client-${index}`}
+                className={`${styles.clientItem} ${selectedClient?.id === client?.id ? styles.clientItemActive : ''}`}
                 onClick={() => handleClientSelect(client)}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {client.status && client.status !== 'normal' && (
+                  {client?.status && client.status !== 'normal' && (
                     <div className={`${styles.clientStatusIndicator} ${getClientStatusClass(client.status)}`}></div>
                   )}
                   <div className={styles.clientInfo}>
-                    <h4>{client.name}</h4>
-                    <p>{client.type}</p>
+                    <h4>{client?.name || 'Unknown Client'}</h4>
+                    <p>{client?.type || 'Unknown'}</p>
                   </div>
                 </div>
-                {client.notifications && (
+                {client?.notifications && (
                   <div className={styles.clientStatus}>{client.notifications}</div>
                 )}
               </div>
@@ -707,7 +959,10 @@ export default function Dashboard() {
             {/* Project Status Summary */}
             <div className={styles.card}>
               <div className={styles.cardHeader}>
-                <h3 className={styles.cardTitle}>{selectedClient.name} - Project Status Summary</h3>
+                <h3 className={styles.cardTitle}>
+                  {selectedClient?.name || 'Overall'} - Project Status Summary
+                </h3>
+                {isStatsLoading && <Spinner size="tiny" />}
               </div>
               <div className={styles.progressContainer}>
                 <div className={styles.progressBar}>
@@ -716,19 +971,27 @@ export default function Dashboard() {
                     style={{ width: `${progressWidth}%` }}
                   ></div>
                 </div>
-                <div className={styles.progressText}>75% Complete</div>
+                <div className={styles.progressText}>
+                  {dashboardStats?.completionPercentage || 75}% Complete
+                </div>
               </div>
               <div className={styles.statusGrid}>
                 <div className={styles.statusItem}>
-                  <div className={styles.statusNumber}>5</div>
+                  <div className={styles.statusNumber}>
+                    {dashboardStats?.pendingValidation || 5}
+                  </div>
                   <div className={styles.statusLabel}>Pending Validation</div>
                 </div>
                 <div className={styles.statusItem}>
-                  <div className={styles.statusNumber}>3</div>
+                  <div className={styles.statusNumber}>
+                    {dashboardStats?.pendingSigning || 3}
+                  </div>
                   <div className={styles.statusLabel}>Pending Signing</div>
                 </div>
                 <div className={styles.statusItem}>
-                  <div className={styles.statusNumber}>2</div>
+                  <div className={styles.statusNumber}>
+                    {dashboardStats?.pendingApproval || 2}
+                  </div>
                   <div className={styles.statusLabel}>Pending Approval</div>
                 </div>
               </div>
@@ -738,17 +1001,22 @@ export default function Dashboard() {
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3 className={styles.cardTitle}>Upcoming Deadlines</h3>
+                {isActivitiesLoading && <Spinner size="tiny" />}
               </div>
               <div className={styles.deadlineList}>
-                {mockDeadlines.map((deadline) => (
-                  <div key={deadline.id} className={styles.deadlineItem}>
-                    <div className={`${styles.deadlinePriority} ${getPriorityClass(deadline.priority)}`}></div>
+                {deadlines.length > 0 ? deadlines.map((deadline, index) => (
+                  <div key={deadline?.id || `deadline-${index}`} className={styles.deadlineItem}>
+                    <div className={`${styles.deadlinePriority} ${getPriorityClass(deadline?.priority || 'medium')}`}></div>
                     <div>
-                      <h5>{deadline.title}</h5>
-                      <p>Due in {deadline.dueIn} - {deadline.action}</p>
+                      <h5>{deadline?.title || 'Untitled'}</h5>
+                      <p>Due {deadline?.dueDate || 'TBD'} - {deadline?.action || 'Action required'}</p>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                    No upcoming deadlines
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -757,23 +1025,28 @@ export default function Dashboard() {
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>Action Required Documents</h3>
+              {isDocumentsLoading && <Spinner size="tiny" />}
             </div>
             <div className={styles.documentList}>
-              {mockDocuments.map((document) => (
+              {documents.length > 0 ? documents.map((document, index) => (
                 <div 
-                  key={document.id} 
+                  key={document?.id || `document-${index}`} 
                   className={styles.documentItem}
                   onClick={() => handleDocumentSelect(document)}
                 >
                   <div>
-                    <h5>{document.name}</h5>
-                    <p>Uploaded {document.uploadedTime} by {document.uploadedBy}</p>
+                    <h5>{document?.name || 'Untitled Document'}</h5>
+                    <p>Uploaded {document?.uploadedTime || document?.created || 'Unknown'} by {document?.uploadedBy || document?.metadata?.createdBy || 'Unknown'}</p>
                   </div>
-                  <div className={`${styles.documentStatus} ${getStatusClass(document.status)}`}>
-                    {document.status}
+                  <div className={`${styles.documentStatus} ${getStatusClass(document?.status || 'draft')}`}>
+                    {document?.status || 'Draft'}
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                  No documents requiring action
+                </div>
+              )}
             </div>
           </div>
 
@@ -781,17 +1054,22 @@ export default function Dashboard() {
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>Recent Activity</h3>
+              {isActivitiesLoading && <Spinner size="tiny" />}
             </div>
             <div className={styles.activityList}>
-              {mockActivities.map((activity) => (
-                <div key={activity.id} className={styles.activityItem}>
+              {activities.length > 0 ? activities.map((activity, index) => (
+                <div key={activity?.id || `activity-${index}`} className={styles.activityItem}>
                   <div className={styles.activityDot}></div>
                   <div className={styles.activityContent}>
-                    <h5>{activity.title}</h5>
-                    <p>{activity.description} - {activity.time}</p>
+                    <h5>{activity?.title || 'Activity'}</h5>
+                    <p>{activity?.description || 'No description'} - {activity?.time || 'Unknown time'}</p>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                  No recent activity
+                </div>
+              )}
             </div>
           </div>
         </main>
@@ -801,28 +1079,38 @@ export default function Dashboard() {
           {/* Document Information */}
           <div className={styles.sidebarSection}>
             <h3 className={styles.sectionTitle}>Document Information</h3>
-            <div className={styles.documentMeta}>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Document Type:</span>
-                <span className={styles.metaValue}>{selectedDocument.type}</span>
+            {selectedDocument ? (
+              <div className={styles.documentMeta}>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Document Type:</span>
+                  <span className={styles.metaValue}>{selectedDocument?.type || selectedDocument?.category || 'Unknown'}</span>
+                </div>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Category:</span>
+                  <span className={styles.metaValue}>{selectedDocument?.category || 'General'}</span>
+                </div>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Domain:</span>
+                  <span className={styles.metaValue}>{selectedDocument?.domain || 'General'}</span>
+                </div>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Created:</span>
+                  <span className={styles.metaValue}>{selectedDocument?.created || selectedDocument?.metadata?.createdAt || 'Unknown'}</span>
+                </div>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Status:</span>
+                  <span className={styles.metaValue}>{selectedDocument?.status || 'Unknown'}</span>
+                </div>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Priority:</span>
+                  <span className={styles.metaValue}>{selectedDocument?.metadata?.priority || 'Medium'}</span>
+                </div>
               </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Category:</span>
-                <span className={styles.metaValue}>{selectedDocument.category}</span>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                No document selected
               </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Domain:</span>
-                <span className={styles.metaValue}>{selectedDocument.domain}</span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Created:</span>
-                <span className={styles.metaValue}>{selectedDocument.created}</span>
-              </div>
-              <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Status:</span>
-                <span className={styles.metaValue}>{selectedDocument.status}</span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Assigned Team */}
@@ -917,8 +1205,19 @@ export default function Dashboard() {
               <Button appearance="secondary" onClick={() => setIsAddClientDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button appearance="primary" onClick={handleAddClient}>
-                Add Client
+              <Button 
+                appearance="primary" 
+                onClick={handleAddClient}
+                disabled={isAddClientLoading}
+              >
+                {isAddClientLoading ? (
+                  <>
+                    <Spinner size="tiny" />
+                    Adding...
+                  </>
+                ) : (
+                  'Add Client'
+                )}
               </Button>
             </DialogActions>
           </DialogBody>
@@ -927,3 +1226,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
