@@ -22,6 +22,7 @@ import {
   type ActivityItem,
   type DeadlineItem 
 } from '@/shared/api';
+import { ClientNotificationBadge, type NotificationDetail } from '../components/ClientNotificationBadge';
 
 const useStyles = makeStyles({
   root: {
@@ -479,7 +480,7 @@ const mockClients: Client[] = [
 const mockDocuments: Document[] = [
   {
     id: '1',
-    partitionKey: 'documents',
+    partitionKey: '1', // XYZ Accounting LLP
     name: 'Service Agreement',
     fileName: 'service-agreement.pdf',
     contentType: 'application/pdf',
@@ -491,55 +492,104 @@ const mockDocuments: Document[] = [
     domain: 'Law',
     created: 'May 20, 2025',
     status: 'pending',
-    uploadedBy: 'Robert Chen',
+    uploadedBy: 'XYZ Accounting LLP',
     uploadedTime: 'May 20, 2025',
     metadata: {
       createdAt: 'May 20, 2025',
       createdBy: 'Robert Chen',
+      clientId: '1',
       priority: 'High'
     }
   },
   {
     id: '2',
-    partitionKey: 'documents',
-    name: 'Financial Statement Questionnaire',
-    fileName: 'financial-statement.pdf',
+    partitionKey: '2', // ABC Legal Services
+    name: 'Legal Contract Review',
+    fileName: 'legal-contract.pdf',
     contentType: 'application/pdf',
     size: 512000,
     uploadDate: 'May 19, 2025',
     lastModified: 'May 19, 2025',
-    type: 'Financial Statement',
-    category: 'Financial Documents',
-    domain: 'Accounting',
+    type: 'Legal Document',
+    category: 'Legal Documents',
+    domain: 'Legal',
     created: 'May 19, 2025',
-    status: 'approved',
-    uploadedBy: 'Anna Martinez',
+    status: 'draft',
+    uploadedBy: 'ABC Legal Services',
     uploadedTime: 'May 19, 2025',
     metadata: {
       createdAt: 'May 19, 2025',
       createdBy: 'Anna Martinez',
+      clientId: '2',
       priority: 'Medium'
     }
   },
   {
     id: '3',
-    partitionKey: 'documents',
-    name: 'Board Meeting Minutes',
-    fileName: 'board-meeting-minutes.docx',
+    partitionKey: '4', // Smith Dental Clinic
+    name: 'Medical Consent Form',
+    fileName: 'medical-consent.docx',
     contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     size: 256000,
     uploadDate: 'May 18, 2025',
     lastModified: 'May 18, 2025',
-    type: 'Meeting Minutes',
-    category: 'Corporate Documents',
-    domain: 'Corporate',
+    type: 'Medical Form',
+    category: 'Healthcare Documents',
+    domain: 'Healthcare',
     created: 'May 18, 2025',
-    status: 'draft',
-    uploadedBy: 'John Doe',
+    status: 'pending',
+    uploadedBy: 'Smith Dental Clinic',
     uploadedTime: 'May 18, 2025',
     metadata: {
       createdAt: 'May 18, 2025',
-      createdBy: 'John Doe',
+      createdBy: 'Dr. Smith',
+      clientId: '4',
+      priority: 'Medium'
+    }
+  },
+  {
+    id: '4',
+    partitionKey: '1', // XYZ Accounting LLP
+    name: 'Tax Return 2024',
+    fileName: 'tax-return-2024.pdf',
+    contentType: 'application/pdf',
+    size: 445000,
+    uploadDate: 'May 17, 2025',
+    lastModified: 'May 17, 2025',
+    type: 'Tax Document',
+    category: 'Tax Documents',
+    domain: 'Tax',
+    created: 'May 17, 2025',
+    status: 'draft',
+    uploadedBy: 'XYZ Accounting LLP',
+    uploadedTime: 'May 17, 2025',
+    metadata: {
+      createdAt: 'May 17, 2025',
+      createdBy: 'Tax Specialist',
+      clientId: '1',
+      priority: 'High'
+    }
+  },
+  {
+    id: '5',
+    partitionKey: '4', // Smith Dental Clinic
+    name: 'Insurance Claim',
+    fileName: 'insurance-claim.pdf',
+    contentType: 'application/pdf',
+    size: 334000,
+    uploadDate: 'May 16, 2025',
+    lastModified: 'May 16, 2025',
+    type: 'Insurance Form',
+    category: 'Healthcare Documents',
+    domain: 'Healthcare',
+    created: 'May 16, 2025',
+    status: 'draft',
+    uploadedBy: 'Smith Dental Clinic',
+    uploadedTime: 'May 16, 2025',
+    metadata: {
+      createdAt: 'May 16, 2025',
+      createdBy: 'Dr. Smith',
+      clientId: '4',
       priority: 'Low'
     }
   }
@@ -559,16 +609,73 @@ const mockWorkflowSteps: WorkflowStep[] = [
 ];
 
 const mockDeadlines: Deadline[] = [
-  { id: '1', title: 'Service Agreement Signature', priority: 'high', dueDate: 'March 15, 2024', action: 'Signature required' },
-  { id: '2', title: 'Tax Return Authorization', priority: 'medium', dueDate: 'February 28, 2024', action: 'Approval needed' },
-  { id: '3', title: 'Financial Statement Approval', priority: 'low', dueDate: 'March 5, 2024', action: 'Review pending' },
+  { 
+    id: '1', 
+    title: 'Tax Return Filing - XYZ Accounting LLP', 
+    priority: 'high', 
+    dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
+    action: 'Submit to IRS',
+    clientId: '1' 
+  },
+  { 
+    id: '2', 
+    title: 'Legal Contract Review - ABC Legal Services', 
+    priority: 'medium', 
+    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
+    action: 'Attorney review needed',
+    clientId: '2' 
+  },
+  { 
+    id: '3', 
+    title: 'Medical License Renewal - Smith Dental Clinic', 
+    priority: 'high', 
+    dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day from now
+    action: 'Submit documentation',
+    clientId: '4' 
+  },
 ];
 
 const mockActivities: Activity[] = [
-  { id: '1', title: 'Khalil Salehi uploaded a new document "Service Agreement"', description: 'Service Agreement for XYZ Accounting LLP', time: 'May 20 1:00 PM', type: 'upload', userId: 'user1' },
-  { id: '2', title: 'Gary Hussein commented on "Financial Statement"', description: 'Financial Statement for ABC Legal Services', time: 'Today at 4:47 PM', type: 'comment', userId: 'user2' },
-  { id: '3', title: 'Robert Chavez completed review of "Initial Draft"', description: 'Board Meeting Minutes review completed', time: 'Yesterday', type: 'review', userId: 'user3' },
-  { id: '4', title: 'Anna Martinez uploaded documents', description: 'Tax documents for Smith Dental Clinic', time: 'May 18 9:30 AM', type: 'upload', userId: 'user4' },
+  { 
+    id: '1', 
+    title: 'Service Agreement uploaded', 
+    description: 'Service Agreement for XYZ Accounting LLP', 
+    time: 'May 20 1:00 PM', 
+    type: 'upload', 
+    userId: 'user1',
+    clientId: '1',
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2 hours ago
+  },
+  { 
+    id: '2', 
+    title: 'Legal contract reviewed', 
+    description: 'Contract review completed for ABC Legal Services', 
+    time: 'Today at 4:47 PM', 
+    type: 'review', 
+    userId: 'user2',
+    clientId: '2',
+    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString() // 5 hours ago
+  },
+  { 
+    id: '3', 
+    title: 'Medical form signed', 
+    description: 'Medical consent form signed by Smith Dental Clinic', 
+    time: 'Yesterday', 
+    type: 'signature', 
+    userId: 'user3',
+    clientId: '4',
+    createdAt: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString() // 26 hours ago
+  },
+  { 
+    id: '4', 
+    title: 'Tax documents uploaded', 
+    description: 'Tax Return 2024 uploaded by XYZ Accounting LLP', 
+    time: 'May 18 9:30 AM', 
+    type: 'upload', 
+    userId: 'user4',
+    clientId: '1',
+    createdAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString() // 20 hours ago
+  },
 ];
 
 export default function Dashboard() {
@@ -619,6 +726,13 @@ export default function Dashboard() {
       return () => clearTimeout(timer);
     }
   }, [dashboardStats]);
+
+  // Recalculate notifications when data changes
+  useEffect(() => {
+    if (clients.length > 0 && (documents.length > 0 || activities.length > 0 || deadlines.length > 0)) {
+      recalculateClientNotifications();
+    }
+  }, [documents, activities, deadlines]);
 
   // Helper function to create timeout promise
   const createTimeoutPromise = <T,>(promise: Promise<T>, timeout: number = 8000): Promise<T> => {
@@ -782,8 +896,193 @@ export default function Dashboard() {
     (client.type || '').toLowerCase().includes(clientSearchTerm.toLowerCase())
   );
 
+  // Фильтрация данных по выбранному клиенту
+  const getClientRelatedData = (client: Client) => {
+    const clientName = client?.name || '';
+    const clientId = client?.id || client?.Id;
+    
+    // Фильтрация документов клиента
+    const clientDocuments = documents.filter(doc => 
+      doc.partitionKey === clientId ||
+      doc.metadata?.clientId === clientId ||
+      doc.name?.toLowerCase().includes(clientName.toLowerCase()) ||
+      doc.uploadedBy?.toLowerCase().includes(clientName.toLowerCase())
+    );
+    
+    // Фильтрация активностей клиента
+    const clientActivities = activities.filter(activity => 
+      activity.clientId === clientId ||
+      activity.description?.toLowerCase().includes(clientName.toLowerCase()) ||
+      activity.title?.toLowerCase().includes(clientName.toLowerCase())
+    );
+    
+    // Фильтрация дедлайнов клиента
+    const clientDeadlines = deadlines.filter(deadline => 
+      deadline.clientId === clientId ||
+      deadline.title?.toLowerCase().includes(clientName.toLowerCase())
+    );
+    
+    return { clientDocuments, clientActivities, clientDeadlines };
+  };
+
+  // Вычисление детальных уведомлений для клиента
+  const getClientNotificationDetails = (client: Client): NotificationDetail[] => {
+    const { clientDocuments, clientActivities, clientDeadlines } = getClientRelatedData(client);
+    const details: NotificationDetail[] = [];
+    
+    // Pending documents
+    const pendingDocs = clientDocuments.filter(doc => doc.status === 'pending' || doc.status === 'draft');
+    pendingDocs.forEach(doc => {
+      details.push({
+        id: `doc-${doc.id}`,
+        type: 'pending_document',
+        title: `${doc.name} needs action`,
+        description: `Status: ${doc.status}`,
+        priority: 'high',
+        actionText: doc.status === 'pending' ? 'Review' : 'Complete',
+        documentId: doc.id,
+      });
+    });
+    
+    // Urgent deadlines (within 3 days)
+    const urgentDeadlines = clientDeadlines.filter(deadline => {
+      const dueDate = new Date(deadline.dueDate);
+      const now = new Date();
+      const diffDays = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return diffDays <= 3 && diffDays >= 0;
+    });
+    
+    urgentDeadlines.forEach(deadline => {
+      details.push({
+        id: `deadline-${deadline.id}`,
+        type: 'urgent_deadline',
+        title: `${deadline.title} due soon`,
+        description: `Due: ${formatDueDate(deadline.dueDate)}`,
+        priority: 'high',
+        actionText: 'Handle',
+        deadlineId: deadline.id,
+      });
+    });
+    
+    // Recent uploads (last 24 hours)
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const recentUploads = clientActivities.filter(activity => {
+      try {
+        const activityDate = new Date(activity.createdAt || activity.time);
+        return activityDate > yesterday && activity.type === 'upload';
+      } catch {
+        return false;
+      }
+    });
+    
+    recentUploads.forEach(activity => {
+      details.push({
+        id: `upload-${activity.id}`,
+        type: 'recent_upload',
+        title: 'New document uploaded',
+        description: activity.description || activity.title,
+        priority: 'medium',
+        actionText: 'Review',
+      });
+    });
+    
+    return details.slice(0, 5); // Limit to 5 most important
+  };
+
+  // Обработка действий пользователя с уведомлениями
+  const handleNotificationAction = async (notificationId: string, action: string) => {
+    console.log(`🔔 Handling notification action: ${action} for ${notificationId}`);
+    
+    const [type, id] = notificationId.split('-');
+    
+    try {
+      switch (action) {
+        case 'Review':
+        case 'Complete':
+          if (type === 'doc') {
+            // Найти документ и обновить статус
+            const docToUpdate = documents.find(doc => doc.id === id);
+            if (docToUpdate) {
+              // Обновить статус документа
+              const newStatus = action === 'Review' ? 'approved' : 'approved';
+              const updatedDoc = { ...docToUpdate, status: newStatus };
+              setDocuments(prev => prev.map(doc => doc.id === id ? updatedDoc : doc));
+              
+              console.log(`✅ Document ${docToUpdate.name} ${action.toLowerCase()}ed successfully`);
+              
+              // Пересчитать уведомления
+              await recalculateClientNotifications();
+            }
+          }
+          break;
+          
+        case 'Handle':
+          if (type === 'deadline') {
+            // Обработать дедлайн - переместить в выполненные
+            const deadlineToUpdate = deadlines.find(d => d.id === id);
+            if (deadlineToUpdate) {
+              setDeadlines(prev => prev.filter(deadline => deadline.id !== id));
+              console.log(`✅ Deadline ${deadlineToUpdate.title} handled`);
+              
+              // Пересчитать уведомления
+              await recalculateClientNotifications();
+            }
+          }
+          break;
+          
+        case 'mark_read':
+          // Пометить как прочитанное (в реальном приложении сохранить в базе)
+          console.log(`✅ Marked notification ${notificationId} as read`);
+          break;
+          
+        case 'view_all':
+          // Показать все уведомления/документы клиента
+          console.log(`📋 Viewing all notifications for client: ${selectedClient?.name}`);
+          break;
+      }
+      
+    } catch (error) {
+      console.error('❌ Error handling notification action:', error);
+    }
+  };
+
+  // Пересчет уведомлений для всех клиентов
+  const recalculateClientNotifications = async () => {
+    const updatedClients = clients.map(client => {
+      const details = getClientNotificationDetails(client);
+      return {
+        ...client,
+        notifications: details.length,
+      };
+    });
+    setClients(updatedClients);
+  };
+
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client);
+    
+    // Фильтрация данных по выбранному клиенту
+    const { clientDocuments, clientActivities, clientDeadlines } = getClientRelatedData(client);
+    
+    console.log(`🔄 Selected client: ${client.name}`);
+    console.log(`📄 Client documents: ${clientDocuments.length}`);
+    console.log(`📋 Client activities: ${clientActivities.length}`);  
+    console.log(`⏰ Client deadlines: ${clientDeadlines.length}`);
+    
+    // Вычислить статистику для выбранного клиента
+    const clientStats = {
+      totalDocuments: clientDocuments.length,
+      pendingValidation: clientDocuments.filter(d => d.status === 'pending').length,
+      pendingSigning: clientDocuments.filter(d => d.status === 'draft').length,
+      pendingApproval: clientDocuments.filter(d => d.status === 'pending').length,
+      completionPercentage: clientDocuments.length > 0 
+        ? Math.floor((clientDocuments.filter(d => d.status === 'approved').length / clientDocuments.length) * 100)
+        : 0
+    };
+    
+    // Обновить статистику дашборда для выбранного клиента
+    setDashboardStats(clientStats);
   };
 
   const handleDocumentSelect = (document: Document) => {
@@ -970,7 +1269,11 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {client?.notifications && (
-                  <div className={styles.clientStatus}>{client.notifications}</div>
+                  <ClientNotificationBadge
+                    count={client.notifications}
+                    details={getClientNotificationDetails(client)}
+                    onActionClick={handleNotificationAction}
+                  />
                 )}
               </div>
             ))}

@@ -25,7 +25,7 @@ export interface DashboardDocument {
   size: number;
   uploadDate: string;
   lastModified: string;
-  status: 'pending' | 'draft' | 'approved' | 'rejected' | 'archived';
+  status: 'pending' | 'draft' | 'approved' | 'rejected' | 'archived' | string;
   // UI specific properties
   type?: string;
   category?: string;
@@ -37,6 +37,7 @@ export interface DashboardDocument {
     createdAt?: string;
     createdBy?: string;
     priority?: string;
+    clientId?: string;
   };
 }
 
@@ -63,6 +64,8 @@ export interface ActivityItem {
   time: string;
   type: string;
   userId: string;
+  clientId?: string;
+  createdAt?: string;
 }
 
 export interface DeadlineItem {
@@ -71,6 +74,7 @@ export interface DeadlineItem {
   dueDate: string;
   priority: 'high' | 'medium' | 'low';
   action: string;
+  clientId?: string;
 }
 
 export class DashboardService {
