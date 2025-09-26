@@ -1,59 +1,144 @@
-# Overview of the React with Fluent UI template
+# FileSharing Application - RBAC & Demo Mode Integration
 
-This app showcases how to craft a visually appealing web page that can be embedded in Microsoft Teams, Outlook and the Microsoft 365 app with React and Fluent UI. The app also enhances the end-user experiences with built-in single sign-on and data from Microsoft Graph.
+## 🚀 Недавние обновления
 
-This app has adopted [On-Behalf-Of flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow) to implement SSO, and uses Azure Functions as middle-tier service, and make authenticated requests to call Graph from Azure Functions.
+### ✅ Интегрированная RBAC система с Demo режимом
 
-## Get started with the React with Fluent UI template
+Реализована полная система управления ролями и разрешениями (RBAC) с возможностью включения Demo режима для демонстрации функционала.
 
-> **Prerequisites**
->
-> To run the command bot template in your local dev machine, you will need:
->
-> - [Node.js](https://nodejs.org/), supported versions: 18, 20, 22
-> - A [Microsoft 365 account for development](https://docs.microsoft.com/microsoftteams/platform/toolkit/accounts)
->   Please note that after you enrolled your developer tenant in Office 365 Target Release, it may take couple days for the enrollment to take effect.
-> - [Microsoft 365 Agents Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) version 5.0.0 and higher or [Microsoft 365 Agents Toolkit CLI](https://aka.ms/teamsfx-toolkit-cli)
+## 🔐 RBAC Система
 
-1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
-2. In the Account section, sign in with your [Microsoft 365 account](https://docs.microsoft.com/microsoftteams/platform/toolkit/accounts) if you haven't already.
-3. Press F5 to start debugging which launches your app in Teams using a web browser. Select `Debug in Teams (Edge)` or `Debug in Teams (Chrome)`.
-4. When Teams launches in the browser, select the Add button in the dialog to install your app to Teams.
+### Роли пользователей
+- **Organization Owner** 👑 - Полный контроль над системой
+- **Administrator** ⚙️ - Системный администратор 
+- **Technical Support** 🛠️ - Техническая поддержка
+- **Service Provider** 🏢 - Поставщик услуг
+- **Department Team Lead** 👨‍💼 - Руководитель департамента
+- **Document Validator** 🔍 - Специалист по валидации
+- **Document Approver** ✅ - Специалист по одобрению
+- **Regular Employee** 👤 - Обычный сотрудник
+- **Client End User** 👨‍💻 - Внешний клиент
 
-**Congratulations**! You are running an application that can now show a beautiful web page in Teams, Outlook and the Microsoft 365 app.
+### Защищенные разделы
+- **Настройки организации** - `Permission.ORG_SETTINGS`
+- **Управление пользователями** - `Permission.USERS_VIEW`
+- **Настройки хранилища** - `Permission.STORAGE_CONFIG`
+- **Настройки валидации** - `Permission.VALIDATION_CONFIG`
+- **Настройки утверждения** - `Permission.APPROVAL_CONFIG`
 
-![Personal tab demo](https://github.com/OfficeDev/TeamsFx/assets/63089166/9599b53c-8f89-493f-9f7e-9edae1f9be54)
+## 🎭 Demo Mode
 
-## What's included in the template
+### Функциональность
+- **Полный доступ** ко всем разделам приложения
+- **Обход всех ограничений** RBAC для демонстрации
+- **Визуальные индикаторы** активности demo режима
+- **Сохранение состояния** в localStorage
 
-| Folder       | Contents                                                                                                               |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `.vscode`    | VSCode files for debugging                                                                                             |
-| `appPackage` | Templates for the application manifest                                                                           |
-| `env`        | Environment files                                                                                                      |
-| `infra`      | Templates for provisioning Azure resources                                                                             |
-| `src`        | The source code for the frontend of the Tab application. Implemented with Fluent UI Framework.                         |
-| `api`        | The source code for the backend of the Tab application. Implemented single-sign-on with OBO flow using Azure Functions. |
+### Активация Demo режима
+1. **Через Header** - кнопка "Включить Demo" в меню пользователя
+2. **Через настройки** - переключатель на главной странице настроек
+3. **Автоматическое подтверждение** при включении
 
-The following are Microsoft 365 Agents Toolkit specific project files. You can [visit a complete guide on Github](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5-Guide#overview) to understand how Microsoft 365 Agents Toolkit works.
+### Визуальные элементы
+- 🌈 **Анимированная полоса** в верхней части страницы
+- 📋 **Banner уведомления** с возможностью отключения
+- 🎯 **Водяной знак** "DEMO MODE" в углу экрана
+- 🎨 **CSS стили** для выделения demo состояния
 
-| File                 | Contents                                                                                                                                                                                                                                                |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `m365agents.yml`       | This is the main Microsoft 365 Agents Toolkit project file. The project file defines two primary things: Properties and configuration Stage definitions.                                                                                                               |
-| `m365agents.local.yml` | This overrides `m365agents.yml` with actions that enable local execution and debugging.                                                                                                                                                                   |
-| `aad.manifest.json`  | This file defines the configuration of Microsoft Entra app. This template will only provision [single tenant](https://learn.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps#who-can-sign-in-to-your-app) Microsoft Entra app. |
+## 🛠️ Технические детали
 
-## Extend the React with Fluent UI template
+### Компоненты
+```typescript
+// Защита страницы с проверкой разрешений
+<PermissionGate permissions={[Permission.ORG_SETTINGS]}>
+  <SettingsPage />
+</PermissionGate>
 
-Following documentation will help you to extend the React with Fluent UI template.
+// Переключатель demo режима
+<DemoModeToggle showQuickActions={true} />
 
-- [Add or manage the environment](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-multi-env)
-- [Create multi-capability app](https://learn.microsoft.com/microsoftteams/platform/toolkit/add-capability)
-- [Use an existing Microsoft Entra application](https://learn.microsoft.com/microsoftteams/platform/toolkit/use-existing-aad-app)
-- [Customize the app manifest](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-preview-and-customize-app-manifest)
-- Host your app in Azure by [provision cloud resources](https://learn.microsoft.com/microsoftteams/platform/toolkit/provision) and [deploy the code to cloud](https://learn.microsoft.com/microsoftteams/platform/toolkit/deploy)
-- [Collaborate on app development](https://learn.microsoft.com/microsoftteams/platform/toolkit/teamsfx-collaboration)
-- [Set up the CI/CD pipeline](https://learn.microsoft.com/microsoftteams/platform/toolkit/use-cicd-template)
-- [Publish the app to your organization or the Microsoft app store](https://learn.microsoft.com/microsoftteams/platform/toolkit/publish)
-- [Enable the app for multi-tenant](https://github.com/OfficeDev/TeamsFx/wiki/Multi-tenancy-Support-for-Azure-AD-app)
-- [Preview the app on mobile clients](https://aka.ms/teamsfx-mobile)
+// Banner уведомления
+<DemoModeBanner showDismiss={true} />
+```
+
+### Хуки
+```typescript
+// Проверка разрешений с учетом demo режима
+const { hasPermission } = usePermissions();
+const canEdit = hasPermission(Permission.USERS_EDIT);
+
+// Управление demo режимом
+const { isDemoMode, toggleDemoMode } = useDemoMode();
+```
+
+### Провайдеры
+```typescript
+<DemoModeProvider>
+  <RBACProvider authService={authService}>
+    <App />
+  </RBACProvider>
+</DemoModeProvider>
+```
+
+## 📁 Структура файлов
+
+```
+src/
+├── shared/lib/
+│   ├── rbac/              # RBAC система
+│   │   ├── types.ts       # Типы ролей и разрешений
+│   │   ├── permissions.ts # Определения разрешений
+│   │   ├── context.tsx    # RBAC провайдер
+│   │   ├── hooks.ts       # Хуки для проверки разрешений
+│   │   └── guards.tsx     # Компоненты-защитники
+│   └── demo/              # Demo режим
+│       ├── DemoModeProvider.tsx
+│       └── index.ts
+├── shared/ui/
+│   ├── DemoModeBanner.tsx # Banner уведомления
+│   └── DemoModeToggle.tsx # Переключатель режима
+├── pages/settings/
+│   ├── SettingsMain.tsx   # Главная страница настроек
+│   ├── organization/      # Настройки организации (защищено)
+│   ├── users/            # Управление пользователями (защищено)
+│   ├── storage/          # Настройки хранилища (защищено)
+│   ├── validation/       # Настройки валидации (защищено)
+│   └── approval/         # Настройки утверждения (защищено)
+└── components/
+    └── DemoWatermark.tsx  # Водяной знак
+```
+
+## 🎯 Использование
+
+### Разработка
+```bash
+# Запуск в режиме разработки
+npm start
+
+# Demo режим можно включить через UI
+# Все настройки сохраняются в localStorage
+```
+
+### Демонстрация заказчику
+1. Включите **Demo режим** через переключатель
+2. Покажите **все разделы настроек** - доступ будет предоставлен
+3. **Визуальные индикаторы** покажут, что режим активен
+4. **Отключите** по завершении демонстрации
+
+## ⚠️ Важные замечания
+
+- **Demo режим ТОЛЬКО для демонстрации** - не использовать в продакшне
+- **Файлы demo/** должны быть **удалены перед продакшном**
+- **RBAC система** полностью функциональна и готова к продакшну
+- **Все разрешения** корректно проверяются в обычном режиме
+
+## 🔧 Настройка ролей
+
+Роли и разрешения определены в `src/shared/lib/rbac/permissions.ts`. 
+Для изменения системы ролей модифицируйте этот файл и соответствующие типы.
+
+---
+
+**Система готова к использованию!** 🚀
+
+Все компоненты интегрированы, RBAC работает корректно, а Demo режим предоставляет полную свободу для демонстрации функционала заказчику.

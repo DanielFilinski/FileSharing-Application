@@ -56,8 +56,11 @@ export {
   RBACProvider,
   useRBAC,
   withPermissions,
-  PermissionGate,
 } from './context';
+
+export {
+  PermissionGate,
+} from './guards';
 
 // Защитники компонентов
 export {

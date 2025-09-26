@@ -33,7 +33,7 @@ export const RBACProvider: React.FC<RBACProviderProps> = ({
   const [user, setUser] = useState<UserWithRoles | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Получить разрешения пользователя
+  // Получить разрешения пользователя (с учетом demo режима)
   const permissions: Permission[] = user?.roles 
     ? getPermissionsForRoles(user.roles) 
     : [];
@@ -66,8 +66,8 @@ export const RBACProvider: React.FC<RBACProviderProps> = ({
         // TODO: Здесь нужно будет добавить запрос к API для получения ролей пользователя
         // Пока что используем заглушку
         const userWithRoles: UserWithRoles = {
-          id: userInfo.objectId || '',
-          email: userInfo.preferredUserName || userInfo.email || '',
+          id: userInfo.id || '',
+          email: userInfo.email || '',
           displayName: userInfo.displayName || '',
           roles: [UserRole.REGULAR_EMPLOYEE], // По умолчанию
           organizationId: userInfo.tenantId,
@@ -90,23 +90,20 @@ export const RBACProvider: React.FC<RBACProviderProps> = ({
     refreshUserRoles();
   }, [authService]);
 
-  // Слушать изменения аутентификации
-  useEffect(() => {
-    if (!authService) return;
+    // Слушать изменения аутентификации
+    useEffect(() => {
+      if (!authService) return;
 
-    // При изменении состояния аутентификации обновляем роли
-    const handleAuthChange = () => {
-      refreshUserRoles();
-    };
+      // TODO: Добавить подписку на изменения в AuthService если необходимо
+      // const handleAuthChange = () => {
+      //   refreshUserRoles();
+      // };
+      // authService.onAuthStateChanged(handleAuthChange);
 
-    // TODO: Добавить подписку на изменения в AuthService
-    // authService.onAuthStateChanged(handleAuthChange);
-
-    return () => {
-      // TODO: Отписаться от изменений
-      // authService.offAuthStateChanged(handleAuthChange);
-    };
-  }, [authService]);
+      // return () => {
+      //   authService.offAuthStateChanged(handleAuthChange);
+      // };
+    }, [authService]);
 
   const contextValue: RBACContextValue = {
     user,
@@ -140,12 +137,6 @@ export const useRBAC = (): RBACContextValue => {
 /**
  * HOC для компонентов, требующих определенных разрешений
  */
-interface WithPermissionsProps {
-  permissions?: Permission[];
-  roles?: UserRole[];
-  fallback?: ReactNode;
-}
-
 export const withPermissions = (
   WrappedComponent: React.ComponentType<any>,
   requiredPermissions?: Permission[],
@@ -181,51 +172,4 @@ export const withPermissions = (
   };
 };
 
-/**
- * Компонент для условного рендеринга на основе разрешений
- */
-interface PermissionGateProps {
-  children: ReactNode;
-  permissions?: Permission[];
-  roles?: UserRole[];
-  fallback?: ReactNode;
-  requireAll?: boolean; // true - требовать все разрешения, false - любое
-}
-
-export const PermissionGate: React.FC<PermissionGateProps> = ({
-  children,
-  permissions = [],
-  roles = [],
-  fallback = null,
-  requireAll = false
-}) => {
-  const { user, checkPermission } = useRBAC();
-
-  // Проверить роли
-  if (roles.length > 0) {
-    const hasRequiredRole = requireAll
-      ? roles.every(role => user?.roles?.includes(role))
-      : roles.some(role => user?.roles?.includes(role));
-    
-    if (!hasRequiredRole) {
-      return <>{fallback}</>;
-    }
-  }
-
-  // Проверить разрешения
-  if (permissions.length > 0) {
-    const permissionChecks = permissions.map(permission => 
-      checkPermission(permission).granted
-    );
-
-    const hasRequiredPermissions = requireAll
-      ? permissionChecks.every(check => check)
-      : permissionChecks.some(check => check);
-    
-    if (!hasRequiredPermissions) {
-      return <>{fallback}</>;
-    }
-  }
-
-  return <>{children}</>;
-};
+// PermissionGate перенесен в guards.tsx для избежания циркулярных зависимостей

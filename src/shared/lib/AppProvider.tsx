@@ -4,6 +4,7 @@ import { authService } from './auth';
 import { errorHandler } from './errorHandler';
 import { notificationService } from './notifications';
 import { RBACProvider } from './rbac';
+import { DemoModeProvider } from './demo';
 import { NotificationContainer } from '../ui/NotificationContainer';
 import { LoginScreen } from '../../components/LoginScreen';
 
@@ -125,22 +126,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   if (isInitialized && !isAuthenticated) {
     return (
       <AppContext.Provider value={contextValue}>
-        <TeamsProvider>
-          <LoginScreen />
-          <NotificationContainer />
-        </TeamsProvider>
+        <DemoModeProvider>
+          <TeamsProvider>
+            <LoginScreen />
+            <NotificationContainer />
+          </TeamsProvider>
+        </DemoModeProvider>
       </AppContext.Provider>
     );
   }
 
   return (
     <AppContext.Provider value={contextValue}>
-      <TeamsProvider>
-        <RBACProvider authService={authService}>
-          {children}
-          <NotificationContainer />
-        </RBACProvider>
-      </TeamsProvider>
+      <DemoModeProvider>
+        <TeamsProvider>
+          <RBACProvider authService={authService}>
+            {children}
+            <NotificationContainer />
+          </RBACProvider>
+        </TeamsProvider>
+      </DemoModeProvider>
     </AppContext.Provider>
   );
 };

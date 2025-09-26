@@ -1,11 +1,13 @@
-// Re-export all shared UI components
-export { ConfirmationDialog } from './ConfirmationDialog';
-export { SearchAndFilter } from './SearchAndFilter';
-export type { FilterOption } from './SearchAndFilter';
-export { FieldConfigurationDialog } from './FieldConfigurationDialog';
-export type { FieldConfig } from './FieldConfigurationDialog';
-export { Pagination, usePagination, usePaginationState } from './Pagination';
-export type { PaginationProps } from './Pagination';
-export { TableContainer, useTableStyles } from './TableContainer';
+/**
+ * Общие UI компоненты
+ */
+
 export { Button } from './Button';
+export { DemoModeBanner } from './DemoModeBanner';
+export { DemoModeToggle } from './DemoModeToggle';
+export { ConfirmationDialog } from './ConfirmationDialog';
+export { FieldConfigurationDialog } from './FieldConfigurationDialog';
+export { Pagination } from './Pagination';
+export { SearchAndFilter } from './SearchAndFilter';
+export { TableContainer } from './TableContainer';
 export { NotificationContainer } from './NotificationContainer';

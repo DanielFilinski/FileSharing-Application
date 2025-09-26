@@ -34,6 +34,10 @@ import { SettingsHeader } from '@/components/SettingsHeader';
 import GeneralTab from './components/GeneralTab';
 import OfficesTab from './components/OfficesTab';
 import { ContentContainer, MarginTop, RowCardContainer, ScreenContainer } from '@/app/styles/layouts';
+import { 
+  PermissionGate, 
+  Permission 
+} from '@/shared/lib/rbac';
 
 // Custom theme with brand color
 
@@ -65,38 +69,54 @@ const OrganizationSettings: React.FC = () => {
     );
   };
 
-  return (    
-    <ScreenContainer>
-      <Toaster toasterId={toasterId} />
-
-          <div>
-            <SettingsHeader
-                title="Organization Settings"
-                icon={<Settings24Regular />}
-                buttonText="Save changes"
-                onButtonClick={handleSave}
-              />
-              <div className={styles.tabsContainer}>
-                <TabList
-                  selectedValue={selectedTab}
-                  onTabSelect={handleTabSelect}
-                  className={styles.tabsList}
-                >
-                  <Tab value="general">General</Tab>
-                  <Tab value="offices">Offices</Tab>
-                </TabList>
-              </div>
+  return (
+    <PermissionGate 
+      permissions={[Permission.ORG_SETTINGS]}
+      fallback={
+        <ScreenContainer>
+          <div style={{ 
+            padding: '48px 24px', 
+            textAlign: 'center',
+            color: tokens.colorNeutralForeground2
+          }}>
+            <h2>Access Denied</h2>
+            <p>You don't have permission to view organization settings</p>
           </div>
-       
-          
-          
-        <ContentContainer>             
-              {selectedTab === 'general' && <GeneralTab />}           
+        </ScreenContainer>
+      }
+    >
+      <ScreenContainer>
+        <Toaster toasterId={toasterId} />
+
+            <div>
+              <SettingsHeader
+                  title="Organization Settings"
+                  icon={<Settings24Regular />}
+                  buttonText="Save changes"
+                  onButtonClick={handleSave}
+                />
+                <div className={styles.tabsContainer}>
+                  <TabList
+                    selectedValue={selectedTab}
+                    onTabSelect={handleTabSelect}
+                    className={styles.tabsList}
+                  >
+                    <Tab value="general">General</Tab>
+                    <Tab value="offices">Offices</Tab>
+                  </TabList>
+                </div>
+            </div>
+         
             
-              {selectedTab === 'offices' && <OfficesTab />}             
-        </ContentContainer>
-        
-    </ScreenContainer>
+            
+          <ContentContainer>             
+                {selectedTab === 'general' && <GeneralTab />}           
+              
+                {selectedTab === 'offices' && <OfficesTab />}             
+          </ContentContainer>
+          
+      </ScreenContainer>
+    </PermissionGate>
   );
 };
 

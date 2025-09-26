@@ -11,6 +11,10 @@ import {
 import { ContentContainer, RowCardContainer, ScreenContainer } from '@/app/styles/layouts';
 import styled from 'styled-components';
 import { tokens } from '@fluentui/react-components';
+import { 
+  PermissionGate, 
+  Permission 
+} from '@/shared/lib/rbac';
 
 
 function ApprovalSettingsForm() {
@@ -80,49 +84,65 @@ function ApprovalSettingsForm() {
   };
 
   return (
-    <ScreenContainer>
+    <PermissionGate 
+      permissions={[Permission.APPROVAL_CONFIG]}
+      fallback={
+        <ScreenContainer>
+          <div style={{ 
+            padding: '48px 24px', 
+            textAlign: 'center',
+            color: tokens.colorNeutralForeground2
+          }}>
+            <h2>Access Denied</h2>
+            <p>You don't have permission to configure approval process</p>
+          </div>
+        </ScreenContainer>
+      }
+    >
+      <ScreenContainer>
 
-      <SettingsHeader
-        title="Approval Settings"
-        icon={<CheckmarkCircle20Regular />}
-        buttonText="Save changes"
-        onButtonClick={handleSave}
-      />
-
-      <ContentContainer>
-        <RowCardContainer>
-          <ManualApprovalCard
-          manualApprovalNeeded={manualApprovalNeeded}
-          onToggle={toggleManualApproval}
+        <SettingsHeader
+          title="Approval Settings"
+          icon={<CheckmarkCircle20Regular />}
+          buttonText="Save changes"
+          onButtonClick={handleSave}
         />
-          {manualApprovalNeeded && (
-            <>
-              <DepartmentSelectionCard
-                departments={departments}
-                selectedDepartments={selectedDepartments}
-                onDepartmentToggle={toggleDepartment}
-              />
 
-              <ApprovalFlowCard
-                approvalFlow={approvalFlow}
-                selectedDepartments={selectedDepartments}
-                onApprovalFlowChange={setApprovalFlow}
-              />
+        <ContentContainer>
+          <RowCardContainer>
+            <ManualApprovalCard
+            manualApprovalNeeded={manualApprovalNeeded}
+            onToggle={toggleManualApproval}
+          />
+            {manualApprovalNeeded && (
+              <>
+                <DepartmentSelectionCard
+                  departments={departments}
+                  selectedDepartments={selectedDepartments}
+                  onDepartmentToggle={toggleDepartment}
+                />
 
-              <EmployeeSelectionCard
-                offices={offices}
-                employeesByOffice={employeesByOffice}
-                selectedOffices={selectedOffices}
-                employeesBySelectedOffice={employeesBySelectedOffice}
-                onOfficeToggle={toggleOffice}
-                onEmployeeToggle={toggleEmployee}
-              />
-            </>
-          )}
-        </RowCardContainer>
-        
-      </ContentContainer>
-    </ScreenContainer>
+                <ApprovalFlowCard
+                  approvalFlow={approvalFlow}
+                  selectedDepartments={selectedDepartments}
+                  onApprovalFlowChange={setApprovalFlow}
+                />
+
+                <EmployeeSelectionCard
+                  offices={offices}
+                  employeesByOffice={employeesByOffice}
+                  selectedOffices={selectedOffices}
+                  employeesBySelectedOffice={employeesBySelectedOffice}
+                  onOfficeToggle={toggleOffice}
+                  onEmployeeToggle={toggleEmployee}
+                />
+              </>
+            )}
+          </RowCardContainer>
+          
+        </ContentContainer>
+      </ScreenContainer>
+    </PermissionGate>
   );
 }
 

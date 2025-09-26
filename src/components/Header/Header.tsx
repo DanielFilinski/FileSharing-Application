@@ -16,12 +16,15 @@ import {
 import { 
   ChevronDownRegular, 
   SignOutRegular,
-  SettingsRegular
+  SettingsRegular,
+  EyeRegular,
+  EyeOffRegular
 } from '@fluentui/react-icons';
 import { useApp } from '@/shared/lib/AppProvider';
 import { UserAvatar } from '@/entities/user/ui/UserAvatar';
 import { COMPANY_CONFIG } from '@/config/company';
 import { SettingsMenu } from './SettingsMenu';
+import { useDemoMode } from '@/shared/lib/demo';
 
 const useStyles = makeStyles({
   header: {
@@ -124,12 +127,26 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const styles = useStyles();
   const { currentUser, handleLogout: appLogout } = useApp();
+  const { isDemoMode, toggleDemoMode } = useDemoMode();
 
   const handleLogout = async () => {
     try {
       await appLogout();
     } catch (error) {
       console.error('Logout failed:', error);
+    }
+  };
+
+  const handleToggleDemo = () => {
+    if (!isDemoMode) {
+      const confirmed = window.confirm(
+        'Включить Demo режим?\n\nВсе ограничения доступа будут сняты для демонстрации функционала.'
+      );
+      if (confirmed) {
+        toggleDemoMode();
+      }
+    } else {
+      toggleDemoMode();
     }
   };
 
@@ -193,6 +210,12 @@ const Header: React.FC<HeaderProps> = ({
                     </MenuItem>
                   }
                 />
+                <MenuItem onClick={handleToggleDemo}>
+                  <div className={styles.menuItem}>
+                    {isDemoMode ? <EyeOffRegular /> : <EyeRegular />}
+                    {isDemoMode ? 'Отключить Demo' : 'Включить Demo'}
+                  </div>
+                </MenuItem>
                 <MenuItem onClick={handleLogout}>
                   <div className={styles.menuItem}>
                     <SignOutRegular />

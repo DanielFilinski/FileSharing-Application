@@ -13,6 +13,11 @@ import { useStorageSettings } from '@/entities/storage/model/useStorageSettings'
 import { useStorageValidation } from './hooks/useStorageValidation';
 import { apiClient } from '@/shared/api';
 import { notificationService } from '@/shared/lib/notifications';
+import { 
+  PermissionGate, 
+  Permission 
+} from '@/shared/lib/rbac';
+import { ScreenContainer } from '@/app/styles/layouts';
 import {
   StorageTypeSelector,
   SharePointCredentials,

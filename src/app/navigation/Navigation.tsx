@@ -19,11 +19,14 @@ import {
   Dismiss24Regular,
   WeatherSunnyRegular,
   WeatherMoonFilled,
-  WeatherSunnyFilled
+  WeatherSunnyFilled,
+  EyeRegular,
+  EyeOffRegular
 } from '@fluentui/react-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NAV_GROUPS } from './constants';
 import { useTheme } from '../theme/ThemeProvider';
+import { useDemoMode } from '@/shared/lib/demo';
 
 // Teams-compliant styles using 4px grid system
 const useStyles = makeStyles({
@@ -182,6 +185,28 @@ const useStyles = makeStyles({
     alignItems: 'center',
     width: '100%',
     ...shorthands.gap('12px')
+  },
+
+  demoToggle: {
+    marginBottom: '8px',
+    width: '100%',
+    justifyContent: 'flex-start',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderRadius: '4px',
+    ...shorthands.padding('8px', '12px'),
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground2,
+    }
+  },
+
+  demoToggleActive: {
+    backgroundColor: tokens.colorPaletteYellowBackground1,
+    '&:hover': {
+      backgroundColor: tokens.colorPaletteYellowBackground2,
+    }
   }
 });
 
@@ -204,6 +229,7 @@ const Navigation: React.FC<NavigationProps> = ({
   selectedItem 
 }) => {
   const { isDark, toggleTheme } = useTheme();
+  const { isDemoMode, toggleDemoMode } = useDemoMode();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>(['dms', 'storage']);
   
@@ -367,6 +393,33 @@ const Navigation: React.FC<NavigationProps> = ({
           {group.links.map(link => renderNavItem(link))}
         </div>
       ))}
+
+      <Button
+        className={mergeClasses(
+          styles.demoToggle,
+          isDemoMode && styles.demoToggleActive
+        )}
+        onClick={() => {
+          if (!isDemoMode) {
+            const confirmed = window.confirm(
+              'Enable Demo mode?\n\nThis will grant full access to all features for demonstration purposes.'
+            );
+            if (confirmed) {
+              toggleDemoMode();
+            }
+          } else {
+            toggleDemoMode();
+          }
+        }}
+        appearance="subtle"
+      >
+        <div className={styles.themeToggleContent}>
+          {isDemoMode ? <EyeRegular /> : <EyeOffRegular />}
+          <Text className={styles.navItemText}>
+            {isDemoMode ? 'Demo Mode ON' : 'Demo Mode OFF'}
+          </Text>
+        </div>
+      </Button>
 
       <Button
         className={styles.themeToggle}

@@ -12,6 +12,67 @@ interface GuardProps {
 }
 
 /**
+ * Универсальный компонент для условного рендеринга на основе разрешений
+ */
+interface PermissionGateProps {
+  children: ReactNode;
+  permissions?: Permission[];
+  roles?: UserRole[];
+  fallback?: ReactNode;
+  requireAll?: boolean; // true - требовать все разрешения, false - любое
+}
+
+export const PermissionGate: React.FC<PermissionGateProps> = ({
+  children,
+  permissions = [],
+  roles = [],
+  fallback = null,
+  requireAll = false
+}) => {
+  const { 
+    hasAnyRole,
+    hasAllPermissions,
+    hasAnyPermission 
+  } = usePermissions();
+
+  // Debug информация для отладки (можно убрать после тестирования)
+  // React.useEffect(() => {
+  //   if (permissions.length > 0) {
+  //     console.log('🔐 PermissionGate check:', {
+  //       permissions,
+  //       hasRequiredPermissions: requireAll 
+  //         ? hasAllPermissions(permissions)
+  //         : hasAnyPermission(permissions)
+  //     });
+  //   }
+  // }, [permissions, hasAllPermissions, hasAnyPermission, requireAll]);
+
+  // Проверить роли
+  if (roles.length > 0) {
+    const hasRequiredRole = requireAll
+      ? roles.every(role => hasAnyRole([role]))
+      : hasAnyRole(roles);
+    
+    if (!hasRequiredRole) {
+      return <>{fallback}</>;
+    }
+  }
+
+  // Проверить разрешения
+  if (permissions.length > 0) {
+    const hasRequiredPermissions = requireAll
+      ? hasAllPermissions(permissions)
+      : hasAnyPermission(permissions);
+    
+    if (!hasRequiredPermissions) {
+      return <>{fallback}</>;
+    }
+  }
+
+  return <>{children}</>;
+};
+
+/**
  * Защитник для админов
  */
 interface AdminGuardProps extends GuardProps {}

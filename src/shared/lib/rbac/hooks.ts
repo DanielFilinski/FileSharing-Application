@@ -13,6 +13,7 @@ import {
   checkUserHasRole,
   checkUserHasAnyRole 
 } from './utils';
+import { useDemoMode } from '../demo';
 
 /**
  * Хуки для работы с системой разрешений и ролей
@@ -23,47 +24,84 @@ import {
  */
 export const usePermissions = (): UsePermissionsResult => {
   const { user, isLoading, checkPermission } = useRBAC();
+  const { isDemoMode, hasFullAccess } = useDemoMode();
 
   const hasPermission = useCallback(
     (permission: Permission): boolean => {
+      // В demo режиме разрешаем все
+      if (isDemoMode && hasFullAccess) {
+        return true;
+      }
       return checkPermission(permission).granted;
     },
-    [checkPermission]
+    [checkPermission, isDemoMode, hasFullAccess]
   );
 
   const hasAnyPermission = useCallback(
     (permissions: Permission[]): boolean => {
+      // В demo режиме разрешаем все
+      if (isDemoMode && hasFullAccess) {
+        return true;
+      }
       return checkUserHasAnyPermission(user, permissions).granted;
     },
-    [user]
+    [user, isDemoMode, hasFullAccess]
   );
 
   const hasAllPermissions = useCallback(
     (permissions: Permission[]): boolean => {
+      // В demo режиме разрешаем все
+      if (isDemoMode && hasFullAccess) {
+        return true;
+      }
       return checkUserHasAllPermissions(user, permissions).granted;
     },
-    [user]
+    [user, isDemoMode, hasFullAccess]
   );
 
   const hasRole = useCallback(
     (role: UserRole): boolean => {
+      // В demo режиме считаем, что у пользователя есть все роли высокого уровня
+      if (isDemoMode && hasFullAccess) {
+        return [
+          UserRole.ORGANIZATION_OWNER,
+          UserRole.ADMINISTRATOR,
+          UserRole.TECHNICAL_SUPPORT
+        ].includes(role);
+      }
       return checkUserHasRole(user, role);
     },
-    [user]
+    [user, isDemoMode, hasFullAccess]
   );
 
   const hasAnyRole = useCallback(
     (roles: UserRole[]): boolean => {
+      // В demo режиме разрешаем любую административную роль
+      if (isDemoMode && hasFullAccess) {
+        const adminRoles = [
+          UserRole.ORGANIZATION_OWNER,
+          UserRole.ADMINISTRATOR,
+          UserRole.TECHNICAL_SUPPORT
+        ];
+        return roles.some(role => adminRoles.includes(role));
+      }
       return checkUserHasAnyRole(user, roles);
     },
-    [user]
+    [user, isDemoMode, hasFullAccess]
   );
 
   const checkPermissionWithContext = useCallback(
     (permission: Permission, context?: OrganizationRoleContext): PermissionCheck => {
+      // В demo режиме все разрешения предоставляются
+      if (isDemoMode && hasFullAccess) {
+        return {
+          granted: true,
+          reason: 'Demo mode - all permissions granted for demonstration purposes'
+        };
+      }
       return checkPermission(permission, context);
     },
-    [checkPermission]
+    [checkPermission, isDemoMode, hasFullAccess]
   );
 
   return {
