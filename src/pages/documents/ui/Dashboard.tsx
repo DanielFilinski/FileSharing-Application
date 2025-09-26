@@ -630,6 +630,30 @@ export default function Dashboard() {
     ]);
   };
 
+  // Helper function to format due dates
+  const formatDueDate = (dueDate: string): string => {
+    try {
+      const date = new Date(dueDate);
+      const now = new Date();
+      const diffTime = date.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 0) return 'Overdue';
+      if (diffDays === 0) return 'today';
+      if (diffDays === 1) return 'tomorrow';
+      if (diffDays <= 7) return `in ${diffDays} days`;
+      
+      // Format as readable date for longer periods
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      });
+    } catch {
+      return dueDate; // Return original if parsing fails
+    }
+  };
+
   // Load clients data
   const loadClientsData = async () => {
     console.log('🔄 Loading clients data...');
@@ -1009,7 +1033,7 @@ export default function Dashboard() {
                     <div className={`${styles.deadlinePriority} ${getPriorityClass(deadline?.priority || 'medium')}`}></div>
                     <div>
                       <h5>{deadline?.title || 'Untitled'}</h5>
-                      <p>Due {deadline?.dueDate || 'TBD'} - {deadline?.action || 'Action required'}</p>
+                      <p>Due {formatDueDate(deadline?.dueDate || '')} - {deadline?.action || 'Action required'}</p>
                     </div>
                   </div>
                 )) : (

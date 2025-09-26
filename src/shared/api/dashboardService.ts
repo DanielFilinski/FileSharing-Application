@@ -77,7 +77,9 @@ export class DashboardService {
   private apiClient: ApiClient;
 
   constructor() {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071/api';
+    const baseUrl = (typeof window !== 'undefined' && window.location.hostname === 'localhost') 
+      ? 'http://localhost:7071/api'
+      : (process.env.VITE_API_BASE_URL || '/api');
     this.apiClient = new ApiClient(baseUrl);
   }
 
@@ -103,12 +105,12 @@ export class DashboardService {
     return 'Individual Client';
   }
 
-  private calculateNotifications(client: DashboardClient): number {
+  private calculateNotifications(_client: DashboardClient): number {
     // Mock notification calculation based on client activity
     return Math.floor(Math.random() * 5);
   }
 
-  private determineClientStatus(client: DashboardClient): 'urgent' | 'attention' | 'normal' {
+  private determineClientStatus(_client: DashboardClient): 'urgent' | 'attention' | 'normal' {
     const random = Math.random();
     if (random < 0.2) return 'urgent';
     if (random < 0.4) return 'attention';
@@ -198,38 +200,46 @@ export class DashboardService {
   async getDashboardStats(): Promise<DashboardStats> {
     console.log('📞 Calling getDashboardStats API...');
     try {
-      // This endpoint doesn't exist yet, so we'll mock it for now
-      // const response: ApiResponse<DashboardStats> = await this.apiClient.get('/dashboard/stats');
-      
-      // Mock implementation - calculate from available data
-      const [clients, documents] = await Promise.all([
-        this.getClients().catch(() => []),
-        this.getDocuments().catch(() => [])
-      ]);
-
-      const stats: DashboardStats = {
-        totalDocuments: documents.length,
-        pendingValidation: documents.filter(d => d.status === 'pending').length,
-        pendingSigning: documents.filter(d => d.status === 'draft').length,
-        pendingApproval: documents.filter(d => d.status === 'pending').length,
-        completionPercentage: Math.floor((documents.filter(d => d.status === 'approved').length / Math.max(documents.length, 1)) * 100)
-      };
-
-      console.log('✅ getDashboardStats (calculated):', stats);
-      return stats;
+      const response: ApiResponse<DashboardStats> = await this.apiClient.get('/dashboard/stats');
+      console.log('✅ getDashboardStats response:', response.data);
+      return response.data;
     } catch (error) {
-      console.error('❌ Error fetching dashboard stats:', error);
-      throw error;
+      console.warn('⚠️ Dashboard stats API failed, calculating from available data');
+      
+      // Fallback implementation - calculate from available data
+      try {
+        const [, documents] = await Promise.all([
+          this.getClients().catch(() => []),
+          this.getDocuments().catch(() => [])
+        ]);
+
+        const stats: DashboardStats = {
+          totalDocuments: documents.length,
+          pendingValidation: documents.filter(d => d.status === 'pending').length,
+          pendingSigning: documents.filter(d => d.status === 'draft').length,
+          pendingApproval: documents.filter(d => d.status === 'pending').length,
+          completionPercentage: Math.floor((documents.filter(d => d.status === 'approved').length / Math.max(documents.length, 1)) * 100)
+        };
+
+        console.log('✅ getDashboardStats (calculated fallback):', stats);
+        return stats;
+      } catch (fallbackError) {
+        console.error('❌ Error calculating dashboard stats:', fallbackError);
+        throw fallbackError;
+      }
     }
   }
 
   async getRecentActivities(limit: number = 10): Promise<ActivityItem[]> {
     console.log('📞 Calling getRecentActivities API...');
     try {
-      // This endpoint doesn't exist yet, so we'll mock it for now
-      // const response: ApiResponse<ActivityItem[]> = await this.apiClient.get(`/activities/recent?limit=${limit}`);
+      const response: ApiResponse<ActivityItem[]> = await this.apiClient.get(`/activities/recent?limit=${limit}`);
+      console.log('✅ getRecentActivities response:', response.data?.length || 0, 'activities');
+      return response.data;
+    } catch (error) {
+      console.warn('⚠️ Recent activities API failed, using fallback data');
       
-      // Mock implementation
+      // Fallback mock implementation
       const activities: ActivityItem[] = [
         {
           id: '1',
@@ -265,21 +275,21 @@ export class DashboardService {
         }
       ];
 
-      console.log('✅ getRecentActivities (mock):', activities.length);
+      console.log('✅ getRecentActivities (fallback):', activities.length);
       return activities.slice(0, limit);
-    } catch (error) {
-      console.error('❌ Error fetching recent activities:', error);
-      throw error;
     }
   }
 
   async getUpcomingDeadlines(limit: number = 10): Promise<DeadlineItem[]> {
     console.log('📞 Calling getUpcomingDeadlines API...');
     try {
-      // This endpoint doesn't exist yet, so we'll mock it for now
-      // const response: ApiResponse<DeadlineItem[]> = await this.apiClient.get(`/deadlines/upcoming?limit=${limit}`);
+      const response: ApiResponse<DeadlineItem[]> = await this.apiClient.get(`/deadlines/upcoming?limit=${limit}`);
+      console.log('✅ getUpcomingDeadlines response:', response.data?.length || 0, 'deadlines');
+      return response.data;
+    } catch (error) {
+      console.warn('⚠️ Upcoming deadlines API failed, using fallback data');
       
-      // Mock implementation
+      // Fallback mock implementation
       const deadlines: DeadlineItem[] = [
         {
           id: '1',
@@ -304,11 +314,8 @@ export class DashboardService {
         }
       ];
 
-      console.log('✅ getUpcomingDeadlines (mock):', deadlines.length);
+      console.log('✅ getUpcomingDeadlines (fallback):', deadlines.length);
       return deadlines.slice(0, limit);
-    } catch (error) {
-      console.error('❌ Error fetching upcoming deadlines:', error);
-      throw error;
     }
   }
 

@@ -205,18 +205,62 @@ const useStyles = makeStyles({
     fontSize: '12px',
     color: tokens.colorNeutralForeground3,
   },
+  loadingText: {
+    fontSize: '14px',
+    color: tokens.colorNeutralForeground3,
+    textAlign: 'center',
+    padding: '16px',
+    fontStyle: 'italic',
+  },
+  emptyStateText: {
+    fontSize: '14px',
+    color: tokens.colorNeutralForeground3,
+    textAlign: 'center',
+    padding: '16px',
+  },
 });
 
 interface DashboardContentProps {
   selectedClient: Client;
   documents: Document[];
   onDocumentSelect: (document: Document) => void;
+  activities?: Array<{
+    id: string;
+    title: string;
+    description: string;
+    time: string;
+  }>;
+  deadlines?: Array<{
+    id: string;
+    title: string;
+    dueDate: string;
+    priority: 'high' | 'medium' | 'low';
+    action: string;
+  }>;
+  dashboardStats?: {
+    totalDocuments: number;
+    pendingValidation: number;
+    pendingSigning: number;
+    pendingApproval: number;
+    completionPercentage: number;
+  };
+  isLoading?: boolean;
 }
 
 export const DashboardContent: React.FC<DashboardContentProps> = ({
   selectedClient,
   documents,
   onDocumentSelect,
+  activities = [],
+  deadlines = [],
+  dashboardStats = {
+    totalDocuments: 0,
+    pendingValidation: 0,
+    pendingSigning: 0,
+    pendingApproval: 0,
+    completionPercentage: 0
+  },
+  isLoading = false,
 }) => {
   const styles = useStyles();
 
@@ -224,12 +268,12 @@ export const DashboardContent: React.FC<DashboardContentProps> = ({
   React.useEffect(() => {
     const timer = setTimeout(() => {
       const progressFill = document.querySelector(`.${styles.progressFill}`) as HTMLElement;
-      if (progressFill) {
-        progressFill.style.width = '73%';
+      if (progressFill && dashboardStats.completionPercentage > 0) {
+        progressFill.style.width = `${dashboardStats.completionPercentage}%`;
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [styles.progressFill]);
+  }, [styles.progressFill, dashboardStats.completionPercentage]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -257,18 +301,22 @@ export const DashboardContent: React.FC<DashboardContentProps> = ({
     }
   };
 
-  const mockDeadlines = [
-    { title: 'Contract Amendment', due: '2 days', priority: 'high', action: 'Signature required' },
-    { title: 'Tax Filing Documents', due: '5 days', priority: 'medium', action: 'Approval needed' },
-    { title: 'Annual Report', due: '12 days', priority: 'low', action: 'Review pending' },
-  ];
-
-  const mockActivities = [
-    { title: 'Document validated by James Patterson', description: 'Contract Amendment for TechCorp Solutions', time: '15 minutes ago' },
-    { title: 'New document uploaded by client', description: 'Tax documents from Martinez Construction', time: '1 hour ago' },
-    { title: 'Document signed by client', description: 'Service Agreement for Digital Marketing Inc', time: '3 hours ago' },
-    { title: 'Document approved by Lisa Chen', description: 'Business License Application', time: 'Yesterday' },
-  ];
+  // Format due dates for display
+  const formatDueDate = (dueDate: string): string => {
+    try {
+      const date = new Date(dueDate);
+      const now = new Date();
+      const diffTime = date.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 0) return 'Overdue';
+      if (diffDays === 0) return 'Due today';
+      if (diffDays === 1) return '1 day';
+      return `${diffDays} days`;
+    } catch {
+      return dueDate;
+    }
+  };
 
   return (
     <main className={styles.mainContent}>
@@ -282,19 +330,19 @@ export const DashboardContent: React.FC<DashboardContentProps> = ({
             <div className={styles.progressBar}>
               <div className={styles.progressFill}></div>
             </div>
-            <Text className={styles.progressText}>73% Complete</Text>
+            <Text className={styles.progressText}>{dashboardStats.completionPercentage}% Complete</Text>
           </div>
           <div className={styles.statusGrid}>
             <div className={styles.statusItem}>
-              <Text className={styles.statusNumber}>5</Text>
+              <Text className={styles.statusNumber}>{dashboardStats.pendingValidation}</Text>
               <Text className={styles.statusLabel}>Pending Validation</Text>
             </div>
             <div className={styles.statusItem}>
-              <Text className={styles.statusNumber}>3</Text>
+              <Text className={styles.statusNumber}>{dashboardStats.pendingSigning}</Text>
               <Text className={styles.statusLabel}>Pending Signing</Text>
             </div>
             <div className={styles.statusItem}>
-              <Text className={styles.statusNumber}>2</Text>
+              <Text className={styles.statusNumber}>{dashboardStats.pendingApproval}</Text>
               <Text className={styles.statusLabel}>Pending Approval</Text>
             </div>
           </div>
@@ -306,28 +354,34 @@ export const DashboardContent: React.FC<DashboardContentProps> = ({
             <Text className={styles.cardTitle}>Upcoming Deadlines</Text>
           </div>
           <div className={styles.deadlineList}>
-            {mockDeadlines.map((deadline, index) => (
-              <div
-                key={index}
-                className={`${styles.deadlineItem} ${
-                  index === mockDeadlines.length - 1 ? styles.deadlineItemLast : ''
-                }`}
-              >
+            {isLoading ? (
+              <Text className={styles.loadingText}>Loading deadlines...</Text>
+            ) : deadlines.length === 0 ? (
+              <Text className={styles.emptyStateText}>No upcoming deadlines</Text>
+            ) : (
+              deadlines.map((deadline, index) => (
                 <div
-                  className={`${styles.deadlinePriority} ${
-                    deadline.priority === 'high' ? styles.priorityHigh :
-                    deadline.priority === 'medium' ? styles.priorityMedium :
-                    styles.priorityLow
+                  key={deadline.id}
+                  className={`${styles.deadlineItem} ${
+                    index === deadlines.length - 1 ? styles.deadlineItemLast : ''
                   }`}
-                />
-                <div>
-                  <Text className={styles.documentName}>{deadline.title}</Text>
-                  <Text className={styles.documentMeta}>
-                    Due in {deadline.due} - {deadline.action}
-                  </Text>
+                >
+                  <div
+                    className={`${styles.deadlinePriority} ${
+                      deadline.priority === 'high' ? styles.priorityHigh :
+                      deadline.priority === 'medium' ? styles.priorityMedium :
+                      styles.priorityLow
+                    }`}
+                  />
+                  <div>
+                    <Text className={styles.documentName}>{deadline.title}</Text>
+                    <Text className={styles.documentMeta}>
+                      Due in {formatDueDate(deadline.dueDate)} - {deadline.action}
+                    </Text>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -366,22 +420,28 @@ export const DashboardContent: React.FC<DashboardContentProps> = ({
           <Text className={styles.cardTitle}>Recent Activity</Text>
         </div>
         <div className={styles.activityList}>
-          {mockActivities.map((activity, index) => (
-            <div
-              key={index}
-              className={`${styles.activityItem} ${
-                index === mockActivities.length - 1 ? styles.activityItemLast : ''
-              }`}
-            >
-              <div className={styles.activityDot} />
-              <div className={styles.activityContent}>
-                <Text className={styles.activityTitle}>{activity.title}</Text>
-                <Text className={styles.activityTime}>
-                  {activity.description} - {activity.time}
-                </Text>
+          {isLoading ? (
+            <Text className={styles.loadingText}>Loading activities...</Text>
+          ) : activities.length === 0 ? (
+            <Text className={styles.emptyStateText}>No recent activities</Text>
+          ) : (
+            activities.map((activity, index) => (
+              <div
+                key={activity.id}
+                className={`${styles.activityItem} ${
+                  index === activities.length - 1 ? styles.activityItemLast : ''
+                }`}
+              >
+                <div className={styles.activityDot} />
+                <div className={styles.activityContent}>
+                  <Text className={styles.activityTitle}>{activity.title}</Text>
+                  <Text className={styles.activityTime}>
+                    {activity.description} - {activity.time}
+                  </Text>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </main>

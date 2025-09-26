@@ -11,5 +11,8 @@ import "./allocateStorage";
 import "./escalateCase";
 import "./scanNetworkDevices";
 import "./saveStorageSettings";
+import "./dashboard-stats";
+import "./activities-recent";
+import "./deadlines-upcoming";
 
 
