@@ -30,7 +30,7 @@ const useStyles = makeStyles({
   // Desktop navigation
   navigation: {
     width: '240px',
-    height: '100vh',
+    height: '100%',
     backgroundColor: tokens.colorNeutralBackground1,
     borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
     display: 'flex',
@@ -46,7 +46,7 @@ const useStyles = makeStyles({
   mobileMenuButton: {
     display: 'none',
     position: 'fixed',
-    top: '16px',
+    top: '56px', // Positioned below the header
     left: '16px',
     zIndex: 1001,
     backgroundColor: '#9333EA', // Brand color
