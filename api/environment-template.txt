@@ -1,0 +1,46 @@
+# ===========================================
+# Azure Database Configuration Template  
+# ===========================================
+# Copy these values to your local.settings.json or Azure App Settings
+
+# ===========================================  
+# SQL Database Configuration
+# ===========================================
+SQL_SERVER=your-server.database.windows.net
+SQL_DATABASE=filesharing-db
+SQL_USER=your-sql-admin
+SQL_PASSWORD=your-strong-password
+SQL_TRUST_CERT=true
+
+# ===========================================
+# Cosmos DB Configuration  
+# ===========================================
+COSMOSDB_CONNECTION_STRING=AccountEndpoint=https://your-cosmos.documents.azure.com:443/;AccountKey=your-key==;
+COSMOSDB_DATABASE_NAME=filesharing-cosmos-db
+
+# ===========================================
+# Microsoft 365 Integration
+# ===========================================
+M365_CLIENT_ID=your-teams-app-id
+M365_CLIENT_SECRET=your-teams-app-secret
+M365_TENANT_ID=your-tenant-id
+M365_AUTHORITY_HOST=https://login.microsoftonline.com
+M365_APPLICATION_ID_URI=api://your-domain.com/your-app-id
+
+# ===========================================
+# Application Insights (Optional)
+# ===========================================
+APPINSIGHTS_INSTRUMENTATIONKEY=your-instrumentation-key
+APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=your-key;IngestionEndpoint=https://...
+
+# ===========================================
+# Local Development Examples
+# ===========================================
+# For Docker SQL Server:
+# SQL_SERVER=localhost
+# SQL_DATABASE=filesharing-db-dev  
+# SQL_USER=sa
+# SQL_PASSWORD=YourStrong!Passw0rd
+
+# For Cosmos DB Emulator:
+# COSMOSDB_CONNECTION_STRING=AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;
