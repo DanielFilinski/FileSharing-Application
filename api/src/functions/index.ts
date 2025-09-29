@@ -24,5 +24,6 @@ import "./documentsProtected";
 import "./endUsersProtected";
 import "./userManagementProtected";
 import "./workflowEngine";
+import "./documentVersions";
 
 

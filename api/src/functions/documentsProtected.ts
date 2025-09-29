@@ -1,6 +1,7 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 import { getContainer } from '../shared/db/cosmos';
 import { createProtectedFunction, RBAC_CONFIGS } from '../shared/middleware/rbacMiddleware';
+import { DocumentVersioningService } from '../shared/versioning/versioningService';
 import { z } from 'zod';
 
 const DocumentSchema = z.object({
@@ -195,6 +196,27 @@ app.http('createDocumentProtected', {
         const container = getContainer('documents');
         const { resource: createdDocument } = await container.items.create(document);
         
+        // Create initial version for the document
+        try {
+          await DocumentVersioningService.createVersionFromDocument(
+            createdDocument.id,
+            user,
+            {
+              changeType: 'created',
+              changeDescription: 'Document created',
+              auditInfo: {
+                ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+                userAgent: req.headers.get('user-agent') || 'unknown',
+                sessionId: req.headers.get('x-session-id') || `session-${Date.now()}`
+              }
+            },
+            ctx
+          );
+        } catch (versionError) {
+          ctx.warn('Failed to create initial document version:', versionError);
+          // Don't fail the document creation if versioning fails
+        }
+        
         // Log activity
         const activitiesContainer = getContainer('activities');
         await activitiesContainer.items.create({
@@ -285,6 +307,28 @@ app.http('updateDocumentProtected', {
         
         // Get updated document
         const { resource: updatedDocument } = await container.item(documentId).read();
+        
+        // Create version for the update
+        try {
+          const changeDescription = getChangeDescription(body, existingDocument);
+          await DocumentVersioningService.createVersionFromDocument(
+            documentId,
+            user,
+            {
+              changeType: body.status !== existingDocument.status ? 'status_changed' : 'updated',
+              changeDescription,
+              auditInfo: {
+                ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+                userAgent: req.headers.get('user-agent') || 'unknown',
+                sessionId: req.headers.get('x-session-id') || `session-${Date.now()}`
+              }
+            },
+            ctx
+          );
+        } catch (versionError) {
+          ctx.warn('Failed to create document version on update:', versionError);
+          // Don't fail the update if versioning fails
+        }
         
         // Log activity
         const activitiesContainer = getContainer('activities');
@@ -414,3 +458,30 @@ app.http('deleteDocumentProtected', {
     }
   )
 });
+
+// Helper function to generate change description for versioning
+function getChangeDescription(updates: any, existingDocument: any): string {
+  const changes: string[] = [];
+  
+  if (updates.name && updates.name !== existingDocument.name) {
+    changes.push(`renamed from "${existingDocument.name}" to "${updates.name}"`);
+  }
+  
+  if (updates.status && updates.status !== existingDocument.status) {
+    changes.push(`status changed from "${existingDocument.status}" to "${updates.status}"`);
+  }
+  
+  if (updates.category && updates.category !== existingDocument.category) {
+    changes.push(`category changed from "${existingDocument.category}" to "${updates.category}"`);
+  }
+  
+  if (updates.tags && JSON.stringify(updates.tags) !== JSON.stringify(existingDocument.tags)) {
+    changes.push('tags updated');
+  }
+  
+  if (changes.length === 0) {
+    return 'Document updated';
+  }
+  
+  return 'Document ' + changes.join(', ');
+}

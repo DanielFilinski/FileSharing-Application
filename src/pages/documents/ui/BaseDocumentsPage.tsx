@@ -4,6 +4,7 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Toolbar } from '../components/Toolbar';
 import { DocumentsTable } from '../components/DocumentsTable';
 import { DocumentDetailsDrawer } from '../components/DocumentDetailsDrawer';
+import { DocumentHistoryPanel } from '../../../components/DocumentHistory';
 import { useFavorites } from '@/features/favorites';
 import { useDocuments } from '@/entities/document';
 import { DocumentsService } from '@/shared/api/documentsService';
@@ -105,6 +106,9 @@ export default function BaseDocumentsPage({
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState(false);
+  const [historyDocumentId, setHistoryDocumentId] = useState<string>('');
+  const [historyDocumentName, setHistoryDocumentName] = useState<string>('');
 
   const handleAddItem = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
     // Опционально: можно открыть модал создания; пока опускаем
@@ -450,6 +454,15 @@ export default function BaseDocumentsPage({
               a.remove();
             }
           }}
+          onViewHistory={(key) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (doc) {
+              setHistoryDocumentId(doc.id);
+              setHistoryDocumentName(doc.name);
+              setIsHistoryPanelOpen(true);
+              console.log('Viewing history for document:', doc.name);
+            }
+          }}
           pageType={getPageType()}
           onRowClick={handleRowClick}
           {...customTableProps}
@@ -461,6 +474,32 @@ export default function BaseDocumentsPage({
         selectedDoc={selectedDoc}
         onClose={handleDrawerClose}
       />
+
+      {/* Document History Panel */}
+      {isHistoryPanelOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '600px',
+          height: '100vh',
+          backgroundColor: tokens.colorNeutralBackground1,
+          boxShadow: tokens.shadow64,
+          zIndex: 1000,
+          borderLeft: `1px solid ${tokens.colorNeutralStroke2}`
+        }}>
+          <DocumentHistoryPanel
+            documentId={historyDocumentId}
+            documentName={historyDocumentName}
+            isVisible={isHistoryPanelOpen}
+            onClose={() => {
+              setIsHistoryPanelOpen(false);
+              setHistoryDocumentId('');
+              setHistoryDocumentName('');
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 } 

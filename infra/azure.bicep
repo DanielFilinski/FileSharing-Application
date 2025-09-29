@@ -182,8 +182,57 @@ resource documentVersionsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDat
     resource: {
       id: 'document-versions'
       partitionKey: {
-        paths: ['/documentId']
+        paths: ['/partitionKey']
         kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+    }
+  }
+}
+
+resource documentHistoryEventsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'document-history-events'
+  properties: {
+    resource: {
+      id: 'document-history-events'
+      partitionKey: {
+        paths: ['/partitionKey']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/*'
+          }
+          {
+            path: '/timestamp/?'
+          }
+          {
+            path: '/eventType/?'
+          }
+          {
+            path: '/userInfo/userEmail/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
       }
     }
   }

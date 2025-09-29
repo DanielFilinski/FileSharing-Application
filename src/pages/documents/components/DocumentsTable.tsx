@@ -72,6 +72,7 @@ export const DocumentsTable: React.FC<{
   onMoveToFirm?: (documentKey: string) => void,
   onPreview?: (documentKey: string) => void,
   onDownload?: (documentKey: string) => void,
+  onViewHistory?: (documentKey: string) => void,
   showBulkSelection?: boolean,
   showAdvancedColumns?: boolean,
   pageType?: 'firm' | 'client',
@@ -102,6 +103,7 @@ export const DocumentsTable: React.FC<{
     const baseItems = [
       { key: 'preview', label: 'Preview', action: () => onPreview?.(itemKey) },
       { key: 'download', label: 'Download', action: () => onDownload?.(itemKey) },
+      { key: 'history', label: 'View History', action: () => onViewHistory?.(itemKey) },
       { key: 'delete', label: 'Delete', action: () => onDelete?.(itemKey) },
     ];
 
