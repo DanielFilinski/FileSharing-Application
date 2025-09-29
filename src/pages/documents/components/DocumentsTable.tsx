@@ -17,7 +17,7 @@ import {
   MenuTrigger,
   Badge
 } from '@fluentui/react-components';
-import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular, LockClosed20Regular, LockOpen20Regular, SignatureRegular } from '@fluentui/react-icons';
+import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular, LockClosed20Regular, LockOpen20Regular, SignatureRegular, Chat20Regular } from '@fluentui/react-icons';
 import { useFavorites } from '@/features/favorites';
 import { SignatureWidget, SignatureStatus } from '../../../components/DigitalSignature';
 
@@ -76,6 +76,7 @@ export const DocumentsTable: React.FC<{
   onDownload?: (documentKey: string) => void,
   onViewHistory?: (documentKey: string) => void,
   onSignDocument?: (documentKey: string, documentName: string) => void,
+  onOpenChat?: (documentKey: string, documentName: string) => void,
   showBulkSelection?: boolean,
   showAdvancedColumns?: boolean,
   pageType?: 'firm' | 'client',
@@ -94,6 +95,7 @@ export const DocumentsTable: React.FC<{
   onPreview,
   onDownload,
   onSignDocument,
+  onOpenChat,
   showBulkSelection = false,
   showAdvancedColumns = false,
   pageType = 'firm',
@@ -110,6 +112,7 @@ export const DocumentsTable: React.FC<{
       { key: 'download', label: 'Download', action: () => onDownload?.(itemKey) },
       { key: 'history', label: 'View History', action: () => onViewHistory?.(itemKey) },
       { key: 'sign', label: 'Sign Document', action: () => onSignDocument?.(itemKey, item?.name || ''), icon: <SignatureRegular /> },
+      { key: 'chat', label: 'Open Chat', action: () => onOpenChat?.(itemKey, item?.name || ''), icon: <Chat20Regular /> },
       { key: 'delete', label: 'Delete', action: () => onDelete?.(itemKey) },
     ];
 

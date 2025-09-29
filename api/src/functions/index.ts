@@ -27,5 +27,6 @@ import "./workflowEngine";
 import "./documentVersions";
 import "./digitalSignature";
 import "./auditTrail";
+import "./chat";
 
 

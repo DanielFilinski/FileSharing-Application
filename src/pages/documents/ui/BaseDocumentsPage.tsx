@@ -6,6 +6,7 @@ import { DocumentsTable } from '../components/DocumentsTable';
 import { DocumentDetailsDrawer } from '../components/DocumentDetailsDrawer';
 import { DocumentHistoryPanel } from '../../../components/DocumentHistory';
 import { SignatureWidget } from '../../../components/DigitalSignature';
+import { ChatWidget } from '../../../components/Chat';
 import { useFavorites } from '@/features/favorites';
 import { useDocuments } from '@/entities/document';
 import { DocumentsService } from '@/shared/api/documentsService';
@@ -115,6 +116,11 @@ export default function BaseDocumentsPage({
   const [isSignatureWidgetOpen, setIsSignatureWidgetOpen] = useState(false);
   const [signatureDocumentId, setSignatureDocumentId] = useState<string>('');
   const [signatureDocumentName, setSignatureDocumentName] = useState<string>('');
+
+  // State for chat widget
+  const [isChatWidgetOpen, setIsChatWidgetOpen] = useState(false);
+  const [chatDocumentId, setChatDocumentId] = useState<string>('');
+  const [chatDocumentName, setChatDocumentName] = useState<string>('');
 
   const handleAddItem = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
     // Опционально: можно открыть модал создания; пока опускаем
@@ -478,6 +484,15 @@ export default function BaseDocumentsPage({
               console.log('Viewing history for document:', doc.name);
             }
           }}
+          onOpenChat={(key, docName) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (doc) {
+              setChatDocumentId(doc.id);
+              setChatDocumentName(docName || doc.name);
+              setIsChatWidgetOpen(true);
+              console.log('Opening chat for document:', docName || doc.name);
+            }
+          }}
           pageType={getPageType()}
           onRowClick={handleRowClick}
           {...customTableProps}
@@ -529,7 +544,7 @@ export default function BaseDocumentsPage({
             );
             setIsSignatureWidgetOpen(false);
             // Опционально: обновить документы чтобы показать статус подписи
-            refetch();
+            fetchDocuments();
           }}
           onClose={() => {
             setIsSignatureWidgetOpen(false);
@@ -539,6 +554,31 @@ export default function BaseDocumentsPage({
           trigger={<div style={{ display: 'none' }} />} // Скрытый триггер, поскольку мы управляем состоянием вручную
         />
       )}
+
+      {/* Chat Widget */}
+      <ChatWidget
+        isOpen={isChatWidgetOpen}
+        onClose={() => {
+          setIsChatWidgetOpen(false);
+          setChatDocumentId('');
+          setChatDocumentName('');
+        }}
+        documentId={chatDocumentId}
+        documentName={chatDocumentName}
+        onFragmentCreate={(fragment) => {
+          console.log('Fragment created:', fragment);
+          notificationService.success(
+            'Fragment Created',
+            `Fragment created for document "${chatDocumentName}"`
+          );
+          // TODO: Handle fragment highlighting in document viewer
+        }}
+        onFragmentHighlight={(fragment) => {
+          console.log('Fragment highlighted:', fragment);
+          // TODO: Scroll to and highlight fragment in document viewer
+          // This would require integration with document viewer component
+        }}
+      />
     </div>
   );
 } 

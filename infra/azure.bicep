@@ -553,6 +553,303 @@ resource auditSettingsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDataba
   }
 }
 
+// Chat System Containers
+resource chatThreadsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'chat-threads'
+  properties: {
+    resource: {
+      id: 'chat-threads'
+      partitionKey: {
+        paths: ['/documentId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/documentId/?'
+          }
+          {
+            path: '/isActive/?'
+          }
+          {
+            path: '/isArchived/?'
+          }
+          {
+            path: '/createdBy/?'
+          }
+          {
+            path: '/lastActivity/?'
+          }
+          {
+            path: '/threadType/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+          {
+            path: '/settings/*'
+          }
+          {
+            path: '/lastMessage/*'
+          }
+        ]
+      }
+      defaultTtl: -1 // No TTL for threads
+    }
+  }
+}
+
+resource chatMessagesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'chat-messages'
+  properties: {
+    resource: {
+      id: 'chat-messages'
+      partitionKey: {
+        paths: ['/threadId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/threadId/?'
+          }
+          {
+            path: '/documentId/?'
+          }
+          {
+            path: '/senderId/?'
+          }
+          {
+            path: '/messageType/?'
+          }
+          {
+            path: '/timestamp/?'
+          }
+          {
+            path: '/isDeleted/?'
+          }
+          {
+            path: '/isPinned/?'
+          }
+          {
+            path: '/content/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+          {
+            path: '/metadata/*'
+          }
+          {
+            path: '/reactions/*'
+          }
+        ]
+        compositeIndexes: [
+          [
+            {
+              path: '/threadId'
+              order: 'ascending'
+            }
+            {
+              path: '/timestamp'
+              order: 'ascending'
+            }
+          ]
+          [
+            {
+              path: '/documentId'
+              order: 'ascending'
+            }
+            {
+              path: '/timestamp'
+              order: 'descending'
+            }
+          ]
+          [
+            {
+              path: '/senderId'
+              order: 'ascending'
+            }
+            {
+              path: '/timestamp'
+              order: 'descending'
+            }
+          ]
+        ]
+      }
+      defaultTtl: 31536000 // 1 year in seconds
+    }
+  }
+}
+
+resource documentFragmentsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'document-fragments'
+  properties: {
+    resource: {
+      id: 'document-fragments'
+      partitionKey: {
+        paths: ['/documentId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/documentId/?'
+          }
+          {
+            path: '/createdBy/?'
+          }
+          {
+            path: '/createdAt/?'
+          }
+          {
+            path: '/isActive/?'
+          }
+          {
+            path: '/isResolved/?'
+          }
+          {
+            path: '/selectionType/?'
+          }
+          {
+            path: '/pageNumber/?'
+          }
+          {
+            path: '/highlightColor/?'
+          }
+          {
+            path: '/tags/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+        compositeIndexes: [
+          [
+            {
+              path: '/documentId'
+              order: 'ascending'
+            }
+            {
+              path: '/pageNumber'
+              order: 'ascending'
+            }
+            {
+              path: '/startPosition'
+              order: 'ascending'
+            }
+          ]
+        ]
+      }
+      defaultTtl: -1 // No TTL for fragments
+    }
+  }
+}
+
+resource chatParticipantsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'chat-participants'
+  properties: {
+    resource: {
+      id: 'chat-participants'
+      partitionKey: {
+        paths: ['/threadId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/threadId/?'
+          }
+          {
+            path: '/userId/?'
+          }
+          {
+            path: '/userRole/?'
+          }
+          {
+            path: '/joinedAt/?'
+          }
+          {
+            path: '/lastSeenAt/?'
+          }
+          {
+            path: '/isActive/?'
+          }
+          {
+            path: '/isOnline/?'
+          }
+          {
+            path: '/permissions/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+          {
+            path: '/notificationSettings/*'
+          }
+        ]
+      }
+      defaultTtl: -1 // No TTL for participants
+    }
+  }
+}
+
+resource chatEventsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'chat-events'
+  properties: {
+    resource: {
+      id: 'chat-events'
+      partitionKey: {
+        paths: ['/threadId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/threadId/?'
+          }
+          {
+            path: '/type/?'
+          }
+          {
+            path: '/userId/?'
+          }
+          {
+            path: '/timestamp/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+          {
+            path: '/data/*'
+          }
+        ]
+      }
+      defaultTtl: 2592000 // 30 days in seconds
+    }
+  }
+}
+
 // Application Insights
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${resourceBaseName}-insights'
