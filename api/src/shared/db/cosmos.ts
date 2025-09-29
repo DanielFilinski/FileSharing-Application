@@ -1,6 +1,6 @@
 import { CosmosClient, Container, Database } from '@azure/cosmos';
 
-type Containers = 'documents' | 'end-users' | 'sharepoint-sites' | 'user-relationships' | 'chat-messages' | 'audit-events' | 'user-favorites' | 'document-versions' | 'activities' | 'deadlines';
+export type Containers = 'documents' | 'users' | 'settings' | 'end-users' | 'sharepoint-sites' | 'user-relationships' | 'chat-messages' | 'audit-events' | 'audit-logs' | 'user-favorites' | 'document-versions' | 'activities' | 'deadlines' | 'workflows';
 
 let client: CosmosClient | null = null;
 let database: Database | null = null;

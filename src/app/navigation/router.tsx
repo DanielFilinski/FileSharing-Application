@@ -18,6 +18,7 @@ import { TestRBACDemo } from '@/pages/settings/TestRBACDemo';
 import { SettingsMain } from '@/pages/settings/SettingsMain';
 import { SettingsMainWithDebug } from '@/pages/settings/SettingsMainWithDebug';
 import { SharePointPage } from '@/pages/sharepoint/SharePointPage';
+import { WorkflowPage } from '@/pages/workflow/WorkflowPage';
 import { TeamsTab, TeamsTabConfig } from '@/teams';
 
 
@@ -89,6 +90,10 @@ export const router = createBrowserRouter([
       {
         path: 'sharepoint',
         element: <SharePointPage />,
+      },
+      {
+        path: 'workflow',
+        element: <WorkflowPage />,
       },
       {
         path: 'teams/tab',

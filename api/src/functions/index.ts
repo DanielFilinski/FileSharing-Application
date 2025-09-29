@@ -19,5 +19,10 @@ import "./sharePointBasic";
 import "./sharePointProvisioning";
 import "./sharePointDocuments";
 import "./teamsOperations";
+import "./advancedDocumentOperations";
+import "./documentsProtected";
+import "./endUsersProtected";
+import "./userManagementProtected";
+import "./workflowEngine";
 
 

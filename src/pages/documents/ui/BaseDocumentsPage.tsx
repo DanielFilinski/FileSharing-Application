@@ -8,6 +8,8 @@ import { useFavorites } from '@/features/favorites';
 import { useDocuments } from '@/entities/document';
 import { DocumentsService } from '@/shared/api/documentsService';
 import { apiClient } from '@/shared/api';
+import { AdvancedDocumentApiClient } from '@/shared/api/advancedDocumentApi';
+import { notificationService } from '@/shared/lib/notifications';
 import { useDocumentCleanup } from '@/shared/hooks/useDocumentCleanup';
 import { useLocation } from 'react-router-dom';
 
@@ -158,7 +160,8 @@ export default function BaseDocumentsPage({
           if (documentIds.length === 1) {
             await deleteDocument(documentIds[0]);
           } else {
-            await bulkDelete(documentIds);
+            await AdvancedDocumentApiClient.bulkOperation(documentIds, 'delete');
+            notificationService.success('Success', `${documentIds.length} documents deleted`);
           }
           setSelectedItems(new Set());
           break;
@@ -169,29 +172,84 @@ export default function BaseDocumentsPage({
           }
           break;
           
+        case 'pin':
+          for (const documentId of documentIds) {
+            await AdvancedDocumentApiClient.pinDocument(documentId, true);
+          }
+          notificationService.success('Success', `${documentIds.length} document(s) pinned to top`);
+          break;
+          
+        case 'unpin':
+          for (const documentId of documentIds) {
+            await AdvancedDocumentApiClient.pinDocument(documentId, false);
+          }
+          notificationService.success('Success', `${documentIds.length} document(s) unpinned`);
+          break;
+          
         case 'move':
-          // Implementation for move operation
-          console.log('Moving documents to:', data?.targetFolder);
+          if (data?.targetFolder) {
+            const result = await AdvancedDocumentApiClient.moveDocuments(documentIds, data.targetFolder, 'move');
+            const { successMessages, errorMessages } = AdvancedDocumentApiClient.formatOperationResults(result.results);
+            
+            if (successMessages.length > 0) {
+              notificationService.success('Move Complete', successMessages.join(', '));
+            }
+            if (errorMessages.length > 0) {
+              notificationService.error('Move Errors', errorMessages.join(', '));
+            }
+          }
           break;
           
         case 'copy':
-          // Implementation for copy operation  
-          console.log('Copying documents to:', data?.targetLocation);
+          if (data?.targetFolder) {
+            const result = await AdvancedDocumentApiClient.moveDocuments(documentIds, data.targetFolder, 'copy');
+            const { successMessages, errorMessages } = AdvancedDocumentApiClient.formatOperationResults(result.results);
+            
+            if (successMessages.length > 0) {
+              notificationService.success('Copy Complete', successMessages.join(', '));
+            }
+            if (errorMessages.length > 0) {
+              notificationService.error('Copy Errors', errorMessages.join(', '));
+            }
+          }
+          break;
+          
+        case 'archive':
+          const archiveResult = await AdvancedDocumentApiClient.bulkOperation(documentIds, 'archive');
+          notificationService.success('Archive Complete', 
+            `${archiveResult.summary.successful} documents archived successfully`);
+          break;
+          
+        case 'restore':
+          const restoreResult = await AdvancedDocumentApiClient.bulkOperation(documentIds, 'restore');
+          notificationService.success('Restore Complete', 
+            `${restoreResult.summary.successful} documents restored successfully`);
+          break;
+          
+        case 'tag':
+          if (data?.tags && data.tags.length > 0) {
+            const tagResult = await AdvancedDocumentApiClient.bulkOperation(documentIds, 'tag', { tags: data.tags });
+            notificationService.success('Tag Complete', 
+              `${tagResult.summary.successful} documents tagged with: ${data.tags.join(', ')}`);
+          }
           break;
           
         case 'download':
           // Implementation for download operation
           console.log('Downloading documents:', documentIds);
+          notificationService.info('Download', 'Download functionality coming soon');
           break;
           
         case 'print':
           // Implementation for print operation
           console.log('Printing documents:', documentIds);
+          notificationService.info('Print', 'Print functionality coming soon');
           break;
           
         case 'share':
           // Implementation for share operation
           console.log('Sharing documents:', documentIds, 'with:', data);
+          notificationService.info('Share', 'Advanced sharing functionality coming soon');
           break;
           
         case 'create':
@@ -218,8 +276,25 @@ export default function BaseDocumentsPage({
           }
           break;
       }
+      
+      // Refresh documents after operation (except create which is handled separately)
+      if (operation !== 'create' && operation !== 'download' && operation !== 'print') {
+        try {
+          // Simple refresh by re-calling the documents service
+          window.location.reload(); // Simple refresh for now - can be improved with state management
+        } catch (refreshError) {
+          console.error('Error refreshing documents after operation:', refreshError);
+        }
+      }
+      
+      // Clear selection after most operations
+      if (['delete', 'pin', 'unpin', 'move', 'copy', 'archive', 'restore', 'tag'].includes(operation)) {
+        setSelectedItems(new Set());
+      }
+      
     } catch (error) {
       console.error(`Error during ${operation}:`, error);
+      notificationService.error('Operation Failed', `Failed to ${operation} documents: ${error.message}`);
       throw error;
     }
   };

@@ -106,8 +106,15 @@ export const NAV_LINKS: NavLink[] = [
     url: '#',
     key: 'sharepoint',
     linkName: '/sharepoint',
-    icon: 'SharePointLogo'
-  }
+    icon: 'CloudStorage'
+  },
+  {
+    name: 'Workflow',
+    url: '#',
+    key: 'workflow',
+    linkName: '/workflow',
+    icon: 'WorkFlow'
+  },
 ];
 
 // Navigation groups following Teams design patterns
@@ -120,7 +127,6 @@ export const NAV_GROUPS: NavGroup[] = [
       NAV_LINKS[2], // Firm Side 2
       NAV_LINKS[3], // Favorites
       NAV_LINKS[8], // Leads
-      NAV_LINKS[10], // SharePoint
     ]
   },
   {
