@@ -100,6 +100,13 @@ export const NAV_LINKS: NavLink[] = [
     key: 'users',
     linkName: '/settings/users',
     icon: 'Person'
+  },
+  {
+    name: 'SharePoint',
+    url: '#',
+    key: 'sharepoint',
+    linkName: '/sharepoint',
+    icon: 'SharePointLogo'
   }
 ];
 
@@ -113,6 +120,7 @@ export const NAV_GROUPS: NavGroup[] = [
       NAV_LINKS[2], // Firm Side 2
       NAV_LINKS[3], // Favorites
       NAV_LINKS[8], // Leads
+      NAV_LINKS[10], // SharePoint
     ]
   },
   {

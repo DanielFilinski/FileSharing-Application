@@ -255,6 +255,7 @@ const Navigation: React.FC<NavigationProps> = ({
     if (path.includes('/employees')) return 'employees';
     if (path.includes('/leads')) return 'leads';
     if (path.includes('/settings/users')) return 'users';
+    if (path.includes('/sharepoint')) return 'sharepoint';
     return 'dms'; // Default
   };
 
@@ -307,6 +308,9 @@ const Navigation: React.FC<NavigationProps> = ({
         break;
       case 'leads':
         navigate('/leads');
+        break;
+      case 'sharepoint':
+        navigate('/sharepoint');
         break;
       default:
         navigate('/');

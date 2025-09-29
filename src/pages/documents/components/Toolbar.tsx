@@ -39,6 +39,7 @@ import { useNotifications } from '@/shared/lib/useNotifications';
 import { DocumentsService } from '@/shared/api/documentsService';
 import { apiClient } from '@/shared/api';
 import { useSelectedEndUser } from '@/components/EndUser';
+import { SharePointApiClient } from '@/shared/api/sharePointApi';
 
 interface FilePickerFile {
   id: string;
@@ -307,6 +308,31 @@ export const Toolbar: React.FC<{
     });
   };
 
+  const handleOpenInSharePoint = async () => {
+    if (selectedDocuments.length !== 1) {
+      showError('Selection Error', 'Please select exactly one document');
+      return;
+    }
+
+    if (!selectedEndUser) {
+      showError('No End User', 'Please select an End User first');
+      return;
+    }
+
+    try {
+      showInfo('Opening in SharePoint', 'Opening document in SharePoint...');
+      
+      const document = selectedDocuments[0];
+      const result = await SharePointApiClient.openSharePointDocument(document.id, 'view');
+      
+      window.open(result.openUrl, '_blank');
+      showSuccess('Opened Successfully', 'Document opened in SharePoint');
+    } catch (error: any) {
+      console.error('SharePoint open error:', error);
+      showError('SharePoint Error', `Failed to open in SharePoint: ${error.message}`);
+    }
+  };
+
   const handleOperationConfirm = async (operation: string, data?: any) => {
     try {
       if (onDocumentOperation) {
@@ -557,6 +583,7 @@ export const Toolbar: React.FC<{
             <MenuItem onClick={() => handleDocumentOperation('move')} disabled={selectedDocuments.length === 0}>Move</MenuItem>
             <MenuItem onClick={() => handleDocumentOperation('copy')} disabled={selectedDocuments.length === 0}>Copy</MenuItem>
             <MenuItem onClick={() => handleDocumentOperation('download')} disabled={selectedDocuments.length === 0}>Download</MenuItem>
+            <MenuItem onClick={() => handleOpenInSharePoint()} disabled={selectedDocuments.length !== 1}>Open in SharePoint</MenuItem>
             <MenuItem onClick={() => handleDocumentOperation('print')} disabled={selectedDocuments.length === 0}>Print</MenuItem>
           </MenuList>
         </MenuPopover>

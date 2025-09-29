@@ -17,6 +17,7 @@ import Dashboard from '@/pages/documents/ui/Dashboard';
 import { TestRBACDemo } from '@/pages/settings/TestRBACDemo';
 import { SettingsMain } from '@/pages/settings/SettingsMain';
 import { SettingsMainWithDebug } from '@/pages/settings/SettingsMainWithDebug';
+import { SharePointPage } from '@/pages/sharepoint/SharePointPage';
 
 
 export const router = createBrowserRouter([
@@ -83,6 +84,10 @@ export const router = createBrowserRouter([
       {
         path: 'settings/test-rbac',
         element: <TestRBACDemo />,
+      },
+      {
+        path: 'sharepoint',
+        element: <SharePointPage />,
       },
 
     ],

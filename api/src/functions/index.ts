@@ -15,5 +15,8 @@ import "./endUsers";
 import "./dashboard-stats";
 import "./activities-recent";
 import "./deadlines-upcoming";
+import "./sharePointBasic";
+import "./sharePointProvisioning";
+import "./sharePointDocuments";
 
 
