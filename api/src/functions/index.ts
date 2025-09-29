@@ -18,5 +18,6 @@ import "./deadlines-upcoming";
 import "./sharePointBasic";
 import "./sharePointProvisioning";
 import "./sharePointDocuments";
+import "./teamsOperations";
 
 

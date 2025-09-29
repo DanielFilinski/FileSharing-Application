@@ -83,7 +83,7 @@ export class DashboardService {
   constructor() {
     const baseUrl = (typeof window !== 'undefined' && window.location.hostname === 'localhost') 
       ? 'http://localhost:7071/api'
-      : (process.env.VITE_API_BASE_URL || '/api');
+      : (import.meta.env.VITE_API_BASE_URL || '/api');
     this.apiClient = new ApiClient(baseUrl);
   }
 

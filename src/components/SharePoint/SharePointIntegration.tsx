@@ -12,13 +12,13 @@ import {
   Text,
   Badge,
   MessageBar,
-  MessageBarType
+  MessageBarBody
 } from '@fluentui/react-components';
 import { 
-  CloudUpload20Regular,
+  ArrowUpload20Regular,
   FolderOpen20Regular,
   Document20Regular,
-  SharePointLogo20Filled
+  ShareAndroid20Regular
 } from '@fluentui/react-icons';
 import { SharePointApiClient, SharePointDocument } from '../../shared/api/sharePointApi';
 import { useSelectedEndUser } from '../../contexts/EndUserContext';
@@ -399,7 +399,7 @@ export const SharePointIntegration: React.FC = () => {
         <Button
           appearance="primary"
           size="small"
-          icon={<CloudUpload20Regular />}
+          icon={<ArrowUpload20Regular />}
           disabled={isUploading || !selectedEndUser}
           onClick={() => document.getElementById(`file-${folderKey}`)?.click()}
         >
@@ -470,8 +470,10 @@ export const SharePointIntegration: React.FC = () => {
   if (!selectedEndUser) {
     return (
       <div className={styles.container}>
-        <MessageBar type={MessageBarType.info}>
-          Please select an End User to access SharePoint integration.
+        <MessageBar intent="info">
+          <MessageBarBody>
+            Please select an End User to access SharePoint integration.
+          </MessageBarBody>
         </MessageBar>
       </div>
     );
@@ -480,25 +482,27 @@ export const SharePointIntegration: React.FC = () => {
   if (!selectedEndUser.sharePointSite) {
     return (
       <div className={styles.container}>
-        <MessageBar type={MessageBarType.warning}>
-          SharePoint site not found for this End User. 
-          <Button 
-            appearance="primary" 
-            size="small"
-            style={{ marginLeft: '12px' }}
-            onClick={async () => {
-              try {
-                showInfo('Creating Site', 'Creating SharePoint site...');
-                await SharePointApiClient.createEndUserSite(selectedEndUser);
-                showSuccess('Site Created', 'SharePoint site created successfully');
-                window.location.reload(); // Refresh to load new site
-              } catch (error: any) {
-                showError('Creation Failed', error.message);
-              }
-            }}
-          >
-            Create SharePoint Site
-          </Button>
+        <MessageBar intent="warning">
+          <MessageBarBody>
+            SharePoint site not found for this End User. 
+            <Button 
+              appearance="primary" 
+              size="small"
+              style={{ marginLeft: '12px' }}
+              onClick={async () => {
+                try {
+                  showInfo('Creating Site', 'Creating SharePoint site...');
+                  await SharePointApiClient.createEndUserSite(selectedEndUser);
+                  showSuccess('Site Created', 'SharePoint site created successfully');
+                  window.location.reload(); // Refresh to load new site
+                } catch (error: any) {
+                  showError('Creation Failed', error.message);
+                }
+              }}
+            >
+              Create SharePoint Site
+            </Button>
+          </MessageBarBody>
         </MessageBar>
       </div>
     );
@@ -507,16 +511,18 @@ export const SharePointIntegration: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <SharePointLogo20Filled style={{ color: tokens.colorBrandForeground1 }} />
+        <ShareAndroid20Regular style={{ color: tokens.colorBrandForeground1 }} />
         <Text className={styles.title}>
           SharePoint Integration - {selectedEndUser.displayName}
         </Text>
       </div>
 
       {isUploading && (
-        <MessageBar type={MessageBarType.info}>
-          <Spinner size="tiny" style={{ marginRight: '8px' }} />
-          Uploading files to SharePoint...
+        <MessageBar intent="info">
+          <MessageBarBody>
+            <Spinner size="tiny" style={{ marginRight: '8px' }} />
+            Uploading files to SharePoint...
+          </MessageBarBody>
         </MessageBar>
       )}
 
