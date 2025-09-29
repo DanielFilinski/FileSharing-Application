@@ -51,13 +51,13 @@ export interface Document {
   shared: boolean;
   status: 'Active' | 'pending validation' | 'validation in process' | 'pending review' | 'Locked' | 'Access Closed';
   lock: boolean;
-  clientEmail?: string; // Email клиента, который загрузил документ
-  documentType?: string; // Тип документа (tax, audit, consulting, etc.)
-  documentSubtype?: string; // Подтип документа (income tax, sales tax, etc.)
-  period?: string; // Период (quarter, year, specific dates)
-  startDate?: string; // Начальная дата для периода
-  endDate?: string; // Конечная дата для периода
-  description?: string; // Описание документа
+  clientEmail?: string; // Client email who uploaded the document
+  documentType?: string; // Document type (tax, audit, consulting, etc.)
+  documentSubtype?: string; // Document subtype (income tax, sales tax, etc.)
+  period?: string; // Period (quarter, year, specific dates)
+  startDate?: string; // Start date for period
+  endDate?: string; // End date for period
+  description?: string; // Document description
 }
 
 export interface BaseDocumentsPageProps {
@@ -79,7 +79,7 @@ export default function BaseDocumentsPage({
   const documentsService = new DocumentsService(apiClient);
   const { addOpenDocument, removeOpenDocument, cleanupDocuments } = useDocumentCleanup();
   
-  // Определяем тип страницы на основе пути
+  // Determine page type based on path
   const getPageType = (): 'firm' | 'client' => {
     if (location.pathname.includes('/client') || 
         location.pathname.includes('/client-side') || 
@@ -123,7 +123,7 @@ export default function BaseDocumentsPage({
   const [chatDocumentName, setChatDocumentName] = useState<string>('');
 
   const handleAddItem = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
-    // Опционально: можно открыть модал создания; пока опускаем
+    // Optionally: can open creation modal; skipping for now
   };
 
   const handleFilterChange = (filter: 'All Documents' | 'My Documents' | 'Shared Documents' | 'Recent' | 'Favorites') => {
@@ -145,7 +145,7 @@ export default function BaseDocumentsPage({
   };
 
   const handleCloseAccess = (documentKey: string) => {
-    // Можно обновить статус документа, если потребуется отдельный флаг доступа
+    // Can update document status if separate access flag is needed
   };
 
   const handleToggleLock = (documentKey: string) => {
@@ -384,7 +384,7 @@ export default function BaseDocumentsPage({
     filteredDocuments = filteredDocuments.filter(d => favoriteKeys.includes(d.key));
   }
   
-  // Фильтрация по статусу
+  // Filter by status
   if (statusFilter !== 'All') {
     filteredDocuments = filteredDocuments.filter(d => d.status === statusFilter);
   }
@@ -431,7 +431,7 @@ export default function BaseDocumentsPage({
           onDelete={(key) => {
             const doc = documents.find(d => d.id === key || (d as any).key === key);
             if (doc) {
-              // маппинг id
+              // id mapping
               // @ts-ignore
               import('@/entities/document').then(({ documentsApi }) => documentsApi.deleteDocument(doc.id)).catch(() => {});
             }
@@ -455,7 +455,7 @@ export default function BaseDocumentsPage({
           onDownload={(key) => {
             const doc = documents.find(d => d.id === key || (d as any).key === key);
             if (!doc) return;
-            // Пытаемся скачать через blobUrl
+            // Try to download through blobUrl
             const url = (doc as any).blobUrl;
             if (url) {
               const a = document.createElement('a');
@@ -531,7 +531,7 @@ export default function BaseDocumentsPage({
         </div>
       )}
 
-      {/* Signature Widget - показывается как диалог */}
+      {/* Signature Widget - displayed as dialog */}
       {isSignatureWidgetOpen && (
         <SignatureWidget
           documentId={signatureDocumentId}
@@ -539,11 +539,11 @@ export default function BaseDocumentsPage({
           onSignatureRequestCreated={(signatureRequest) => {
             console.log('Signature request created:', signatureRequest);
             notificationService.success(
-              'Документ отправлен на подпись',
-              `Запрос на подпись создан для документа "${signatureDocumentName}"`
+              'Document sent for signature',
+              `Signature request created for document "${signatureDocumentName}"`
             );
             setIsSignatureWidgetOpen(false);
-            // Опционально: обновить документы чтобы показать статус подписи
+            // Optionally: refresh documents to show signature status
             fetchDocuments();
           }}
           onClose={() => {
@@ -551,7 +551,7 @@ export default function BaseDocumentsPage({
             setSignatureDocumentId('');
             setSignatureDocumentName('');
           }}
-          trigger={<div style={{ display: 'none' }} />} // Скрытый триггер, поскольку мы управляем состоянием вручную
+          trigger={<div style={{ display: 'none' }} />} // Hidden trigger since we manage state manually
         />
       )}
 

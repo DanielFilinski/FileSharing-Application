@@ -1,5 +1,5 @@
 /**
- * SignatureWidget - основной компонент для инициирования подписания документов
+ * SignatureWidget - main component for initiating document signing
  */
 
 import React, { useState, useEffect } from 'react';
@@ -189,7 +189,7 @@ export const SignatureWidget: React.FC<SignatureWidgetProps> = ({
       setEmailNotifications(orgSettings.workflowSettings.autoSendReminders);
     } catch (err: any) {
       console.error('Failed to load organization settings:', err);
-      setError('Не удалось загрузить настройки организации');
+      setError('Failed to load organization settings');
     } finally {
       setIsLoading(false);
     }
@@ -197,20 +197,20 @@ export const SignatureWidget: React.FC<SignatureWidgetProps> = ({
 
   const handleAddSigner = (): void => {
     if (!newSignerEmail || !newSignerName) {
-      setError('Email и имя подписанта обязательны');
+      setError('Email and signer name are required');
       return;
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newSignerEmail)) {
-      setError('Введите корректный email адрес');
+      setError('Enter a valid email address');
       return;
     }
 
     // Check for duplicate emails
     if (signers.some(s => s.email.toLowerCase() === newSignerEmail.toLowerCase())) {
-      setError('Подписант с таким email уже добавлен');
+      setError('Signer with this email is already added');
       return;
     }
 
@@ -236,7 +236,7 @@ export const SignatureWidget: React.FC<SignatureWidgetProps> = ({
 
   const handleCreateSignatureRequest = async (): Promise<void> => {
     if (signers.length === 0) {
-      setError('Добавьте хотя бы одного подписанта');
+      setError('Add at least one signer');
       return;
     }
 
@@ -276,8 +276,8 @@ export const SignatureWidget: React.FC<SignatureWidgetProps> = ({
       const signatureRequest = await signatureApi.createSignatureRequest(documentId, signatureRequestData);
       
       notificationService.success(
-        'Запрос на подпись создан',
-        `Документ отправлен на подпись ${signers.length} получателям`
+        'Signature request created',
+        `Document sent for signature to ${signers.length} recipients`
       );
 
       if (onSignatureRequestCreated) {
@@ -289,7 +289,7 @@ export const SignatureWidget: React.FC<SignatureWidgetProps> = ({
 
     } catch (err: any) {
       console.error('Failed to create signature request:', err);
-      setError(err.message || 'Не удалось создать запрос на подпись');
+      setError(err.message || 'Failed to create signature request');
     } finally {
       setIsLoading(false);
     }

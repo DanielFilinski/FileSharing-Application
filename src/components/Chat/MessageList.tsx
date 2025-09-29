@@ -1,6 +1,6 @@
 /**
- * MessageList - компонент для отображения списка сообщений в чате
- * Поддерживает различные типы сообщений, редактирование и удаление
+ * MessageList - component for displaying chat message list
+ * Supports different message types, editing and deletion
  */
 
 import React, { useState } from 'react';
@@ -146,7 +146,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
   };
 
   const handleFragmentClick = (fragmentRef: any) => {
-    // Здесь будет логика для подсветки фрагмента в документе
+    // Here will be the logic for highlighting fragment in document
     if (onFragmentReference && fragmentRef.fragment) {
       onFragmentReference(fragmentRef.fragment);
     }

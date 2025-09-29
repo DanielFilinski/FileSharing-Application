@@ -156,21 +156,21 @@ export const useStorageSettings = (): StorageSettings & StorageSettingsActions =
       );
       if (res.data.status === 'ok') {
         setConnectionStatus('established');
-        notificationService.success('Подключено', 'Доступ к SharePoint проверен');
+        notificationService.success('Connected', 'SharePoint access verified');
       } else {
         setConnectionStatus('invalid');
-        notificationService.error('Ошибка доступа', 'Неверные учетные данные');
+        notificationService.error('Access Error', 'Invalid credentials');
       }
     } catch (error) {
       setConnectionStatus('invalid');
-      notificationService.showApiError(error, 'Ошибка проверки доступа');
+      notificationService.showApiError(error, 'Access Verification Error');
     }
   };
 
   const handleStorageAllocation = async () => {
     const amount = parseInt(storageAmount);
     if (Number.isNaN(amount) || amount <= 0) {
-      notificationService.warning('Некорректный объем', 'Укажите положительное число');
+      notificationService.warning('Invalid Amount', 'Please specify a positive number');
       return;
     }
 
@@ -179,9 +179,9 @@ export const useStorageSettings = (): StorageSettings & StorageSettingsActions =
         amount,
         unit: storageUnit,
       });
-      notificationService.success('Распределено', `Выделено ${amount} ${storageUnit}`);
+      notificationService.success('Allocated', `Allocated ${amount} ${storageUnit}`);
     } catch (error) {
-      notificationService.showApiError(error, 'Не удалось распределить хранилище');
+      notificationService.showApiError(error, 'Failed to allocate storage');
     }
   };
 

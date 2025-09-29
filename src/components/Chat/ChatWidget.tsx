@@ -1,6 +1,6 @@
 /**
- * ChatWidget - основной компонент чата для документов
- * Предоставляет полнофункциональный интерфейс для общения о документе
+ * ChatWidget - main chat component for documents
+ * Provides full-featured interface for document discussion
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -85,14 +85,14 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       setIsLoading(true);
       setError(null);
 
-      // Получение или создание чата
+      // Get or create chat
       const thread = await chatApi.getOrCreateDocumentChat(documentId, documentName);
       setChatThread(thread);
 
-      // Загрузка сообщений
+      // Load messages
       await loadMessages();
 
-      // Загрузка фрагментов
+      // Load fragments
       await loadFragments();
 
     } catch (error) {
@@ -119,7 +119,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         setMessages(prev => [...prev, ...result.messages]);
       } else {
         setMessages(result.messages);
-        // Прокрутить к концу для новых сообщений
+        // Scroll to bottom for new messages
         setTimeout(scrollToBottom, 100);
       }
       
@@ -156,10 +156,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         fragmentReferences: fragmentRefs
       });
 
-      // Добавить сообщение в список
+      // Add message to list
       setMessages(prev => [...prev, newMessage]);
       
-      // Прокрутить к концу
+      // Scroll to bottom
       setTimeout(scrollToBottom, 100);
 
     } catch (error) {
@@ -188,7 +188,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     try {
       await chatApi.deleteMessage(messageId);
       
-      // Обновить сообщение в UI (оно будет помечено как удаленное на бекенде)
+      // Update message in UI (it will be marked as deleted on backend)
       await loadMessages();
 
     } catch (error) {

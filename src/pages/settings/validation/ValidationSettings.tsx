@@ -32,8 +32,8 @@ import {
 import { CardHeader } from '@/components/card/card-header';
 
 /**
- * Главная страница настроек валидации (Стадия 4.1)
- * Реализует выбор типа валидации и маршрутизацию на соответствующие стадии
+ * Main validation settings page (Stage 4.1)
+ * Implements validation type selection and routing to corresponding stages
  */
 export const ValidationSettings = () => {
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export const ValidationSettings = () => {
 
     const success = await saveSettings();
     if (success) {
-      // Определение маршрута в зависимости от настроек (согласно диаграмме)
+      // Route determination based on settings (according to diagram)
       const nextRoute = getNextRoute(settings);
       navigate(nextRoute);
     }
@@ -70,7 +70,7 @@ export const ValidationSettings = () => {
   const handleToggleManualValidation = (checked: boolean) => {
     updateSettings({
       manualValidationNeeded: checked,
-      // При отключении ручной валидации очищаем тип назначения
+      // When disabling manual validation clear assignment type
       ...(checked === false && { validationAssignment: undefined })
     });
   };
@@ -100,18 +100,18 @@ export const ValidationSettings = () => {
       }
     >
       <ScreenContainer>
-        {/* Заголовок страницы */}
+        {/* Page header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <Shield20Regular className="text-2xl text-blue-600" />
-            <Title3>Настройки валидации документов</Title3>
+            <Title3>Document Validation Settings</Title3>
           </div>
           <Text size={400} className="text-gray-600">
-            Настройте процесс валидации документов в вашей организации
+            Configure document validation process in your organization
           </Text>
         </div>
 
-        {/* Ошибки */}
+        {/* Errors */}
         {isError && (
           <MessageBar intent="error" className="mb-4">
             <MessageBarBody>
@@ -122,25 +122,25 @@ export const ValidationSettings = () => {
 
         <ContentContainer>
           <RowCardContainer>
-            {/* Основные настройки валидации */}
+            {/* Main validation settings */}
             <CardContainer>
               <CardHeader 
-                text="Тип валидации" 
+                text="Validation Type" 
                 icon={<Shield20Regular />} 
               />
               
               <div className="space-y-4">
-                {/* Переключатель ручной валидации */}
+                {/* Manual validation switch */}
                 <div className="flex items-start gap-3">
                   <Switch
                     checked={settings.manualValidationNeeded}
                     onChange={(_, data) => handleToggleManualValidation(data.checked)}
                     disabled={isLoading}
-                    label="Требуется ручная валидация"
+                    label="Manual validation required"
                   />
                 </div>
                 
-                {/* Описание выбранного режима */}
+                {/* Selected mode description */}
                 <div className="mt-3">
                   {settings.manualValidationNeeded ? (
                     <MessageBar intent="info">
@@ -148,7 +148,7 @@ export const ValidationSettings = () => {
                         <div className="flex items-start gap-2">
                           <Info20Regular className="mt-1 flex-shrink-0" />
                           <div>
-                            <Text weight="semibold">Ручная валидация</Text>
+                            <Text weight="semibold">Manual Validation</Text>
                             <br />
                             <Text size={200}>
                               Документы будут проходить проверку назначенными валидаторами перед публикацией

@@ -1,6 +1,6 @@
 /**
- * Chat API Client - для работы с системой чата
- * Предоставляет методы для взаимодействия с backend Chat API
+ * Chat API Client - for working with chat system
+ * Provides methods for interacting with backend Chat API
  */
 
 import { apiClient } from './apiClient';
@@ -41,7 +41,7 @@ export class ChatApiClient {
   // ==========================================
 
   /**
-   * Получает или создает чат для документа
+   * Gets or creates chat for document
    */
   static async getOrCreateDocumentChat(
     documentId: string,
@@ -64,7 +64,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Получает информацию о чате
+   * Gets chat information
    */
   static async getChatThread(threadId: string): Promise<ChatThread> {
     const response = await apiClient.get<ApiResponse<ChatThread>>(
@@ -79,7 +79,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Обновляет настройки чата
+   * Updates chat settings
    */
   static async updateThreadSettings(
     threadId: string,
@@ -102,7 +102,7 @@ export class ChatApiClient {
   // ==========================================
 
   /**
-   * Получает сообщения чата
+   * Gets chat messages
    */
   static async getThreadMessages(
     threadId: string,
@@ -121,7 +121,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Создает новое сообщение
+   * Creates new message
    */
   static async createMessage(
     threadId: string,
@@ -140,7 +140,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Создает текстовое сообщение (упрощенный метод)
+   * Creates text message (simplified method)
    */
   static async sendTextMessage(
     threadId: string,
@@ -157,7 +157,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Создает сообщение с ссылками на фрагменты
+   * Creates message with fragment references
    */
   static async sendFragmentMessage(
     threadId: string,
@@ -174,7 +174,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Редактирует сообщение
+   * Edits message
    */
   static async editMessage(
     messageId: string,
@@ -193,7 +193,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Удаляет сообщение
+   * Deletes message
    */
   static async deleteMessage(messageId: string): Promise<void> {
     const response = await apiClient.delete<ApiResponse>(
@@ -210,7 +210,7 @@ export class ChatApiClient {
   // ==========================================
 
   /**
-   * Получает фрагменты документа
+   * Gets document fragments
    */
   static async getDocumentFragments(
     documentId: string,
@@ -228,7 +228,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Создает фрагмент документа
+   * Creates document fragment
    */
   static async createDocumentFragment(
     documentId: string,
@@ -247,7 +247,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Создает текстовый фрагмент (упрощенный метод)
+   * Creates text fragment (simplified method)
    */
   static async createTextFragment(
     documentId: string,
@@ -273,7 +273,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Обновляет фрагмент документа
+   * Updates document fragment
    */
   static async updateDocumentFragment(
     fragmentId: string,
@@ -292,7 +292,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Помечает фрагмент как решенный
+   * Marks fragment as resolved
    */
   static async resolveFragment(
     fragmentId: string,
@@ -310,7 +310,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Деактивирует фрагмент
+   * Deactivates fragment
    */
   static async deactivateFragment(fragmentId: string): Promise<DocumentFragment> {
     return this.updateDocumentFragment(fragmentId, { isActive: false });
@@ -321,7 +321,7 @@ export class ChatApiClient {
   // ==========================================
 
   /**
-   * Получает участников чата
+   * Gets chat participants
    */
   static async getThreadParticipants(threadId: string): Promise<ChatParticipant[]> {
     const response = await apiClient.get<ApiResponse<ChatParticipant[]>>(
@@ -340,7 +340,7 @@ export class ChatApiClient {
   // ==========================================
 
   /**
-   * Поиск сообщений
+   * Search messages
    */
   static async searchMessages(query: ChatSearchQuery): Promise<ChatSearchResult> {
     const response = await apiClient.post<ApiResponse<ChatSearchResult>>(
@@ -356,7 +356,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Простой поиск по содержимому
+   * Simple content search
    */
   static async searchMessagesByContent(
     searchTerm: string,
@@ -377,7 +377,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Поиск сообщений от конкретного пользователя
+   * Search messages from specific user
    */
   static async searchMessagesBySender(
     senderId: string,
@@ -398,7 +398,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Получает статистику чата
+   * Gets chat statistics
    */
   static async getChatStatistics(threadId: string): Promise<ChatStatistics> {
     const response = await apiClient.get<ApiResponse<ChatStatistics>>(
@@ -417,7 +417,7 @@ export class ChatApiClient {
   // ==========================================
 
   /**
-   * Проверяет, есть ли новые сообщения в чате
+   * Checks if there are new messages in chat
    */
   static async hasNewMessages(
     threadId: string,
@@ -438,7 +438,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Получает количество непрочитанных сообщений
+   * Gets unread message count
    */
   static async getUnreadMessageCount(
     threadId: string,
@@ -461,7 +461,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Получает активные фрагменты документа
+   * Gets active document fragments
    */
   static async getActiveDocumentFragments(documentId: string): Promise<DocumentFragment[]> {
     const fragments = await this.getDocumentFragments(documentId, false);
@@ -469,7 +469,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Получает решенные фрагменты документа
+   * Gets resolved document fragments
    */
   static async getResolvedDocumentFragments(documentId: string): Promise<DocumentFragment[]> {
     const fragments = await this.getDocumentFragments(documentId, true);
@@ -477,7 +477,7 @@ export class ChatApiClient {
   }
 
   /**
-   * Получает недавние сообщения для нескольких чатов
+   * Gets recent messages for multiple chats
    */
   static async getRecentMessagesForThreads(
     threadIds: string[],
@@ -505,32 +505,32 @@ export class ChatApiClient {
   // ==========================================
 
   /**
-   * Отправляет индикатор "печатает"
+   * Sends typing indicator
    */
   static async sendTypingIndicator(threadId: string): Promise<void> {
-    // Это будет реализовано позже через WebSocket/SignalR
+    // This will be implemented later through WebSocket/SignalR
     console.log(`Typing indicator sent for thread: ${threadId}`);
   }
 
   /**
-   * Отправляет индикатор прочитанности сообщения
+   * Sends message read indicator
    */
   static async markMessageAsRead(messageId: string): Promise<void> {
-    // Это будет реализовано позже через WebSocket/SignalR или отдельный endpoint
+    // This will be implemented later through WebSocket/SignalR or separate endpoint
     console.log(`Message marked as read: ${messageId}`);
   }
 
   /**
-   * Помечает пользователя как онлайн в чате
+   * Marks user as online in chat
    */
   static async updateUserPresence(
     threadId: string,
     isOnline: boolean
   ): Promise<void> {
-    // Это будет реализовано позже через WebSocket/SignalR
+    // This will be implemented later through WebSocket/SignalR
     console.log(`User presence updated for thread ${threadId}: ${isOnline}`);
   }
 }
 
-// Экспортируем алиас для удобства
+// Export alias for convenience
 export const chatApi = ChatApiClient;

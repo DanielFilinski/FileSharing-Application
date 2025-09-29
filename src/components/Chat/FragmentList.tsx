@@ -1,6 +1,6 @@
 /**
- * FragmentList - компонент для отображения и управления фрагментами документа
- * Поддерживает создание, редактирование и разрешение фрагментов
+ * FragmentList - component for displaying and managing document fragments
+ * Supports creation, editing and resolution of fragments
  */
 
 import React, { useState } from 'react';

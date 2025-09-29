@@ -1,6 +1,6 @@
 /**
- * MessageInput - компонент для ввода и отправки сообщений
- * Поддерживает текст, упоминания, ссылки на фрагменты и файлы
+ * MessageInput - component for message input and sending
+ * Supports text, mentions, fragment references and files
  */
 
 import React, { useState, useRef, useEffect } from 'react';

@@ -1,6 +1,6 @@
 /**
  * Chat System Types and Interfaces
- * Типы и интерфейсы для системы чата документов
+ * Types and interfaces for document chat system
  */
 
 // ==========================================

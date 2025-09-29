@@ -1,6 +1,6 @@
 /**
  * Audit Trail API Client
- * Frontend API клиент для работы с системой аудита
+ * Frontend API client for working with audit system
  */
 
 import {
@@ -26,7 +26,7 @@ export interface CreateAuditReportRequest {
 
 class AuditApiClient {
   /**
-   * Получение событий аудита с фильтрацией и пагинацией
+   * Getting audit events with filtering and pagination
    */
   async getEvents(query: Partial<AuditEventsQuery> = {}): Promise<AuditEventsResponse> {
     try {
@@ -57,7 +57,7 @@ class AuditApiClient {
   }
 
   /**
-   * Расширенный поиск событий аудита
+   * Advanced search for audit events
    */
   async searchEvents(query: AuditEventsQuery): Promise<AuditEventsResponse> {
     try {
@@ -70,7 +70,7 @@ class AuditApiClient {
   }
 
   /**
-   * Создание события аудита (для тестирования или особых случаев)
+   * Creating audit event (for testing or special cases)
    */
   async createEvent(event: AuditEventInput): Promise<AuditEvent> {
     try {
@@ -83,7 +83,7 @@ class AuditApiClient {
   }
 
   /**
-   * Получение статистики аудита
+   * Getting audit statistics
    */
   async getStatistics(startDate?: string, endDate?: string): Promise<AuditStatistics> {
     try {
@@ -100,7 +100,7 @@ class AuditApiClient {
   }
 
   /**
-   * Получение настроек аудита
+   * Getting audit settings
    */
   async getSettings(): Promise<AuditSettings> {
     try {
@@ -113,7 +113,7 @@ class AuditApiClient {
   }
 
   /**
-   * Обновление настроек аудита
+   * Updating audit settings
    */
   async updateSettings(settings: Partial<AuditSettings>): Promise<AuditSettings> {
     try {
@@ -126,7 +126,7 @@ class AuditApiClient {
   }
 
   /**
-   * Создание отчета аудита
+   * Creating audit report
    */
   async createReport(request: CreateAuditReportRequest): Promise<AuditReport> {
     try {
@@ -139,7 +139,7 @@ class AuditApiClient {
   }
 
   /**
-   * Получение списка отчетов
+   * Getting report list
    */
   async getReports(): Promise<AuditReport[]> {
     try {

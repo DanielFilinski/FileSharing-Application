@@ -1,6 +1,6 @@
 /**
- * Chat Service - основной сервис для управления чатами
- * Реализует бизнес-логику для работы с сообщениями, потоками и фрагментами документов
+ * Chat Service - main service for managing chats
+ * Implements business logic for working with messages, threads and document fragments
  */
 
 import { CosmosClient, Container } from '@azure/cosmos';
@@ -63,7 +63,7 @@ export class ChatService {
   // ==========================================
 
   /**
-   * Создает или получает существующий чат для документа
+   * Creates or gets existing chat for document
    */
   async getOrCreateDocumentChat(
     documentId: string, 
@@ -71,15 +71,15 @@ export class ChatService {
     context: ChatContext
   ): Promise<ChatThread> {
     try {
-      // Попытка найти существующий чат
+      // Try to find existing chat
       const existingThread = await this.getDocumentChat(documentId);
       if (existingThread) {
-        // Добавить участника если его нет
+        // Add participant if they don't exist
         await this.ensureParticipant(existingThread.id, context);
         return existingThread;
       }
 
-      // Создание нового чата
+      // Create new chat
       const threadId = `thread-${documentId}`;
       const now = new Date().toISOString();
 
@@ -103,17 +103,17 @@ export class ChatService {
 
       await this.threadsContainer.items.create(newThread);
 
-      // Добавить создателя как участника
+      // Add creator as participant
       await this.addParticipant(threadId, context, ['read', 'write', 'create_fragments']);
 
-      // Создать системное сообщение о создании чата
+      // Create system message about chat creation
       await this.createSystemMessage(
         threadId,
         `Chat created for document: ${documentName}`,
         context
       );
 
-      // Обновить счетчик участников
+      // Update participant count
       const updatedThread = await this.updateActiveParticipants(threadId);
       
       return updatedThread;
@@ -124,7 +124,7 @@ export class ChatService {
   }
 
   /**
-   * Получает чат документа
+   * Gets document chat
    */
   async getDocumentChat(documentId: string): Promise<ChatThread | null> {
     try {
@@ -140,7 +140,7 @@ export class ChatService {
   }
 
   /**
-   * Обновляет настройки чата
+   * Updates chat settings
    */
   async updateThreadSettings(
     threadId: string, 
@@ -161,7 +161,7 @@ export class ChatService {
 
       await this.threadsContainer.items.upsert(updatedThread);
 
-      // Создать событие изменения настроек
+      // Create settings change event
       await this.createEvent(threadId, 'settings_changed', context.userId, { settings });
 
       return updatedThread;
@@ -176,7 +176,7 @@ export class ChatService {
   // ==========================================
 
   /**
-   * Создает новое сообщение
+   * Creates new message
    */
   async createMessage(
     threadId: string,

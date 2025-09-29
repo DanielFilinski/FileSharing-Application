@@ -1,6 +1,6 @@
 /**
  * Digital Signatures API Client
- * Frontend API клиент для работы с системой электронной подписи
+ * Frontend API client for working with digital signature system
  */
 
 import {
@@ -35,7 +35,7 @@ export interface SignatureRequestsResponse {
 
 class SignatureApiClient {
   /**
-   * Создание запроса на подпись документа
+   * Creating document signature request
    */
   async createSignatureRequest(documentId: string, data: CreateSignatureRequestData): Promise<SignatureRequest> {
     try {
@@ -48,7 +48,7 @@ class SignatureApiClient {
   }
 
   /**
-   * Получение запросов на подпись пользователя
+   * Getting user signature requests
    */
   async getUserSignatureRequests(filters: SignatureRequestFilters = {}): Promise<SignatureRequestsResponse> {
     try {
@@ -76,7 +76,7 @@ class SignatureApiClient {
   }
 
   /**
-   * Получение конкретного запроса на подпись
+   * Getting specific signature request
    */
   async getSignatureRequest(requestId: string): Promise<SignatureRequest> {
     try {
@@ -89,7 +89,7 @@ class SignatureApiClient {
   }
 
   /**
-   * Обновление статуса запроса на подпись
+   * Updating signature request status
    */
   async updateSignatureRequest(
     requestId: string, 
@@ -109,7 +109,7 @@ class SignatureApiClient {
   }
 
   /**
-   * Отмена запроса на подпись
+   * Canceling signature request
    */
   async cancelSignatureRequest(requestId: string): Promise<SignatureRequest> {
     try {
@@ -122,7 +122,7 @@ class SignatureApiClient {
   }
 
   /**
-   * Обновление статуса подписанта
+   * Updating signer status
    */
   async updateSignerStatus(
     requestId: string,
@@ -147,7 +147,7 @@ class SignatureApiClient {
   }
 
   /**
-   * Получение настроек подписи организации
+   * Getting organization signature settings
    */
   async getSignatureSettings(): Promise<OrganizationSignatureSettings> {
     try {
@@ -160,7 +160,7 @@ class SignatureApiClient {
   }
 
   /**
-   * Обновление настроек подписи организации
+   * Updating organization signature settings
    */
   async updateSignatureSettings(settings: Partial<OrganizationSignatureSettings>): Promise<OrganizationSignatureSettings> {
     try {

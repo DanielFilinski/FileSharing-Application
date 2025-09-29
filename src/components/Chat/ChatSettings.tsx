@@ -1,6 +1,6 @@
 /**
- * ChatSettings - компонент для настроек чата
- * Позволяет управлять различными параметрами чата и уведомлений
+ * ChatSettings - component for chat settings
+ * Allows managing various chat and notification parameters
  */
 
 import React, { useState, useEffect } from 'react';

@@ -30,7 +30,7 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Документ готов к рассмотрению",
+      text: "The document is ready for consideration",
       sender: "System",
       timestamp: new Date(Date.now() - 3600000) // 1 час назад
     }

@@ -1,6 +1,6 @@
 /**
- * ChatParticipants - компонент для отображения и управления участниками чата
- * Показывает статус участников, их роли и активность
+ * ChatParticipants - component for displaying and managing chat participants
+ * Shows participant status, roles and activity
  */
 
 import React, { useState, useEffect } from 'react';
