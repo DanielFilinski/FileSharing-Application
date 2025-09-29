@@ -25,6 +25,7 @@ import { UserAvatar } from '@/entities/user/ui/UserAvatar';
 import { COMPANY_CONFIG } from '@/config/company';
 import { SettingsMenu } from './SettingsMenu';
 import { useDemoMode } from '@/shared/lib/demo';
+import { EndUserSelector } from '../../components/EndUser/EndUserSelector';
 
 const useStyles = makeStyles({
   header: {
@@ -174,6 +175,15 @@ const Header: React.FC<HeaderProps> = ({
         <Title2 className={styles.companyName}>
           {companyName}
         </Title2>
+        
+        {/* End User Selection */}
+        <EndUserSelector
+          placeholder="Select End User"
+          size="md"
+          searchable={true}
+          allowCreate={true}
+          className="ml-6"
+        />
       </div>
 
       <div className={styles.rightSection}>

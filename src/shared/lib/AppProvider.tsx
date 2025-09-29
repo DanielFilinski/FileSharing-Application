@@ -7,6 +7,7 @@ import { RBACProvider } from './rbac';
 import { DemoModeProvider } from './demo';
 import { NotificationContainer } from '../ui/NotificationContainer';
 import { LoginScreen } from '../../components/LoginScreen';
+import { EndUserProvider } from '../../contexts/EndUserContext';
 
 interface AppContextType {
   isInitialized: boolean;
@@ -141,8 +142,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       <DemoModeProvider>
         <TeamsProvider>
           <RBACProvider authService={authService}>
-            {children}
-            <NotificationContainer />
+            <EndUserProvider refreshInterval={5} persistSelection={true}>
+              {children}
+              <NotificationContainer />
+            </EndUserProvider>
           </RBACProvider>
         </TeamsProvider>
       </DemoModeProvider>

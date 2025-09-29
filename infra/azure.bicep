@@ -5,6 +5,10 @@ param aadAppTenantId string
 param aadAppOauthAuthorityHost string
 @secure()
 param aadAppClientSecret string
+@secure()
+param sqlServerAdminLogin string
+@secure()
+param sqlServerAdminPassword string
 param location string = resourceGroup().location
 param serverfarmsName string = resourceBaseName
 param functionAppName string = resourceBaseName
@@ -20,6 +24,182 @@ var officeUwpPwaClientId = '0ec893e0-5785-4de6-99da-4ed124e5296c'
 var outlookOnlineAddInAppClientId = 'bc59ab01-8403-45c6-8796-ac3ef710b3e3'
 var outlookMobileAppClientId = '27922004-5251-4030-b22d-91ecd9a37ea4'
 var allowedClientApplications = '"${teamsMobileOrDesktopAppClientId}","${teamsWebAppClientId}","${officeWebAppClientId1}","${officeWebAppClientId2}","${outlookDesktopAppClientId}","${outlookWebAppClientId}","${officeUwpPwaClientId}","${outlookOnlineAddInAppClientId}","${outlookMobileAppClientId}"'
+
+// Azure SQL Server and Database
+resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
+  name: '${resourceBaseName}-sql-server'
+  location: location
+  properties: {
+    administratorLogin: sqlServerAdminLogin
+    administratorLoginPassword: sqlServerAdminPassword
+    publicNetworkAccess: 'Enabled'
+    version: '12.0'
+  }
+}
+
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
+  parent: sqlServer
+  name: 'filesharing-db'
+  location: location
+  sku: {
+    name: 'Basic'
+    tier: 'Basic'
+    capacity: 5
+  }
+  properties: {
+    maxSizeBytes: 2147483648 // 2GB
+    collation: 'SQL_Latin1_General_CP1_CI_AS'
+  }
+}
+
+// SQL Server Firewall Rules
+resource sqlFirewallRuleAzure 'Microsoft.Sql/servers/firewallRules@2021-11-01' = {
+  parent: sqlServer
+  name: 'AllowAllWindowsAzureIps'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
+// Cosmos DB Account
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
+  name: '${resourceBaseName}-cosmos'
+  location: location
+  kind: 'GlobalDocumentDB'
+  properties: {
+    databaseAccountOfferType: 'Standard'
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+    }
+    locations: [
+      {
+        locationName: location
+        failoverPriority: 0
+        isZoneRedundant: false
+      }
+    ]
+    capabilities: [
+      {
+        name: 'EnableServerless'
+      }
+    ]
+    backupPolicy: {
+      type: 'Periodic'
+      periodicModeProperties: {
+        backupIntervalInMinutes: 240
+        backupRetentionIntervalInHours: 8
+      }
+    }
+  }
+}
+
+// Cosmos Database
+resource cosmosDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-04-15' = {
+  parent: cosmosAccount
+  name: 'filesharing-cosmos-db'
+  properties: {
+    resource: {
+      id: 'filesharing-cosmos-db'
+    }
+  }
+}
+
+// Cosmos DB Containers
+resource documentsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'documents'
+  properties: {
+    resource: {
+      id: 'documents'
+      partitionKey: {
+        paths: ['/partitionKey']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+    }
+  }
+}
+
+resource chatMessagesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'chat-messages'
+  properties: {
+    resource: {
+      id: 'chat-messages'
+      partitionKey: {
+        paths: ['/conversationId']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+resource auditEventsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'audit-events'
+  properties: {
+    resource: {
+      id: 'audit-events'
+      partitionKey: {
+        paths: ['/organizationId']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+resource userFavoritesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'user-favorites'
+  properties: {
+    resource: {
+      id: 'user-favorites'
+      partitionKey: {
+        paths: ['/userId']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+resource documentVersionsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'document-versions'
+  properties: {
+    resource: {
+      id: 'document-versions'
+      partitionKey: {
+        paths: ['/documentId']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+// Application Insights
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${resourceBaseName}-insights'
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Flow_Type: 'Redfield'
+    Request_Source: 'IbizaAIExtension'
+  }
+}
 
 // Azure Static Web Apps that hosts your static web site
 resource swa 'Microsoft.Web/staticSites@2022-09-01' = {
@@ -103,6 +283,42 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
           name: 'WEBSITE_AUTH_AAD_ACL'
           value: '{"allowed_client_applications": [${allowedClientApplications}]}'
         }
+        {
+          name: 'SQL_SERVER'
+          value: sqlServer.properties.fullyQualifiedDomainName
+        }
+        {
+          name: 'SQL_DATABASE'
+          value: sqlDatabase.name
+        }
+        {
+          name: 'SQL_USER'
+          value: sqlServerAdminLogin
+        }
+        {
+          name: 'SQL_PASSWORD'
+          value: sqlServerAdminPassword
+        }
+        {
+          name: 'SQL_TRUST_CERT'
+          value: 'true'
+        }
+        {
+          name: 'COSMOSDB_CONNECTION_STRING'
+          value: cosmosAccount.listConnectionStrings().connectionStrings[0].connectionString
+        }
+        {
+          name: 'COSMOSDB_DATABASE_NAME'
+          value: cosmosDatabase.name
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
       ]
       ftpsState: 'FtpsOnly'
     }
@@ -133,3 +349,9 @@ output API_FUNCTION_ENDPOINT string = apiEndpoint
 output AZURE_STATIC_WEB_APPS_RESOURCE_ID string = swa.id
 output API_FUNCTION_RESOURCE_ID string = functionApp.id
 output FUNCTION_APP_NAME string = functionAppName
+output SQL_SERVER_NAME string = sqlServer.name
+output SQL_DATABASE_NAME string = sqlDatabase.name
+output COSMOS_ACCOUNT_NAME string = cosmosAccount.name
+output COSMOS_DATABASE_NAME string = cosmosDatabase.name
+output APP_INSIGHTS_NAME string = appInsights.name
+output APP_INSIGHTS_INSTRUMENTATION_KEY string = appInsights.properties.InstrumentationKey

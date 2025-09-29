@@ -22,6 +22,12 @@
     },
     "staticWebAppSku": {
       "value": "Free"
+    },
+    "sqlServerAdminLogin": {
+      "value": "${{SQL_SERVER_ADMIN_LOGIN}}"
+    },
+    "sqlServerAdminPassword": {
+      "value": "${{SECRET_SQL_SERVER_ADMIN_PASSWORD}}"
     }
   }
 }

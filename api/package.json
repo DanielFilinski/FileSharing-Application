@@ -13,7 +13,17 @@
         "clean": "rimraf dist",
         "prestart": "npm run clean && npm run build",
         "start": "npx func start",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        
+        "_comment_db": "Database deployment scripts",
+        "deploy:databases": "npm run build && node dist/src/scripts/deploy-databases.js",
+        "deploy:sql": "npm run build && node dist/src/scripts/deploy-sql-migrations.js",
+        "deploy:cosmos": "npm run build && node dist/src/scripts/init-cosmos-db.js",
+        "validate:databases": "npm run deploy:databases -- --validate-only",
+        "db:health": "npm run build && node -e \"require('./dist/src/scripts/deploy-sql-migrations.js').checkDatabaseHealth().then(r => console.log('Health:', r ? 'OK' : 'FAILED'))\"",
+        
+        "_comment_dev": "Development helpers",
+        "db:setup-local": "echo 'Setting up local databases...' && echo 'Make sure you have SQL Server and Cosmos DB Emulator running'"
     },
     "dependencies": {
         "@azure/functions": "^4.0.0",
@@ -23,6 +33,9 @@
         "@azure/cosmos": "^4.2.0",
         "mssql": "^10.0.2",
         "zod": "^3.23.8"
+    },
+    "optionalDependencies": {
+        "@types/mssql": "^9.0.0"
     },
     "devDependencies": {
         "@types/node": "^18.x",

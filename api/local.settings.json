@@ -3,7 +3,24 @@
     "Values": {
       "FUNCTIONS_WORKER_RUNTIME": "node",
       "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
-      "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      
+      "_comment_db": "Database Configuration - Update these with your actual values",
+      "SQL_SERVER": "localhost",
+      "SQL_DATABASE": "filesharing-db-dev",
+      "SQL_USER": "sa",
+      "SQL_PASSWORD": "YourStrong!Passw0rd",
+      "SQL_TRUST_CERT": "true",
+      
+      "COSMOSDB_CONNECTION_STRING": "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;",
+      "COSMOSDB_DATABASE_NAME": "filesharing-cosmos-db",
+      
+      "_comment_m365": "Microsoft 365 Configuration - will be populated from Teams Toolkit",
+      "M365_CLIENT_ID": "",
+      "M365_CLIENT_SECRET": "",
+      "M365_TENANT_ID": "",
+      "M365_AUTHORITY_HOST": "https://login.microsoftonline.com",
+      "M365_APPLICATION_ID_URI": ""
     },
     "Host": {
         "CORS": "*"

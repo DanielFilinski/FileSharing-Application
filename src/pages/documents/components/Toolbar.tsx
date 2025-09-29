@@ -38,6 +38,7 @@ import { type Document } from '@/entities/document/api/documentsApi';
 import { useNotifications } from '@/shared/lib/useNotifications';
 import { DocumentsService } from '@/shared/api/documentsService';
 import { apiClient } from '@/shared/api';
+import { useSelectedEndUser } from '@/components/EndUser';
 
 interface FilePickerFile {
   id: string;
@@ -70,6 +71,7 @@ export const Toolbar: React.FC<{
   const styles = useStyles();
   const { showError, showSuccess, showInfo } = useNotifications();
   const documentsService = new DocumentsService(apiClient);
+  const { selectedEndUser } = useSelectedEndUser();
   const [visibleButtons, setVisibleButtons] = useState<boolean>(true);
   const [, setWindowWidth] = useState<number>(window.innerWidth);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -482,6 +484,8 @@ export const Toolbar: React.FC<{
             appearance="primary"
             shape="rounded"
             className={styles.uploadButton}
+            disabled={!selectedEndUser}
+            title={!selectedEndUser ? "Please select an End User first" : "Upload documents"}
           >
             Upload
           </MenuButton>
@@ -571,6 +575,8 @@ export const Toolbar: React.FC<{
                 appearance="primary"
                 shape="rounded"
                 className={styles.primaryButton}
+                disabled={!selectedEndUser}
+                title={!selectedEndUser ? "Please select an End User first" : "Create new document"}
               >
                 New
               </MenuButton>
