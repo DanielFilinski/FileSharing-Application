@@ -5,6 +5,7 @@ import { Toolbar } from '../components/Toolbar';
 import { DocumentsTable } from '../components/DocumentsTable';
 import { DocumentDetailsDrawer } from '../components/DocumentDetailsDrawer';
 import { DocumentHistoryPanel } from '../../../components/DocumentHistory';
+import { SignatureWidget } from '../../../components/DigitalSignature';
 import { useFavorites } from '@/features/favorites';
 import { useDocuments } from '@/entities/document';
 import { DocumentsService } from '@/shared/api/documentsService';
@@ -109,6 +110,11 @@ export default function BaseDocumentsPage({
   const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState(false);
   const [historyDocumentId, setHistoryDocumentId] = useState<string>('');
   const [historyDocumentName, setHistoryDocumentName] = useState<string>('');
+  
+  // State for signature widget
+  const [isSignatureWidgetOpen, setIsSignatureWidgetOpen] = useState(false);
+  const [signatureDocumentId, setSignatureDocumentId] = useState<string>('');
+  const [signatureDocumentName, setSignatureDocumentName] = useState<string>('');
 
   const handleAddItem = (type: 'document' | 'spreadsheet' | 'presentation' | 'form') => {
     // Опционально: можно открыть модал создания; пока опускаем
@@ -454,6 +460,15 @@ export default function BaseDocumentsPage({
               a.remove();
             }
           }}
+          onSignDocument={(key, docName) => {
+            const doc = documents.find(d => d.id === key || (d as any).key === key);
+            if (doc) {
+              setSignatureDocumentId(doc.id);
+              setSignatureDocumentName(docName || doc.name);
+              setIsSignatureWidgetOpen(true);
+              console.log('Signing document:', docName || doc.name);
+            }
+          }}
           onViewHistory={(key) => {
             const doc = documents.find(d => d.id === key || (d as any).key === key);
             if (doc) {
@@ -499,6 +514,30 @@ export default function BaseDocumentsPage({
             }}
           />
         </div>
+      )}
+
+      {/* Signature Widget - показывается как диалог */}
+      {isSignatureWidgetOpen && (
+        <SignatureWidget
+          documentId={signatureDocumentId}
+          documentName={signatureDocumentName}
+          onSignatureRequestCreated={(signatureRequest) => {
+            console.log('Signature request created:', signatureRequest);
+            notificationService.success(
+              'Документ отправлен на подпись',
+              `Запрос на подпись создан для документа "${signatureDocumentName}"`
+            );
+            setIsSignatureWidgetOpen(false);
+            // Опционально: обновить документы чтобы показать статус подписи
+            refetch();
+          }}
+          onClose={() => {
+            setIsSignatureWidgetOpen(false);
+            setSignatureDocumentId('');
+            setSignatureDocumentName('');
+          }}
+          trigger={<div style={{ display: 'none' }} />} // Скрытый триггер, поскольку мы управляем состоянием вручную
+        />
       )}
     </div>
   );

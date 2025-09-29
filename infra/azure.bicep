@@ -238,6 +238,134 @@ resource documentHistoryEventsContainer 'Microsoft.DocumentDB/databaseAccounts/s
   }
 }
 
+resource signatureRequestsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'signature-requests'
+  properties: {
+    resource: {
+      id: 'signature-requests'
+      partitionKey: {
+        paths: ['/id']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/organizationId/?'
+          }
+          {
+            path: '/requesterId/?'
+          }
+          {
+            path: '/status/?'
+          }
+          {
+            path: '/createdAt/?'
+          }
+          {
+            path: '/signers/*/userId/?'
+          }
+          {
+            path: '/signers/*/email/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+    }
+  }
+}
+
+resource signatureEventsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'signature-events'
+  properties: {
+    resource: {
+      id: 'signature-events'
+      partitionKey: {
+        paths: ['/signatureRequestId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/signatureRequestId/?'
+          }
+          {
+            path: '/eventType/?'
+          }
+          {
+            path: '/timestamp/?'
+          }
+          {
+            path: '/userId/?'
+          }
+          {
+            path: '/signerEmail/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+    }
+  }
+}
+
+resource signatureSettingsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'signature-settings'
+  properties: {
+    resource: {
+      id: 'signature-settings'
+      partitionKey: {
+        paths: ['/organizationId']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
+resource signatureTemplatesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'signature-templates'
+  properties: {
+    resource: {
+      id: 'signature-templates'
+      partitionKey: {
+        paths: ['/organizationId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/organizationId/?'
+          }
+          {
+            path: '/createdBy/?'
+          }
+          {
+            path: '/createdAt/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+    }
+  }
+}
+
 // Application Insights
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${resourceBaseName}-insights'

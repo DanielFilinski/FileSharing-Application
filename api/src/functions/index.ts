@@ -25,5 +25,6 @@ import "./endUsersProtected";
 import "./userManagementProtected";
 import "./workflowEngine";
 import "./documentVersions";
+import "./digitalSignature";
 
 

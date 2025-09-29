@@ -17,8 +17,9 @@ import {
   MenuTrigger,
   Badge
 } from '@fluentui/react-components';
-import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular, LockClosed20Regular, LockOpen20Regular } from '@fluentui/react-icons';
+import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular, LockClosed20Regular, LockOpen20Regular, SignatureRegular } from '@fluentui/react-icons';
 import { useFavorites } from '@/features/favorites';
+import { SignatureWidget, SignatureStatus } from '../../../components/DigitalSignature';
 
 const TABLE_COLUMNS = [
   { key: 'name', name: 'Name' },
@@ -28,6 +29,7 @@ const TABLE_COLUMNS = [
   { key: 'documentType', name: 'Type' },
   { key: 'period', name: 'Period' },
   { key: 'clientEmail', name: 'Client Email' },
+  { key: 'signatureStatus', name: 'Signature' },
   { key: 'favorite', name: 'Favorite' },
   { key: 'status', name: 'Status' }
 ];
@@ -73,6 +75,7 @@ export const DocumentsTable: React.FC<{
   onPreview?: (documentKey: string) => void,
   onDownload?: (documentKey: string) => void,
   onViewHistory?: (documentKey: string) => void,
+  onSignDocument?: (documentKey: string, documentName: string) => void,
   showBulkSelection?: boolean,
   showAdvancedColumns?: boolean,
   pageType?: 'firm' | 'client',
@@ -90,6 +93,7 @@ export const DocumentsTable: React.FC<{
   onMoveToFirm,
   onPreview,
   onDownload,
+  onSignDocument,
   showBulkSelection = false,
   showAdvancedColumns = false,
   pageType = 'firm',
@@ -100,10 +104,12 @@ export const DocumentsTable: React.FC<{
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; itemKey: string } | null>(null);
 
   const getMenuItems = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
     const baseItems = [
       { key: 'preview', label: 'Preview', action: () => onPreview?.(itemKey) },
       { key: 'download', label: 'Download', action: () => onDownload?.(itemKey) },
       { key: 'history', label: 'View History', action: () => onViewHistory?.(itemKey) },
+      { key: 'sign', label: 'Sign Document', action: () => onSignDocument?.(itemKey, item?.name || ''), icon: <SignatureRegular /> },
       { key: 'delete', label: 'Delete', action: () => onDelete?.(itemKey) },
     ];
 
@@ -330,6 +336,13 @@ export const DocumentsTable: React.FC<{
                     </TableCell>
                     <TableCell>
                       <Text>{item.clientEmail || '-'}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <SignatureStatus 
+                        documentId={item.key}
+                        signatureRequestId={item.signatureRequestId}
+                        compact={true}
+                      />
                     </TableCell>
                     <TableCell>
                       <Button
