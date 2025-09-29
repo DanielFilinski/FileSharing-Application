@@ -2,6 +2,8 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/fu
 import { getContainer } from '../shared/db/cosmos';
 import { createProtectedFunction, RBAC_CONFIGS } from '../shared/middleware/rbacMiddleware';
 import { DocumentVersioningService } from '../shared/versioning/versioningService';
+import { auditMiddleware } from '../shared/audit/auditMiddleware';
+import { AuditActions } from '../../../src/shared/types/audit';
 import { z } from 'zod';
 
 const DocumentSchema = z.object({

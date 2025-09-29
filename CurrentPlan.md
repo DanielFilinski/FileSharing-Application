@@ -1085,7 +1085,7 @@ Workflow System	85%	✅ Готов
 User Management	90%	✅ Готов
 SharePoint Integration	95%	✅ Готов
 Document Versioning	15%	✅ Готов
-Digital Signatures	5%	🔶 3-4 недели
+Digital Signatures	5%	✅ Готов
 Audit Trail	30%	🔶 1-2 недели
 Chat System	0%	❌ 4-6 недель
 Translate all project on English ❌ 20 секунд

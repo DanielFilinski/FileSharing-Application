@@ -366,6 +366,193 @@ resource signatureTemplatesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlD
   }
 }
 
+resource auditEventsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'audit-events'
+  properties: {
+    resource: {
+      id: 'audit-events'
+      partitionKey: {
+        paths: ['/partitionKey']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/organizationId/?'
+          }
+          {
+            path: '/timestamp/?'
+          }
+          {
+            path: '/serverTimestamp/?'
+          }
+          {
+            path: '/userId/?'
+          }
+          {
+            path: '/category/?'
+          }
+          {
+            path: '/action/?'
+          }
+          {
+            path: '/resourceType/?'
+          }
+          {
+            path: '/resourceId/?'
+          }
+          {
+            path: '/success/?'
+          }
+          {
+            path: '/severity/?'
+          }
+          {
+            path: '/sessionId/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+          {
+            path: '/metadata/*'
+          }
+        ]
+        compositeIndexes: [
+          [
+            {
+              path: '/organizationId'
+              order: 'ascending'
+            }
+            {
+              path: '/timestamp'
+              order: 'descending'
+            }
+          ]
+          [
+            {
+              path: '/userId'
+              order: 'ascending'
+            }
+            {
+              path: '/timestamp'
+              order: 'descending'
+            }
+          ]
+          [
+            {
+              path: '/category'
+              order: 'ascending'
+            }
+            {
+              path: '/timestamp'
+              order: 'descending'
+            }
+          ]
+        ]
+      }
+      defaultTtl: 31536000 // 1 year in seconds
+    }
+  }
+}
+
+resource auditSessionsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'audit-sessions'
+  properties: {
+    resource: {
+      id: 'audit-sessions'
+      partitionKey: {
+        paths: ['/organizationId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/organizationId/?'
+          }
+          {
+            path: '/userId/?'
+          }
+          {
+            path: '/sessionId/?'
+          }
+          {
+            path: '/startTime/?'
+          }
+          {
+            path: '/endTime/?'
+          }
+          {
+            path: '/status/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+      defaultTtl: 7776000 // 90 days in seconds
+    }
+  }
+}
+
+resource auditReportsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'audit-reports'
+  properties: {
+    resource: {
+      id: 'audit-reports'
+      partitionKey: {
+        paths: ['/organizationId']
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/organizationId/?'
+          }
+          {
+            path: '/createdBy/?'
+          }
+          {
+            path: '/status/?'
+          }
+          {
+            path: '/createdAt/?'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+      defaultTtl: 2592000 // 30 days in seconds
+    }
+  }
+}
+
+resource auditSettingsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'audit-settings'
+  properties: {
+    resource: {
+      id: 'audit-settings'
+      partitionKey: {
+        paths: ['/organizationId']
+        kind: 'Hash'
+      }
+    }
+  }
+}
+
 // Application Insights
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${resourceBaseName}-insights'
