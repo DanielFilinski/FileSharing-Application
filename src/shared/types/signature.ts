@@ -3,7 +3,7 @@
  * Типы для системы электронной подписи документов
  */
 
-export type SignatureMethod = 'docusign' | 'adobe-sign' | 'internal' | 'drawn';
+export type SignatureMethod = 'docusign' | 'adobe-sign' | 'e-signature' | 'digital-certificate' | 'internal' | 'drawn';
 
 export type SignatureStatus = 'pending' | 'in-progress' | 'completed' | 'failed' | 'cancelled' | 'expired';
 
@@ -185,6 +185,19 @@ export interface OrganizationSignatureSettings {
   // Доступные методы подписи
   enabledMethods: SignatureMethod[];
   defaultMethod: SignatureMethod;
+  
+  // Authentication methods for signing
+  authenticationMethods: AuthenticationMethod[];
+  
+  // Session settings
+  sessionTimeout?: number;
+  ipRestrictions?: string[];
+  
+  // Security settings
+  signatureValidityDays?: number;
+  requireLegalAgreement?: boolean;
+  enableAuditTrail?: boolean;
+  requireIdentityVerification?: boolean;
   
   // Настройки провайдеров
   providerSettings: {

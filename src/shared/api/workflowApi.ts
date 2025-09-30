@@ -337,6 +337,110 @@ export class WorkflowApiClient {
   }
 
   /**
+   * Cancel workflow
+   */
+  static async cancelWorkflow(workflowId: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      console.log('Cancelling workflow:', workflowId);
+      
+      const response = await apiClient.delete(`/workflows/${workflowId}`);
+      
+      console.log('Workflow cancelled successfully:', response);
+      return response;
+    } catch (error) {
+      console.error('Failed to cancel workflow:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get workflow statistics
+   */
+  static async getWorkflowStatistics(): Promise<{
+    success: boolean;
+    data: {
+      total: number;
+      pending: number;
+      inProgress: number;
+      completed: number;
+      cancelled: number;
+      overdue: number;
+      assignedToMe: number;
+      createdByMe: number;
+      averageCompletionTime: number;
+      workflowsByType: Record<string, number>;
+      recentActivity: WorkflowInstance[];
+    };
+  }> {
+    try {
+      console.log('Fetching workflow statistics');
+      
+      const response = await apiClient.get('/workflows/statistics');
+      
+      console.log('Workflow statistics retrieved:', response);
+      return response;
+    } catch (error) {
+      console.error('Failed to get workflow statistics:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Helper method to format duration in human readable format
+   */
+  static formatDuration(hours: number): string {
+    if (hours < 1) return 'Less than 1 hour';
+    if (hours < 24) return `${Math.round(hours)} hour${Math.round(hours) > 1 ? 's' : ''}`;
+    
+    const days = Math.floor(hours / 24);
+    const remainingHours = Math.round(hours % 24);
+    
+    if (remainingHours === 0) {
+      return `${days} day${days > 1 ? 's' : ''}`;
+    } else {
+      return `${days} day${days > 1 ? 's' : ''}, ${remainingHours} hour${remainingHours > 1 ? 's' : ''}`;
+    }
+  }
+
+  /**
+   * Helper method to get due date status
+   */
+  static getDueDateStatus(dueDate?: string): {
+    text: string;
+    color: 'success' | 'warning' | 'danger' | 'neutral';
+    isOverdue: boolean;
+  } {
+    if (!dueDate) {
+      return { text: 'No due date', color: 'neutral', isOverdue: false };
+    }
+
+    const due = new Date(dueDate);
+    const now = new Date();
+    const diffMs = due.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      const overdueDays = Math.abs(diffDays);
+      return {
+        text: `Overdue by ${overdueDays} day${overdueDays > 1 ? 's' : ''}`,
+        color: 'danger',
+        isOverdue: true
+      };
+    } else if (diffDays === 0) {
+      return { text: 'Due today', color: 'warning', isOverdue: false };
+    } else if (diffDays === 1) {
+      return { text: 'Due tomorrow', color: 'warning', isOverdue: false };
+    } else if (diffDays <= 3) {
+      return { text: `Due in ${diffDays} days`, color: 'warning', isOverdue: false };
+    } else {
+      return { text: `Due in ${diffDays} days`, color: 'neutral', isOverdue: false };
+    }
+  }
+
+  /**
    * Helper method to get available actions for current user
    */
   static getAvailableActions(workflow: WorkflowInstance): Array<{

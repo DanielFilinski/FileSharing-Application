@@ -1,128 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Textarea, 
   Button, 
-  Card, 
-  Avatar, 
   Subtitle2, 
-  Body2, 
-  Caption1,
   tokens,
   makeStyles
 } from '@fluentui/react-components';
-import { SendRegular } from '@fluentui/react-icons';
-
-interface Message {
-  id: number;
-  text: string;
-  sender: string;
-  timestamp: Date;
-}
-
-
+import { ChatRegular, DismissRegular } from '@fluentui/react-icons';
+import { ChatWidget } from '../../../components/Chat/ChatWidget';
+import { DocumentFragment } from '../../../shared/types/chat';
 
 interface DocumentChatProps {
-  documentName?: string;
+  documentId: string;
+  documentName: string;
+  onFragmentCreate?: (fragment: DocumentFragment) => void;
+  onFragmentHighlight?: (fragment: DocumentFragment) => void;
+  className?: string;
 }
 
-export const DocumentChat: React.FC<DocumentChatProps> = ({ documentName }) => {
+export const DocumentChat: React.FC<DocumentChatProps> = ({ 
+  documentId, 
+  documentName, 
+  onFragmentCreate,
+  onFragmentHighlight,
+  className = ''
+}) => {
   const styles = useStyles();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: "The document is ready for consideration",
-      sender: "System",
-      timestamp: new Date(Date.now() - 3600000) // 1 час назад
-    }
-  ]);
-  const [inputValue, setInputValue] = useState('');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
 
-  const sendMessage = () => {
-    if (inputValue.trim()) {
-      const newMessage: Message = {
-        id: Date.now(),
-        text: inputValue,
-        sender: 'You',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, newMessage]);
-      setInputValue('');
-    }
+  const handleOpenChat = () => {
+    setIsChatOpen(true);
+    setHasNewMessages(false);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+  };
+
+  const handleFragmentCreate = (fragment: DocumentFragment) => {
+    onFragmentCreate?.(fragment);
+    // Show visual indication of new fragment
+    setHasNewMessages(true);
   };
 
   return (
-    <div className={styles.container}>
-      {/* Заголовок чата */}
-      <div className={styles.header}>
-        <Subtitle2>Document chat</Subtitle2>        
+    <div className={`${styles.container} ${className}`}>
+      {/* Chat Toggle Button */}
+      <div className={styles.chatToggle}>
+        <Button
+          appearance="primary"
+          onClick={handleOpenChat}
+          icon={<ChatRegular />}
+          className={styles.toggleButton}
+          size="large"
+        >
+          Document Chat
+          {hasNewMessages && (
+            <div className={styles.notificationBadge} />
+          )}
+        </Button>
       </div>
 
-      {/* История сообщений */}
-      <div className={styles.messagesContainer}>
-        {messages.map(msg => (
-          <Card 
-            key={msg.id} 
-            className={`${styles.messageCard} ${msg.sender === 'You' ? styles.userMessage : styles.otherMessage}`}
-            style={{
-              alignSelf: msg.sender === 'You' ? 'flex-end' : 'flex-start',
-            }}
-          >
-            <div className={styles.messageContent}>
-              <Avatar size={24}>
-                {msg.sender === 'System' ? 'S' : msg.sender[0]}
-              </Avatar>
-              <div style={{ flex: 1 }}>
-                <div className={styles.messageHeader}>
-                  <Body2 style={{ fontWeight: 500 }}>
-                    {msg.sender}
-                  </Body2>
-                  <Caption1 style={{ 
-                    color: tokens.colorNeutralForeground3
-                  }}>
-                    {msg.timestamp.toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </Caption1>
-                </div>
-                <Body2 className={styles.messageText}>
-                  {msg.text}
-                </Body2>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-      
-      {/* Поле ввода */}
-      <div className={styles.inputContainer}>
-        <Textarea 
-          value={inputValue}
-          onChange={(_, data) => setInputValue(data.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Type a message..."
-          className={styles.textarea}
-          resize="none"
-          rows={2}
-        />
-        <div className={styles.sendButton}>
-          <Button 
-            appearance="primary" 
-            onClick={sendMessage}
-            disabled={!inputValue.trim()}
-            icon={<SendRegular />}
-          >
-            Send
-          </Button>
-        </div>
-      </div>
+      {/* Full ChatWidget Integration */}
+      <ChatWidget
+        documentId={documentId}
+        documentName={documentName}
+        isOpen={isChatOpen}
+        onClose={handleCloseChat}
+        onFragmentCreate={handleFragmentCreate}
+        onFragmentHighlight={onFragmentHighlight}
+        className={styles.chatWidget}
+      />
     </div>
   );
 }; 
@@ -131,100 +79,59 @@ const useStyles = makeStyles({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    height: '600px',
-    backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusMedium,
-    overflow: 'hidden',
-    flexShrink: 0
+    position: 'relative',
+    width: '100%',
+    height: 'fit-content'
   },
-  header: {
-    padding: tokens.spacingHorizontalM,
-    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
-    backgroundColor: tokens.colorNeutralBackground2,
-    flexShrink: 0
-  },
-  messagesContainer: {
-    flex: 1,
-    overflow: 'auto',
-    padding: tokens.spacingHorizontalM,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
-    backgroundColor: tokens.colorNeutralBackground1,
-    minHeight: 0,
-    maxHeight: '100%'
-  },
-  messageCard: {
-    padding: tokens.spacingHorizontalM,
-    maxWidth: '70%',
-    borderRadius: tokens.borderRadiusMedium,
-    border: 'none',
-    boxShadow: tokens.shadow4,
-    wordBreak: 'break-word',
-    marginBottom: tokens.spacingVerticalXS,
-    width: 'auto',
-    flexShrink: 0
-  },
-  userMessage: {
-    alignSelf: 'flex-end',
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-    marginLeft: 'auto',
-    marginRight: 0,
-  },
-  otherMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: tokens.colorNeutralBackground2,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    marginRight: 'auto',
-    marginLeft: 0,
-  },
-  messageContent: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: tokens.spacingHorizontalS,
-  },
-  messageHeader: {
+  chatToggle: {
     display: 'flex',
     alignItems: 'center',
-    gap: tokens.spacingHorizontalXS,
-    marginBottom: tokens.spacingVerticalXS
+    justifyContent: 'center',
+    padding: tokens.spacingVerticalM
   },
-  messageText: {
-    wordBreak: 'break-word',
-    lineHeight: tokens.lineHeightBase300
+  toggleButton: {
+    position: 'relative',
+    minWidth: '150px',
+    height: '40px',
+    fontSize: tokens.fontSizeBase300,
+    fontWeight: tokens.fontWeightSemibold,
+    boxShadow: tokens.shadow4,
+    '&:hover': {
+      transform: 'translateY(-1px)',
+      boxShadow: tokens.shadow8
+    },
+    transition: 'all 0.2s ease-in-out'
   },
-  inputContainer: {
-    display: 'flex',
-    gap: tokens.spacingHorizontalS,
-    padding: tokens.spacingHorizontalM,
-    borderTop: `1px solid ${tokens.colorNeutralStroke1}`,
-    backgroundColor: tokens.colorNeutralBackground2,
-    flexShrink: 0
+  notificationBadge: {
+    position: 'absolute',
+    top: '-4px',
+    right: '-4px',
+    width: '12px',
+    height: '12px',
+    backgroundColor: tokens.colorPaletteRedBackground3,
+    borderRadius: '50%',
+    border: `2px solid ${tokens.colorNeutralBackground1}`,
+    animation: 'pulse 2s infinite'
   },
-  textarea: {
-    flex: 1,
-    '& textarea': {
-      resize: 'none',
-      border: `1px solid ${tokens.colorNeutralStroke1}`,
-      borderRadius: tokens.borderRadiusMedium,
-      padding: tokens.spacingHorizontalS,
-      fontSize: tokens.fontSizeBase300,
-      lineHeight: tokens.lineHeightBase300,
-      '&:focus': {
-        outline: 'none'
-      }
-    }
+  chatWidget: {
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    zIndex: 1000,
+    height: '100vh'
   },
-  sendButton: {
-    alignSelf: 'flex-end',
-    minWidth: 'auto',
-    height: '32px',
-    padding: `0 ${tokens.spacingHorizontalS}`,
-    '& button': {
-      height: '32px',
-      minWidth: 'auto'
+  '@keyframes pulse': {
+    '0%': {
+      transform: 'scale(0.95)',
+      boxShadow: `0 0 0 0 ${tokens.colorPaletteRedBackground3}`
+    },
+    '70%': {
+      transform: 'scale(1)',
+      boxShadow: `0 0 0 10px rgba(255, 0, 0, 0)`
+    },
+    '100%': {
+      transform: 'scale(0.95)',
+      boxShadow: `0 0 0 0 rgba(255, 0, 0, 0)`
     }
   }
 });

@@ -1,6 +1,7 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 import { getContainer } from '../shared/db/cosmos';
 import { createProtectedFunction, RBAC_CONFIGS } from '../shared/middleware/rbacMiddleware';
+import { DocumentVersioningService } from '../shared/versioning/versioningService';
 import { z } from 'zod';
 
 // Document Version Schema
@@ -583,6 +584,124 @@ async function createHistoryEvent(
     ctx?.error('Failed to create history event:', error);
   }
 }
+
+// COMPARE VERSIONS
+// GET /api/documents/{documentId}/versions/{version1}/compare/{version2}
+app.http('compareVersions', {
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'documents/{documentId}/versions/{version1}/compare/{version2}',
+  handler: createProtectedFunction(
+    RBAC_CONFIGS.DOCUMENTS_READ,
+    async (req: HttpRequest, ctx: InvocationContext, authResult) => {
+      try {
+        const documentId = req.params.get('documentId');
+        const version1 = parseInt(req.params.get('version1') || '0');
+        const version2 = parseInt(req.params.get('version2') || '0');
+
+        if (!documentId || !version1 || !version2) {
+          return {
+            status: 400,
+            body: JSON.stringify({ error: 'Document ID and both version numbers are required' })
+          };
+        }
+
+        const comparison = await DocumentVersioningService.compareVersions(documentId, version1, version2);
+
+        return {
+          status: 200,
+          body: JSON.stringify(comparison)
+        };
+
+      } catch (error: any) {
+        ctx.error('Error comparing versions:', error);
+        return {
+          status: 500,
+          body: JSON.stringify({ error: error.message })
+        };
+      }
+    }
+  )
+});
+
+// GET VERSION HISTORY WITH EVENTS
+// GET /api/documents/{documentId}/history
+app.http('getVersionHistory', {
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'documents/{documentId}/history',
+  handler: createProtectedFunction(
+    RBAC_CONFIGS.DOCUMENTS_READ,
+    async (req: HttpRequest, ctx: InvocationContext, authResult) => {
+      try {
+        const documentId = req.params.get('documentId');
+        if (!documentId) {
+          return {
+            status: 400,
+            body: JSON.stringify({ error: 'Document ID is required' })
+          };
+        }
+
+        const url = new URL(req.url);
+        const includeEvents = url.searchParams.get('includeEvents') !== 'false';
+
+        const history = await DocumentVersioningService.getVersionHistory(documentId, includeEvents);
+
+        return {
+          status: 200,
+          body: JSON.stringify(history)
+        };
+
+      } catch (error: any) {
+        ctx.error('Error getting version history:', error);
+        return {
+          status: 500,
+          body: JSON.stringify({ error: error.message })
+        };
+      }
+    }
+  )
+});
+
+// GET PAGINATED VERSIONS
+// GET /api/documents/{documentId}/versions?limit=20&offset=0
+app.http('getDocumentVersionsPaginated', {
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'documents/{documentId}/versions',
+  handler: createProtectedFunction(
+    RBAC_CONFIGS.DOCUMENTS_READ,
+    async (req: HttpRequest, ctx: InvocationContext, authResult) => {
+      try {
+        const documentId = req.params.get('documentId');
+        if (!documentId) {
+          return {
+            status: 400,
+            body: JSON.stringify({ error: 'Document ID is required' })
+          };
+        }
+
+        const url = new URL(req.url);
+        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const offset = parseInt(url.searchParams.get('offset') || '0');
+
+        const result = await DocumentVersioningService.getDocumentVersions(documentId, limit, offset);
+
+        return {
+          status: 200,
+          body: JSON.stringify(result)
+        };
+
+      } catch (error: any) {
+        ctx.error('Error getting document versions:', error);
+        return {
+          status: 500,
+          body: JSON.stringify({ error: error.message })
+        };
+      }
+    }
+  )
+});
 
 async function createNewVersionFromDocument(
   document: any,

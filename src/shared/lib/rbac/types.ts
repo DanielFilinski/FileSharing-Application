@@ -48,6 +48,11 @@ export enum Permission {
   DOCS_APPROVE_DEPT = 'docs:approve_dept',
   DOCS_APPROVE_SETTINGS = 'docs:approve_settings',
   
+  // Цифровые подписи
+  SIGNATURE_CONFIG = 'signature:config',
+  SIGNATURE_SIGN = 'signature:sign',
+  SIGNATURE_REQUEST = 'signature:request',
+  
   // Подписание документов
   DOCS_SIGN = 'docs:sign',
   DOCS_SIGN_SETTINGS = 'docs:sign_settings',

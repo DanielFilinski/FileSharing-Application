@@ -28,7 +28,7 @@ import {
   EditRegular,
   PeopleRegular
 } from '@fluentui/react-icons';
-import { WorkflowList } from '../../components/Workflow/WorkflowList';
+import { WorkflowList, WorkflowAnalytics } from '../../components/Workflow';
 import { CreateWorkflowDialog } from '../../components/Workflow/CreateWorkflowDialog';
 import { WorkflowApiClient, WorkflowInstance, AdvanceWorkflowRequest } from '../../shared/api/workflowApi';
 import { notificationService } from '../../shared/lib/notifications';
@@ -92,7 +92,7 @@ const useStyles = makeStyles({
   }
 });
 
-type TabValue = 'all' | 'assigned' | 'created' | 'pending';
+type TabValue = 'all' | 'assigned' | 'created' | 'pending' | 'analytics';
 
 export const WorkflowPage: React.FC = () => {
   const styles = useStyles();

@@ -3,6 +3,7 @@ import DmsMainScreen from '@/pages/documents/ui/DocumentsPage';
 import ApprovalSettingsForm from '@/pages/settings/approval/Approval';
 import OrganizationSettings from '@/pages/settings/organization/Organization';
 import ValidationSettingsForm from '@/pages/settings/validation/Validation';
+import { SignatureSettings } from '@/pages/settings/signature';
 import { ToEndUser } from '@/app/pages/ToEndUser';
 import { FromEndUser } from '@/app/pages/FromEndUser';
 import { FirmUser } from '@/pages/settings/users/users-settings';
@@ -19,6 +20,7 @@ import { SettingsMain } from '@/pages/settings/SettingsMain';
 import { SettingsMainWithDebug } from '@/pages/settings/SettingsMainWithDebug';
 import { SharePointPage } from '@/pages/sharepoint/SharePointPage';
 import { WorkflowPage } from '@/pages/workflow/WorkflowPage';
+import { AuditReportsPage } from '@/pages/audit';
 import { TeamsTab, TeamsTabConfig } from '@/teams';
 
 
@@ -64,6 +66,10 @@ export const router = createBrowserRouter([
         element: <ApprovalSettingsForm />,
       },
       {
+        path: 'settings/signature',
+        element: <SignatureSettings />,
+      },
+      {
         path: 'to-end-user',
         element: <ClientSidePage />,
       },
@@ -94,6 +100,10 @@ export const router = createBrowserRouter([
       {
         path: 'workflow',
         element: <WorkflowPage />,
+      },
+      {
+        path: 'audit',
+        element: <AuditReportsPage />,
       },
       {
         path: 'teams/tab',

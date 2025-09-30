@@ -1,6 +1,7 @@
 // Workflow Components
 export { WorkflowList } from './WorkflowList';
 export { CreateWorkflowDialog } from './CreateWorkflowDialog';
+export { WorkflowAnalytics } from './WorkflowAnalytics';
 
 // Re-export API and types for convenience
 export { WorkflowApiClient } from '../../shared/api/workflowApi';

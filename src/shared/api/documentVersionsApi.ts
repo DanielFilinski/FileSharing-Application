@@ -183,24 +183,36 @@ export const documentVersionsApi = {
   },
 
   /**
-   * Compare two document versions
+   * Compare two document versions using backend endpoint
    */
   async compareVersions(documentId: string, version1: number, version2: number): Promise<VersionComparisonResult> {
     try {
       console.log(`Comparing document ${documentId} versions ${version1} and ${version2}`);
       
-      // This would be implemented as a separate endpoint in the backend
-      const [v1Response, v2Response] = await Promise.all([
-        this.getDocumentVersion(documentId, version1),
-        this.getDocumentVersion(documentId, version2)
-      ]);
+      // Use the new backend endpoint for comparison
+      const response = await apiClient.get<{
+        version1: DocumentVersion;
+        version2: DocumentVersion;
+        changes: Record<string, boolean>;
+        hasChanges: boolean;
+      }>(`/documents/${documentId}/versions/${version1}/compare/${version2}`);
 
-      const differences = this.calculateDifferences(v1Response.data.documentSnapshot, v2Response.data.documentSnapshot);
+      // Convert backend format to frontend format
+      const differences: Record<string, { old: any; new: any }> = {};
+      
+      Object.keys(response.changes).forEach(field => {
+        if (response.changes[field]) {
+          differences[field] = {
+            old: response.version1.documentSnapshot[field],
+            new: response.version2.documentSnapshot[field]
+          };
+        }
+      });
 
       const result: VersionComparisonResult = {
         documentId,
-        version1: v1Response.data,
-        version2: v2Response.data,
+        version1: response.version1,
+        version2: response.version2,
         differences,
         comparedBy: 'current-user', // Would be filled from auth context
         comparedAt: new Date().toISOString()
@@ -209,6 +221,60 @@ export const documentVersionsApi = {
       return result;
     } catch (error) {
       console.error('Failed to compare versions:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get complete version history with events
+   */
+  async getVersionHistoryWithEvents(documentId: string, includeEvents: boolean = true): Promise<{
+    documentId: string;
+    versions: DocumentVersion[];
+    events: DocumentHistoryEvent[];
+    totalVersions: number;
+    latestVersion: number;
+  }> {
+    try {
+      console.log(`Fetching complete version history for document ${documentId}`);
+      
+      const response = await apiClient.get<{
+        documentId: string;
+        versions: DocumentVersion[];
+        events: DocumentHistoryEvent[];
+        totalVersions: number;
+        latestVersion: number;
+      }>(`/documents/${documentId}/history?includeEvents=${includeEvents}`);
+      
+      console.log('Version history retrieved:', response);
+      return response;
+    } catch (error) {
+      console.error('Failed to get version history with events:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get paginated document versions
+   */
+  async getDocumentVersionsPaginated(
+    documentId: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<{ versions: DocumentVersion[]; totalCount: number; hasMore: boolean }> {
+    try {
+      console.log(`Fetching paginated versions for document ${documentId} (limit: ${limit}, offset: ${offset})`);
+      
+      const response = await apiClient.get<{
+        versions: DocumentVersion[];
+        totalCount: number;
+        hasMore: boolean;
+      }>(`/documents/${documentId}/versions?limit=${limit}&offset=${offset}`);
+      
+      console.log('Paginated versions retrieved:', response);
+      return response;
+    } catch (error) {
+      console.error('Failed to get paginated document versions:', error);
       throw error;
     }
   },

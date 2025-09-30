@@ -215,6 +215,62 @@ export class SignatureService {
   }
 
   /**
+   * Получение запросов на подпись с расширенными фильтрами
+   */
+  async getSignatureRequests(filters: {
+    organizationId: string;
+    userId?: string;
+    createdBy?: string;
+    status?: SignatureStatus;
+    documentId?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<SignatureRequest[]> {
+    let query = `
+      SELECT * FROM c 
+      WHERE c.organizationId = @organizationId
+    `;
+    const parameters = [{ name: '@organizationId', value: filters.organizationId }];
+
+    // Filter by specific user (as requester or signer)
+    if (filters.userId) {
+      query += ` AND (c.requesterId = @userId OR EXISTS(SELECT VALUE s FROM s IN c.signers WHERE s.userId = @userId))`;
+      parameters.push({ name: '@userId', value: filters.userId });
+    }
+
+    // Filter by creator
+    if (filters.createdBy) {
+      query += ` AND c.requesterId = @createdBy`;
+      parameters.push({ name: '@createdBy', value: filters.createdBy });
+    }
+
+    // Filter by status
+    if (filters.status) {
+      query += ` AND c.status = @status`;
+      parameters.push({ name: '@status', value: filters.status });
+    }
+
+    // Filter by document
+    if (filters.documentId) {
+      query += ` AND c.documentId = @documentId`;
+      parameters.push({ name: '@documentId', value: filters.documentId });
+    }
+
+    query += ` ORDER BY c.createdAt DESC`;
+
+    // Pagination
+    if (filters.limit) {
+      query += ` OFFSET ${filters.offset || 0} LIMIT ${filters.limit}`;
+    }
+
+    const { resources: requests } = await this.signatureRequestsContainer.items
+      .query<SignatureRequest>({ query, parameters })
+      .fetchAll();
+
+    return requests;
+  }
+
+  /**
    * Получение запросов на подпись для пользователя
    */
   async getUserSignatureRequests(
@@ -306,18 +362,129 @@ export class SignatureService {
   }
 
   /**
-   * Создание шаблона подписи
+   * Обновление настроек подписи организации
    */
-  async createSignatureTemplate(template: Omit<SignatureTemplate, 'id' | 'createdAt' | 'usageCount' | 'lastUsed'>): Promise<SignatureTemplate> {
-    const signatureTemplate: SignatureTemplate = {
-      ...template,
-      id: this.generateId('template'),
-      createdAt: new Date().toISOString(),
-      usageCount: 0
+  async updateOrganizationSettings(
+    organizationId: string, 
+    updates: Partial<OrganizationSignatureSettings>,
+    updatedBy: string
+  ): Promise<OrganizationSignatureSettings> {
+    const existingSettings = await this.getOrganizationSettings(organizationId);
+    
+    const defaultSettings: OrganizationSignatureSettings = {
+      organizationId,
+      enabledMethods: ['docusign'],
+      defaultMethod: 'docusign',
+      authenticationMethods: ['email'],
+      sessionTimeout: 30,
+      signatureValidityDays: 90,
+      requireLegalAgreement: false,
+      enableAuditTrail: true,
+      requireIdentityVerification: false,
+      providerSettings: {},
+      appearanceSettings: {
+        displaySignerName: true,
+        displaySignDate: true,
+        displayCompanyName: true,
+        signatureFont: 'Arial',
+        signatureColor: '#000000'
+      },
+      securitySettings: {
+        requireAuthentication: true,
+        allowedAuthMethods: ['email'],
+        sessionTimeoutMinutes: 30,
+        requireSecureConnection: true
+      },
+      workflowSettings: {
+        autoSendReminders: true,
+        defaultReminderDays: 3,
+        defaultExpirationDays: 30,
+        allowDelegation: false,
+        requireCompleteOrder: true
+      },
+      auditSettings: {
+        logAllEvents: true,
+        retentionDays: 2555, // 7 years
+        includeDocumentHashes: true,
+        requireDigitalCertificate: false
+      },
+      updatedAt: new Date().toISOString(),
+      updatedBy
     };
 
-    await this.signatureTemplatesContainer.items.create(signatureTemplate);
-    return signatureTemplate;
+    const updatedSettings: OrganizationSignatureSettings = {
+      ...(existingSettings || defaultSettings),
+      ...updates,
+      organizationId, // Ensure organizationId is not overwritten
+      updatedAt: new Date().toISOString(),
+      updatedBy
+    };
+
+    await this.signatureSettingsContainer.items.upsert(updatedSettings);
+    return updatedSettings;
+  }
+
+  /**
+   * Создание шаблона подписи
+   */
+  async createSignatureTemplate(template: Omit<SignatureTemplate, 'id' | 'createdAt' | 'usageCount' | 'lastUsed'>): Promise<SignatureTemplate>;
+  async createSignatureTemplate(
+    organizationId: string,
+    templateData: {
+      name: string;
+      signatureMethod: SignatureMethod;
+      defaultSettings: any;
+      defaultSigners?: any[];
+    },
+    userId: string
+  ): Promise<SignatureTemplate>;
+  async createSignatureTemplate(
+    templateOrOrganizationId: any,
+    templateData?: any,
+    userId?: string
+  ): Promise<SignatureTemplate> {
+    let finalTemplate: SignatureTemplate;
+
+    if (typeof templateOrOrganizationId === 'string' && templateData) {
+      // New signature (organizationId, templateData, userId)
+      finalTemplate = {
+        id: this.generateId('template'),
+        name: templateData.name,
+        organizationId: templateOrOrganizationId,
+        signatureMethod: templateData.signatureMethod,
+        defaultSettings: {
+          signingOrder: 'sequential',
+          emailNotifications: true,
+          reminderSettings: {
+            enabled: true,
+            intervalDays: 3,
+            maxReminders: 3
+          },
+          expirationDays: 30,
+          requireAllSignersToSign: true,
+          allowDecline: true,
+          allowComments: true,
+          downloadable: true,
+          printable: true,
+          ...templateData.defaultSettings
+        },
+        defaultSigners: templateData.defaultSigners || [],
+        createdAt: new Date().toISOString(),
+        createdBy: userId!,
+        usageCount: 0
+      };
+    } else {
+      // Original signature (template object)
+      finalTemplate = {
+        ...templateOrOrganizationId,
+        id: this.generateId('template'),
+        createdAt: new Date().toISOString(),
+        usageCount: 0
+      };
+    }
+
+    await this.signatureTemplatesContainer.items.create(finalTemplate);
+    return finalTemplate;
   }
 
   /**
@@ -332,6 +499,13 @@ export class SignatureService {
       .fetchAll();
 
     return templates;
+  }
+
+  /**
+   * Alias для getOrganizationTemplates для совместимости с API
+   */
+  async getSignatureTemplates(organizationId: string): Promise<SignatureTemplate[]> {
+    return this.getOrganizationTemplates(organizationId);
   }
 
   /**
@@ -362,13 +536,29 @@ export class SignatureService {
   }
 
   /**
+   * Завершение процесса подписания документа
+   */
+  async completeDocumentSigning(documentId: string): Promise<void> {
+    // TODO: Implement document completion logic
+    // This could include:
+    // 1. Updating document status to "signed"
+    // 2. Generating final signed document
+    // 3. Notifying relevant parties
+    // 4. Moving document to appropriate storage location
+    console.log(`Document ${documentId} signing process completed`);
+  }
+
+  /**
    * Получение статистики подписей
    */
   async getSignatureStatistics(
     organizationId: string,
-    startDate: string,
-    endDate: string
+    userId?: string,
+    startDate?: string,
+    endDate?: string
   ): Promise<SignatureStatistics> {
+    const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const end = endDate || new Date().toISOString();
     const query = `
       SELECT * FROM c 
       WHERE c.organizationId = @organizationId 
@@ -381,13 +571,13 @@ export class SignatureService {
         query,
         parameters: [
           { name: '@organizationId', value: organizationId },
-          { name: '@startDate', value: startDate },
-          { name: '@endDate', value: endDate }
+          { name: '@startDate', value: start },
+          { name: '@endDate', value: end }
         ]
       })
       .fetchAll();
 
-    return this.calculateStatistics(requests, startDate, endDate, organizationId);
+    return this.calculateStatistics(requests, start, end, organizationId);
   }
 
   /**
@@ -422,6 +612,8 @@ export class SignatureService {
     const byMethod: Record<SignatureMethod, number> = {
       docusign: 0,
       'adobe-sign': 0,
+      'e-signature': 0,
+      'digital-certificate': 0,
       internal: 0,
       drawn: 0
     };

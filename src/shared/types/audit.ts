@@ -332,6 +332,35 @@ export interface AuditSettings {
   updatedBy: string;
 }
 
+// Отчет аудита
+export interface AuditReport {
+  id: string;
+  title: string;
+  description?: string;
+  organizationId: string;
+  createdBy: string;
+  createdAt: string;
+  parameters: AuditReportParameters;
+  status: 'processing' | 'completed' | 'failed';
+  progress?: number;
+  error?: string;
+  downloadUrl?: string;
+  fileSize?: number;
+}
+
+// Параметры отчета аудита
+export interface AuditReportParameters {
+  startDate: string;
+  endDate: string;
+  categories: AuditCategory[];
+  severities: AuditSeverity[];
+  includeSuccessful: boolean;
+  includeFailed: boolean;
+  includeSensitive: boolean;
+  groupBy: 'category' | 'user' | 'resource' | 'date';
+  format: 'pdf' | 'xlsx' | 'csv';
+}
+
 // Статистика аудита
 export interface AuditStatistics {
   organizationId: string;

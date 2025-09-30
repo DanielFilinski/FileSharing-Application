@@ -17,7 +17,31 @@ import {
   MenuTrigger,
   Badge
 } from '@fluentui/react-components';
-import { Document20Regular, DocumentBulletList20Regular, StarRegular, StarFilled, MoreHorizontal20Regular, LockClosed20Regular, LockOpen20Regular, SignatureRegular, Chat20Regular } from '@fluentui/react-icons';
+import { 
+  Document20Regular, 
+  DocumentBulletList20Regular, 
+  StarRegular, 
+  StarFilled, 
+  MoreHorizontal20Regular, 
+  LockClosed20Regular, 
+  LockOpen20Regular, 
+  SignatureRegular, 
+  Chat20Regular,
+  Eye20Regular,
+  Share20Regular,
+  Copy20Regular,
+  Tab20Regular,
+  Delete20Regular,
+  Link20Regular,
+  ArrowDownload20Regular,
+  Rename20Regular,
+  Globe20Regular,
+  Pin20Regular,
+  ArrowMove20Regular,
+  CopyArrowRight20Regular,
+  Edit20Regular,
+  History20Regular
+} from '@fluentui/react-icons';
 import { useFavorites } from '@/features/favorites';
 import { SignatureWidget, SignatureStatus } from '../../../components/DigitalSignature';
 
@@ -108,12 +132,24 @@ export const DocumentsTable: React.FC<{
   const getMenuItems = (itemKey: string) => {
     const item = items.find(i => i.key === itemKey);
     const baseItems = [
-      { key: 'preview', label: 'Preview', action: () => onPreview?.(itemKey) },
-      { key: 'download', label: 'Download', action: () => onDownload?.(itemKey) },
-      { key: 'history', label: 'View History', action: () => onViewHistory?.(itemKey) },
+      { key: 'open', label: 'Open', action: () => onPreview?.(itemKey), icon: <Document20Regular /> },
+      { key: 'preview', label: 'Preview', action: () => onPreview?.(itemKey), icon: <Eye20Regular /> },
+      { key: 'share', label: 'Share', action: () => handleShare(itemKey), icon: <Share20Regular /> },
+      { key: 'copy', label: 'Copy', action: () => handleCopyLink(itemKey), icon: <Copy20Regular /> },
+      { key: 'makeTab', label: 'Make this a Tab', action: () => handleMakeTab(itemKey), icon: <Tab20Regular /> },
+      { key: 'delete', label: 'Delete', action: () => onDelete?.(itemKey), icon: <Delete20Regular /> },
+      { key: 'favorite', label: isFavorite(itemKey) ? 'Remove from Favorites' : 'Add to Favorites', action: () => toggleFavorite(itemKey), icon: isFavorite(itemKey) ? <StarFilled /> : <StarRegular /> },
+      { key: 'shortcut', label: 'Add Shortcut', action: () => handleAddShortcut(itemKey), icon: <Link20Regular /> },
+      { key: 'download', label: 'Download', action: () => onDownload?.(itemKey), icon: <ArrowDownload20Regular /> },
+      { key: 'rename', label: 'Rename', action: () => handleRename(itemKey), icon: <Rename20Regular /> },
+      { key: 'sharepoint', label: 'Open in SharePoint', action: () => handleOpenInSharePoint(itemKey), icon: <Globe20Regular /> },
+      { key: 'pinToTop', label: 'Pin to Top', action: () => handlePinToTop(itemKey), icon: <Pin20Regular /> },
+      { key: 'moveTo', label: 'Move To', action: () => handleMoveTo(itemKey), icon: <ArrowMove20Regular /> },
+      { key: 'copyTo', label: 'Copy To', action: () => handleCopyTo(itemKey), icon: <CopyArrowRight20Regular /> },
+      { key: 'editInApp', label: 'Edit in App', action: () => handleEditInApp(itemKey), icon: <Edit20Regular /> },
+      { key: 'history', label: 'View History', action: () => onViewHistory?.(itemKey), icon: <History20Regular /> },
       { key: 'sign', label: 'Sign Document', action: () => onSignDocument?.(itemKey, item?.name || ''), icon: <SignatureRegular /> },
       { key: 'chat', label: 'Open Chat', action: () => onOpenChat?.(itemKey, item?.name || ''), icon: <Chat20Regular /> },
-      { key: 'delete', label: 'Delete', action: () => onDelete?.(itemKey) },
     ];
 
     if (pageType === 'firm') {
@@ -137,6 +173,114 @@ export const DocumentsTable: React.FC<{
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
+  };
+
+  // New menu handlers
+  const handleShare = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // Create shareable link and copy to clipboard
+      const shareLink = `${window.location.origin}/shared/${itemKey}`;
+      navigator.clipboard.writeText(shareLink).then(() => {
+        // Show success notification
+        console.log('Share link copied to clipboard:', shareLink);
+        // TODO: Add toast notification
+      }).catch((err) => {
+        console.error('Failed to copy share link:', err);
+      });
+    }
+  };
+
+  const handleCopyLink = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      const directLink = `${window.location.origin}/document/${itemKey}`;
+      navigator.clipboard.writeText(directLink).then(() => {
+        console.log('Document link copied to clipboard:', directLink);
+        // TODO: Add toast notification
+      }).catch((err) => {
+        console.error('Failed to copy document link:', err);
+      });
+    }
+  };
+
+  const handleMakeTab = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Implement tab creation functionality
+      console.log('Making tab for document:', item.name);
+      // This would typically add the document to a persistent tabs list
+      // and show it in a dedicated tabs area
+    }
+  };
+
+  const handleAddShortcut = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Implement shortcut creation
+      console.log('Creating shortcut for document:', item.name);
+      // This would show a dialog to choose where to place the shortcut
+    }
+  };
+
+  const handleRename = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Show rename dialog
+      const newName = prompt('Enter new name:', item.name);
+      if (newName && newName.trim() !== '' && newName !== item.name) {
+        console.log('Renaming document from', item.name, 'to', newName);
+        // TODO: Call API to rename document
+      }
+    }
+  };
+
+  const handleOpenInSharePoint = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Open document in SharePoint
+      const sharePointUrl = `https://yourdomain.sharepoint.com/sites/yoursite/Documents/${item.name}`;
+      window.open(sharePointUrl, '_blank');
+      console.log('Opening document in SharePoint:', item.name);
+    }
+  };
+
+  const handlePinToTop = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Implement pin to top functionality
+      console.log('Pinning document to top:', item.name);
+      // This would update the document's pin status and reorder the list
+    }
+  };
+
+  const handleMoveTo = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Show folder selection dialog
+      console.log('Moving document:', item.name);
+      // This would show a dialog to select destination folder
+    }
+  };
+
+  const handleCopyTo = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Show folder selection dialog for copying
+      console.log('Copying document:', item.name);
+      // This would show a dialog to select destination folder for copy
+    }
+  };
+
+  const handleEditInApp = (itemKey: string) => {
+    const item = items.find(i => i.key === itemKey);
+    if (item) {
+      // TODO: Open document in desktop application
+      console.log('Opening document in desktop app:', item.name);
+      // This would attempt to launch the associated desktop application
+      const editUrl = `ms-office://edit/document/${itemKey}`;
+      window.location.href = editUrl;
+    }
   };
 
   // Закрытие контекстного меню при клике вне его

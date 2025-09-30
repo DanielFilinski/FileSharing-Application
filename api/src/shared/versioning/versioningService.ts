@@ -192,6 +192,221 @@ export class DocumentVersioningService {
   }
 
   /**
+   * Get document versions with pagination
+   */
+  static async getDocumentVersions(
+    documentId: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<{ versions: any[]; totalCount: number; hasMore: boolean }> {
+    try {
+      const versionsContainer = getContainer('document-versions');
+      
+      // Get versions with pagination
+      const versionsQuery = {
+        query: `
+          SELECT * FROM c 
+          WHERE c.partitionKey = @documentId 
+          ORDER BY c.versionNumber DESC 
+          OFFSET @offset LIMIT @limit
+        `,
+        parameters: [
+          { name: '@documentId', value: documentId },
+          { name: '@offset', value: offset },
+          { name: '@limit', value: limit }
+        ]
+      };
+      
+      const { resources: versions } = await versionsContainer.items.query(versionsQuery).fetchAll();
+      
+      // Get total count
+      const countQuery = {
+        query: 'SELECT VALUE COUNT(1) FROM c WHERE c.partitionKey = @documentId',
+        parameters: [{ name: '@documentId', value: documentId }]
+      };
+      
+      const { resources: [totalCount] } = await versionsContainer.items.query(countQuery).fetchAll();
+      
+      return {
+        versions,
+        totalCount: totalCount || 0,
+        hasMore: offset + versions.length < totalCount
+      };
+    } catch (error) {
+      throw new Error(`Failed to get document versions: ${error}`);
+    }
+  }
+
+  /**
+   * Restore document to specific version
+   */
+  static async restoreToVersion(
+    documentId: string,
+    versionNumber: number,
+    user: User,
+    reason?: string,
+    ctx?: InvocationContext
+  ): Promise<any> {
+    try {
+      const now = new Date().toISOString();
+      
+      // 1. Get version to restore
+      const versionsContainer = getContainer('document-versions');
+      const versionId = `version-${documentId}-${versionNumber}`;
+      const { resource: versionToRestore } = await versionsContainer.item(versionId, documentId).read();
+      
+      if (!versionToRestore) {
+        throw new Error(`Version ${versionNumber} not found for document ${documentId}`);
+      }
+
+      // 2. Get current document
+      const documentsContainer = getContainer('documents');
+      const { resource: currentDocument } = await documentsContainer.item(documentId).read();
+      
+      if (!currentDocument) {
+        throw new Error(`Document not found: ${documentId}`);
+      }
+
+      // 3. Create backup version of current state
+      await this.createVersionFromDocument(
+        documentId,
+        user,
+        {
+          changeType: 'updated',
+          changeDescription: `Auto-backup before restore to version ${versionNumber}`,
+          reason: 'pre-restore-backup'
+        },
+        ctx
+      );
+
+      // 4. Restore document from version snapshot
+      const snapshot = versionToRestore.documentSnapshot;
+      const restoreUpdates = [
+        { op: 'replace', path: '/name', value: snapshot.name },
+        { op: 'replace', path: '/fileName', value: snapshot.fileName },
+        { op: 'replace', path: '/fileSize', value: snapshot.fileSize },
+        { op: 'replace', path: '/mimeType', value: snapshot.mimeType },
+        { op: 'replace', path: '/blobUrl', value: snapshot.blobUrl },
+        { op: 'replace', path: '/status', value: snapshot.status },
+        { op: 'replace', path: '/category', value: snapshot.category },
+        { op: 'replace', path: '/tags', value: snapshot.tags },
+        { op: 'replace', path: '/metadata/modifiedBy', value: user.email },
+        { op: 'replace', path: '/metadata/modifiedAt', value: now }
+      ];
+
+      await documentsContainer.item(documentId).patch(restoreUpdates);
+
+      // 5. Create restore history event
+      await this.createHistoryEvent(
+        documentId,
+        'restored',
+        {
+          action: `Document restored to version ${versionNumber}`,
+          reason: reason || 'Manual restore',
+          restoredFromVersion: versionNumber,
+          restoredToVersion: versionToRestore.documentSnapshot.metadata?.version
+        },
+        user,
+        now,
+        versionId,
+        ctx
+      );
+
+      ctx?.log(`Document ${documentId} restored to version ${versionNumber} by ${user.displayName || user.email}`);
+
+      return await documentsContainer.item(documentId).read();
+    } catch (error: any) {
+      ctx?.error('DocumentVersioningService.restoreToVersion error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Compare two versions of a document
+   */
+  static async compareVersions(
+    documentId: string,
+    version1: number,
+    version2: number
+  ): Promise<any> {
+    try {
+      const versionsContainer = getContainer('document-versions');
+      
+      const version1Id = `version-${documentId}-${version1}`;
+      const version2Id = `version-${documentId}-${version2}`;
+      
+      const [{ resource: v1 }, { resource: v2 }] = await Promise.all([
+        versionsContainer.item(version1Id, documentId).read(),
+        versionsContainer.item(version2Id, documentId).read()
+      ]);
+      
+      if (!v1 || !v2) {
+        throw new Error('One or both versions not found');
+      }
+      
+      const changes = {
+        name: v1.documentSnapshot.name !== v2.documentSnapshot.name,
+        fileName: v1.documentSnapshot.fileName !== v2.documentSnapshot.fileName,
+        fileSize: v1.documentSnapshot.fileSize !== v2.documentSnapshot.fileSize,
+        status: v1.documentSnapshot.status !== v2.documentSnapshot.status,
+        category: v1.documentSnapshot.category !== v2.documentSnapshot.category,
+        tags: JSON.stringify(v1.documentSnapshot.tags) !== JSON.stringify(v2.documentSnapshot.tags)
+      };
+      
+      return {
+        version1: v1,
+        version2: v2,
+        changes,
+        hasChanges: Object.values(changes).some(changed => changed)
+      };
+    } catch (error) {
+      throw new Error(`Failed to compare versions: ${error}`);
+    }
+  }
+
+  /**
+   * Get version history for a document
+   */
+  static async getVersionHistory(
+    documentId: string,
+    includeEvents: boolean = true
+  ): Promise<any> {
+    try {
+      const versionsContainer = getContainer('document-versions');
+      
+      // Get all versions
+      const versionsQuery = {
+        query: 'SELECT * FROM c WHERE c.partitionKey = @documentId ORDER BY c.versionNumber ASC',
+        parameters: [{ name: '@documentId', value: documentId }]
+      };
+      
+      const { resources: versions } = await versionsContainer.items.query(versionsQuery).fetchAll();
+      
+      let events: any[] = [];
+      if (includeEvents) {
+        const historyContainer = getContainer('document-history-events');
+        const eventsQuery = {
+          query: 'SELECT * FROM c WHERE c.partitionKey = @documentId ORDER BY c.timestamp DESC',
+          parameters: [{ name: '@documentId', value: documentId }]
+        };
+        
+        const { resources: allEvents } = await historyContainer.items.query(eventsQuery).fetchAll();
+        events = allEvents;
+      }
+      
+      return {
+        documentId,
+        versions,
+        events,
+        totalVersions: versions.length,
+        latestVersion: versions.length > 0 ? Math.max(...versions.map(v => v.versionNumber)) : 0
+      };
+    } catch (error) {
+      throw new Error(`Failed to get version history: ${error}`);
+    }
+  }
+
+  /**
    * Map change types to event types for audit trail
    */
   private static mapChangeTypeToEventType(changeType: string): string {

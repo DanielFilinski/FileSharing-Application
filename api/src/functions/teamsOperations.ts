@@ -442,3 +442,245 @@ app.http('sendTeamsNotification', {
     }
   }
 });
+
+// GET /api/teams/channels/{teamId} - Get team channels
+app.http('getTeamChannels', {
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'teams/channels/{teamId}',
+  handler: async (req: HttpRequest, ctx: InvocationContext): Promise<HttpResponseInit> => {
+    if (req.method === 'OPTIONS') {
+      return { status: 200, headers: corsHeaders };
+    }
+
+    try {
+      const accessToken = req.headers.get('Authorization')?.replace('Bearer ', '').trim();
+      if (!accessToken) {
+        return {
+          status: 401,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'No access token provided' })
+        };
+      }
+
+      const teamId = req.params.teamId;
+      if (!teamId) {
+        return {
+          status: 400,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'Team ID is required' })
+        };
+      }
+
+      ctx.log(`Getting channels for team: ${teamId}`);
+
+      // Create OBO credential for Graph API
+      const oboCredential = new OnBehalfOfUserCredential(accessToken, {
+        authorityHost: config.authorityHost,
+        clientId: config.clientId,
+        tenantId: config.tenantId,
+        clientSecret: config.clientSecret
+      });
+
+      // Get Graph client
+      const graphClient = Client.initWithMiddleware({
+        authProvider: {
+          getAccessToken: async () => {
+            const tokenResponse = await oboCredential.getToken(['https://graph.microsoft.com/.default']);
+            return tokenResponse?.token || '';
+          }
+        }
+      });
+
+      // Get team channels
+      const channelsResponse = await graphClient
+        .api(`/teams/${teamId}/channels`)
+        .get();
+
+      const channels = channelsResponse.value.map((channel: any) => ({
+        id: channel.id,
+        displayName: channel.displayName,
+        description: channel.description,
+        webUrl: channel.webUrl,
+        membershipType: channel.membershipType,
+        createdDateTime: channel.createdDateTime
+      }));
+
+      return {
+        status: 200,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          success: true,
+          teamId,
+          channels,
+          count: channels.length
+        })
+      };
+
+    } catch (error: any) {
+      ctx.error('Get team channels error:', error);
+      return {
+        status: 500,
+        headers: corsHeaders,
+        body: JSON.stringify({ 
+          error: error.message,
+          details: 'Failed to get team channels'
+        })
+      };
+    }
+  }
+});
+
+// POST /api/teams/meeting/create - Create a Teams meeting for document review
+app.http('createDocumentReviewMeeting', {
+  methods: ['POST'],
+  authLevel: 'anonymous',
+  route: 'teams/meeting/create',
+  handler: async (req: HttpRequest, ctx: InvocationContext): Promise<HttpResponseInit> => {
+    if (req.method === 'OPTIONS') {
+      return { status: 200, headers: corsHeaders };
+    }
+
+    try {
+      const accessToken = req.headers.get('Authorization')?.replace('Bearer ', '').trim();
+      if (!accessToken) {
+        return {
+          status: 401,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'No access token provided' })
+        };
+      }
+
+      const { 
+        subject, 
+        startTime, 
+        endTime, 
+        attendeeEmails, 
+        documentId, 
+        documentName,
+        description 
+      } = await req.json();
+
+      if (!subject || !startTime || !endTime || !documentId) {
+        return {
+          status: 400,
+          headers: corsHeaders,
+          body: JSON.stringify({ error: 'Subject, start time, end time, and document ID are required' })
+        };
+      }
+
+      ctx.log(`Creating Teams meeting for document review: ${documentName}`);
+
+      // Create OBO credential for Graph API
+      const oboCredential = new OnBehalfOfUserCredential(accessToken, {
+        authorityHost: config.authorityHost,
+        clientId: config.clientId,
+        tenantId: config.tenantId,
+        clientSecret: config.clientSecret
+      });
+
+      // Get user info
+      const userInfo = await oboCredential.getUserInfo();
+
+      // Get Graph client
+      const graphClient = Client.initWithMiddleware({
+        authProvider: {
+          getAccessToken: async () => {
+            const tokenResponse = await oboCredential.getToken(['https://graph.microsoft.com/.default']);
+            return tokenResponse?.token || '';
+          }
+        }
+      });
+
+      // Create attendees list
+      const attendees = (attendeeEmails || []).map((email: string) => ({
+        emailAddress: {
+          address: email,
+          name: email.split('@')[0]
+        },
+        type: 'required'
+      }));
+
+      // Create meeting payload
+      const meetingPayload = {
+        subject: subject,
+        body: {
+          contentType: 'HTML',
+          content: `
+            <h3>Document Review Meeting</h3>
+            <p><strong>Document:</strong> ${documentName}</p>
+            <p><strong>Organized by:</strong> ${userInfo.displayName}</p>
+            <p><strong>Description:</strong> ${description || 'Review and discuss the shared document'}</p>
+            <br/>
+            <p><a href="${config.clientBaseUrl}/documents/${documentId}">📄 Open Document</a></p>
+          `
+        },
+        start: {
+          dateTime: startTime,
+          timeZone: 'UTC'
+        },
+        end: {
+          dateTime: endTime,
+          timeZone: 'UTC'
+        },
+        attendees: attendees,
+        isOnlineMeeting: true,
+        onlineMeetingProvider: 'teamsForBusiness'
+      };
+
+      // Create the meeting
+      const meetingResponse = await graphClient
+        .api('/me/events')
+        .post(meetingPayload);
+
+      // Log activity in CosmosDB
+      const activitiesContainer = getContainer('activities');
+      await activitiesContainer.items.create({
+        id: `teams-meeting-${meetingResponse.id}-${Date.now()}`,
+        partitionKey: userInfo.tenantId,
+        type: 'teams-meeting-created',
+        meetingId: meetingResponse.id,
+        documentId,
+        userId: userInfo.objectId,
+        userName: userInfo.displayName,
+        timestamp: new Date().toISOString(),
+        action: 'document-review-meeting-created',
+        details: { 
+          subject,
+          documentName,
+          attendeeEmails,
+          startTime,
+          endTime
+        }
+      });
+
+      return {
+        status: 200,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          success: true,
+          message: 'Document review meeting created successfully',
+          meeting: {
+            id: meetingResponse.id,
+            subject: meetingResponse.subject,
+            webLink: meetingResponse.webLink,
+            joinUrl: meetingResponse.onlineMeeting?.joinUrl,
+            startTime: meetingResponse.start.dateTime,
+            endTime: meetingResponse.end.dateTime
+          }
+        })
+      };
+
+    } catch (error: any) {
+      ctx.error('Create Teams meeting error:', error);
+      return {
+        status: 500,
+        headers: corsHeaders,
+        body: JSON.stringify({ 
+          error: error.message,
+          details: 'Failed to create Teams meeting'
+        })
+      };
+    }
+  }
+});

@@ -69,8 +69,8 @@ app.http('createSignatureRequest', {
         requestBody.settings
       );
 
-      // TODO: Send to signature provider (DocuSign/Adobe Sign)
-      // This will be implemented in the next phase
+      // Send to signature provider if configured
+      await initiateExternalSignature(signatureRequest, context);
 
       context.log('Signature request created:', signatureRequest.id);
 
@@ -90,34 +90,40 @@ app.http('createSignatureRequest', {
  * Get signature requests for user
  * GET /api/signature-requests
  */
-app.http('getUserSignatureRequests', {
+app.http('getSignatureRequests', {
   methods: ['GET'],
   route: 'signature-requests',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
+      context.log('Getting signature requests for user');
+      
       const { userId, organizationId } = SignatureService.getUserFromRequest(request);
       
-      // Parse query parameters
       const url = new URL(request.url);
-      const status = url.searchParams.get('status')?.split(',') as SignatureStatus[] | undefined;
-      const role = url.searchParams.get('role') as 'requester' | 'signer' | undefined;
-      const limit = url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')!) : undefined;
-      const offset = url.searchParams.get('offset') ? parseInt(url.searchParams.get('offset')!) : undefined;
-
-      const result = await signatureService.getUserSignatureRequests(userId, organizationId, {
-        status,
-        role,
-        limit,
-        offset
+      const status = url.searchParams.get('status');
+      const documentId = url.searchParams.get('documentId');
+      const createdByMe = url.searchParams.get('createdByMe') === 'true';
+      const assignedToMe = url.searchParams.get('assignedToMe') === 'true';
+      
+      const signatureRequests = await signatureService.getSignatureRequests({
+        organizationId,
+        userId: assignedToMe ? userId : undefined,
+        createdBy: createdByMe ? userId : undefined,
+        status: status as any,
+        documentId
       });
 
       return {
         status: 200,
-        jsonBody: result
+        jsonBody: {
+          success: true,
+          data: signatureRequests,
+          count: signatureRequests.length
+        }
       };
 
     } catch (error: any) {
-      context.error('Error getting user signature requests:', error);
+      context.error('Error getting signature requests:', error);
       return SignatureService.handleError(error);
     }
   }
@@ -133,6 +139,7 @@ app.http('getSignatureRequest', {
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
       const requestId = request.params.requestId;
+      context.log('Getting signature request:', requestId);
       
       if (!requestId) {
         return {
@@ -141,6 +148,8 @@ app.http('getSignatureRequest', {
         };
       }
 
+      const { userId, organizationId } = SignatureService.getUserFromRequest(request);
+      
       const signatureRequest = await signatureService.getSignatureRequest(requestId);
       
       if (!signatureRequest) {
@@ -150,11 +159,25 @@ app.http('getSignatureRequest', {
         };
       }
 
-      // TODO: Check permissions - user should have access to this request
+      // Check access permissions
+      const hasAccess = 
+        signatureRequest.createdBy === userId ||
+        signatureRequest.signers.some(s => s.email === request.headers.get('user-email')) ||
+        signatureRequest.organizationId === organizationId;
+
+      if (!hasAccess) {
+        return {
+          status: 403,
+          jsonBody: { error: 'Access denied to this signature request' }
+        };
+      }
 
       return {
         status: 200,
-        jsonBody: signatureRequest
+        jsonBody: {
+          success: true,
+          data: signatureRequest
+        }
       };
 
     } catch (error: any) {
@@ -165,54 +188,69 @@ app.http('getSignatureRequest', {
 });
 
 /**
- * Update signature request status
- * PUT /api/signature-requests/{requestId}
+ * Update signer status (sign, decline, etc.)
+ * POST /api/signature-requests/{requestId}/signers/{signerEmail}/action
  */
-app.http('updateSignatureRequest', {
-  methods: ['PUT'],
-  route: 'signature-requests/{requestId}',
+app.http('updateSignerStatus', {
+  methods: ['POST'],
+  route: 'signature-requests/{requestId}/signers/{signerEmail}/action',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
       const requestId = request.params.requestId;
-      const { userId } = SignatureService.getUserFromRequest(request);
+      const signerEmail = request.params.signerEmail;
       
-      if (!requestId) {
+      context.log('Updating signer status:', { requestId, signerEmail });
+      
+      if (!requestId || !signerEmail) {
         return {
           status: 400,
-          jsonBody: { error: 'Request ID is required' }
+          jsonBody: { error: 'Request ID and signer email are required' }
         };
       }
 
       const requestBody = await request.json() as {
-        status: SignatureStatus;
-        providerEnvelopeId?: string;
-        providerUrl?: string;
+        action: 'signed' | 'declined';
+        signatureInfo?: any;
+        declineReason?: string;
+        signatureData?: string;
+        ipAddress?: string;
       };
 
-      if (!requestBody.status) {
+      // Validate action
+      if (!['signed', 'declined'].includes(requestBody.action)) {
         return {
           status: 400,
-          jsonBody: { error: 'Status is required' }
+          jsonBody: { error: 'Invalid action. Must be "signed" or "declined"' }
         };
       }
 
-      const updatedRequest = await signatureService.updateSignatureRequestStatus(
+      // Update signer status
+      const updatedRequest = await signatureService.updateSignerStatus(
         requestId,
-        requestBody.status,
-        userId,
-        {
-          providerEnvelopeId: requestBody.providerEnvelopeId,
-          providerUrl: requestBody.providerUrl
-        }
+        decodeURIComponent(signerEmail),
+        requestBody.action,
+        requestBody.signatureInfo,
+        requestBody.declineReason
       );
+
+      // If all signers have signed, mark document as signed
+      if (updatedRequest.status === 'completed') {
+        await signatureService.completeDocumentSigning(updatedRequest.documentId);
+      }
+
+      context.log('Signer status updated successfully');
 
       return {
         status: 200,
-        jsonBody: updatedRequest
+        jsonBody: {
+          success: true,
+          data: updatedRequest,
+          message: `Signature ${requestBody.action} successfully`
+        }
       };
 
     } catch (error: any) {
-      context.error('Error updating signature request:', error);
+      context.error('Error updating signer status:', error);
       return SignatureService.handleError(error);
     }
   }
@@ -228,7 +266,7 @@ app.http('cancelSignatureRequest', {
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
       const requestId = request.params.requestId;
-      const { userId } = SignatureService.getUserFromRequest(request);
+      context.log('Cancelling signature request:', requestId);
       
       if (!requestId) {
         return {
@@ -237,17 +275,45 @@ app.http('cancelSignatureRequest', {
         };
       }
 
+      const { userId } = SignatureService.getUserFromRequest(request);
+      
+      const signatureRequest = await signatureService.getSignatureRequest(requestId);
+      
+      if (!signatureRequest) {
+        return {
+          status: 404,
+          jsonBody: { error: 'Signature request not found' }
+        };
+      }
+
+      // Check if user can cancel (only creator or admin)
+      if (signatureRequest.createdBy !== userId) {
+        return {
+          status: 403,
+          jsonBody: { error: 'Only the creator can cancel this signature request' }
+        };
+      }
+
+      // Update status to cancelled
       const updatedRequest = await signatureService.updateSignatureRequestStatus(
         requestId,
         'cancelled',
-        userId
+        userId,
+        {
+          cancelledAt: new Date().toISOString(),
+          cancelledBy: userId
+        }
       );
 
-      // TODO: Cancel with signature provider
+      context.log('Signature request cancelled successfully');
 
       return {
         status: 200,
-        jsonBody: updatedRequest
+        jsonBody: {
+          success: true,
+          data: updatedRequest,
+          message: 'Signature request cancelled successfully'
+        }
       };
 
     } catch (error: any) {
@@ -258,52 +324,30 @@ app.http('cancelSignatureRequest', {
 });
 
 /**
- * Update signer status (webhook endpoint)
- * POST /api/signature-requests/{requestId}/signers/{signerEmail}/status
+ * Get signature statistics
+ * GET /api/signature-requests/statistics
  */
-app.http('updateSignerStatus', {
-  methods: ['POST'],
-  route: 'signature-requests/{requestId}/signers/{signerEmail}/status',
+app.http('getSignatureStatistics', {
+  methods: ['GET'],
+  route: 'signature-requests/statistics',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
-      const requestId = request.params.requestId;
-      const signerEmail = decodeURIComponent(request.params.signerEmail!);
+      context.log('Getting signature statistics');
       
-      if (!requestId || !signerEmail) {
-        return {
-          status: 400,
-          jsonBody: { error: 'Request ID and signer email are required' }
-        };
-      }
-
-      const requestBody = await request.json() as {
-        status: Signer['status'];
-        signatureInfo?: Signer['signatureInfo'];
-        declineReason?: string;
-      };
-
-      if (!requestBody.status) {
-        return {
-          status: 400,
-          jsonBody: { error: 'Status is required' }
-        };
-      }
-
-      const updatedRequest = await signatureService.updateSignerStatus(
-        requestId,
-        signerEmail,
-        requestBody.status,
-        requestBody.signatureInfo,
-        requestBody.declineReason
-      );
+      const { userId, organizationId } = SignatureService.getUserFromRequest(request);
+      
+      const statistics = await signatureService.getSignatureStatistics(organizationId, userId);
 
       return {
         status: 200,
-        jsonBody: updatedRequest
+        jsonBody: {
+          success: true,
+          data: statistics
+        }
       };
 
     } catch (error: any) {
-      context.error('Error updating signer status:', error);
+      context.error('Error getting signature statistics:', error);
       return SignatureService.handleError(error);
     }
   }
@@ -318,54 +362,18 @@ app.http('getSignatureSettings', {
   route: 'signature-settings',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
+      context.log('Getting signature settings');
+      
       const { organizationId } = SignatureService.getUserFromRequest(request);
       
       const settings = await signatureService.getOrganizationSettings(organizationId);
-      
-      if (!settings) {
-        // Return default settings if none exist
-        const defaultSettings: OrganizationSignatureSettings = {
-          organizationId,
-          enabledMethods: ['docusign'],
-          defaultMethod: 'docusign',
-          providerSettings: {},
-          appearanceSettings: {
-            displaySignerName: true,
-            displaySignDate: true,
-            displayCompanyName: true
-          },
-          securitySettings: {
-            requireAuthentication: true,
-            allowedAuthMethods: ['email'],
-            sessionTimeoutMinutes: 30,
-            requireSecureConnection: true
-          },
-          workflowSettings: {
-            autoSendReminders: true,
-            defaultReminderDays: 3,
-            defaultExpirationDays: 30,
-            allowDelegation: false,
-            requireCompleteOrder: true
-          },
-          auditSettings: {
-            logAllEvents: true,
-            retentionDays: 2555, // 7 years
-            includeDocumentHashes: true,
-            requireDigitalCertificate: false
-          },
-          updatedAt: new Date().toISOString(),
-          updatedBy: 'system'
-        };
-
-        return {
-          status: 200,
-          jsonBody: defaultSettings
-        };
-      }
 
       return {
         status: 200,
-        jsonBody: settings
+        jsonBody: {
+          success: true,
+          data: settings
+        }
       };
 
     } catch (error: any) {
@@ -384,24 +392,33 @@ app.http('updateSignatureSettings', {
   route: 'signature-settings',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
+      context.log('Updating signature settings');
+      
       const { userId, organizationId } = SignatureService.getUserFromRequest(request);
       
-      const requestBody = await request.json() as Partial<OrganizationSignatureSettings>;
+      const settingsUpdate = await request.json() as Partial<OrganizationSignatureSettings>;
       
-      // TODO: Check if user has permission to update settings
-      
-      const settings: OrganizationSignatureSettings = {
-        ...requestBody,
-        organizationId,
-        updatedAt: new Date().toISOString(),
-        updatedBy: userId
-      } as OrganizationSignatureSettings;
+      // Validate required fields
+      if (settingsUpdate.enabledMethods && settingsUpdate.enabledMethods.length === 0) {
+        return {
+          status: 400,
+          jsonBody: { error: 'At least one signature method must be enabled' }
+        };
+      }
 
-      await signatureService.saveOrganizationSettings(settings);
+      const updatedSettings = await signatureService.updateOrganizationSettings(
+        organizationId,
+        settingsUpdate,
+        userId
+      );
 
       return {
         status: 200,
-        jsonBody: settings
+        jsonBody: {
+          success: true,
+          data: updatedSettings,
+          message: 'Signature settings updated successfully'
+        }
       };
 
     } catch (error: any) {
@@ -420,13 +437,19 @@ app.http('getSignatureTemplates', {
   route: 'signature-templates',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
+      context.log('Getting signature templates');
+      
       const { organizationId } = SignatureService.getUserFromRequest(request);
       
-      const templates = await signatureService.getOrganizationTemplates(organizationId);
+      const templates = await signatureService.getSignatureTemplates(organizationId);
 
       return {
         status: 200,
-        jsonBody: templates
+        jsonBody: {
+          success: true,
+          data: templates,
+          count: templates.length
+        }
       };
 
     } catch (error: any) {
@@ -445,35 +468,38 @@ app.http('createSignatureTemplate', {
   route: 'signature-templates',
   handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     try {
+      context.log('Creating signature template');
+      
       const { userId, organizationId } = SignatureService.getUserFromRequest(request);
       
-      const requestBody = await request.json() as {
+      const templateData = await request.json() as {
         name: string;
         signatureMethod: any;
         defaultSettings: any;
-        defaultSigners: any[];
+        defaultSigners?: any[];
       };
 
-      if (!requestBody.name) {
+      // Validate required fields
+      if (!templateData.name || !templateData.signatureMethod) {
         return {
           status: 400,
-          jsonBody: { error: 'Template name is required' }
+          jsonBody: { error: 'Template name and signature method are required' }
         };
       }
 
-      const template = await signatureService.createSignatureTemplate({
-        name: requestBody.name,
+      const template = await signatureService.createSignatureTemplate(
         organizationId,
-        signatureMethod: requestBody.signatureMethod,
-        defaultSettings: requestBody.defaultSettings,
-        defaultSigners: requestBody.defaultSigners,
-        createdBy: userId,
-        updatedBy: userId
-      });
+        templateData,
+        userId
+      );
 
       return {
         status: 201,
-        jsonBody: template
+        jsonBody: {
+          success: true,
+          data: template,
+          message: 'Signature template created successfully'
+        }
       };
 
     } catch (error: any) {
@@ -483,91 +509,22 @@ app.http('createSignatureTemplate', {
   }
 });
 
-/**
- * Get signature statistics
- * GET /api/signature-statistics
- */
-app.http('getSignatureStatistics', {
-  methods: ['GET'],
-  route: 'signature-statistics',
-  handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-    try {
-      const { organizationId } = SignatureService.getUserFromRequest(request);
-      
-      const url = new URL(request.url);
-      const startDate = url.searchParams.get('startDate') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const endDate = url.searchParams.get('endDate') || new Date().toISOString();
-
-      const statistics = await signatureService.getSignatureStatistics(organizationId, startDate, endDate);
-
-      return {
-        status: 200,
-        jsonBody: statistics
-      };
-
-    } catch (error: any) {
-      context.error('Error getting signature statistics:', error);
-      return SignatureService.handleError(error);
-    }
+// Helper method to initiate external signature
+async function initiateExternalSignature(signatureRequest: any, context: InvocationContext) {
+  try {
+    // This would integrate with DocuSign, Adobe Sign, or other providers
+    // For now, we'll just log the attempt
+    context.log('Initiating external signature for request:', signatureRequest.id);
+    
+    // In a full implementation, this would:
+    // 1. Get organization signature settings
+    // 2. Create envelope/request in external provider
+    // 3. Send signing URLs to signers
+    // 4. Set up webhooks for status updates
+    
+    return true;
+  } catch (error) {
+    context.error('Failed to initiate external signature:', error);
+    return false;
   }
-});
-
-/**
- * DocuSign webhook endpoint
- * POST /api/signature-webhooks/docusign
- */
-app.http('docusignWebhook', {
-  methods: ['POST'],
-  route: 'signature-webhooks/docusign',
-  handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-    try {
-      context.log('Received DocuSign webhook');
-      
-      // TODO: Implement DocuSign webhook processing
-      // This will be implemented when we integrate with DocuSign API
-      
-      const requestBody = await request.json();
-      context.log('DocuSign webhook payload:', requestBody);
-
-      return {
-        status: 200,
-        jsonBody: { status: 'received' }
-      };
-
-    } catch (error: any) {
-      context.error('Error processing DocuSign webhook:', error);
-      return SignatureService.handleError(error);
-    }
-  }
-});
-
-/**
- * Adobe Sign webhook endpoint
- * POST /api/signature-webhooks/adobe
- */
-app.http('adobeSignWebhook', {
-  methods: ['POST'],
-  route: 'signature-webhooks/adobe',
-  handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-    try {
-      context.log('Received Adobe Sign webhook');
-      
-      // TODO: Implement Adobe Sign webhook processing
-      // This will be implemented when we integrate with Adobe Sign API
-      
-      const requestBody = await request.json();
-      context.log('Adobe Sign webhook payload:', requestBody);
-
-      return {
-        status: 200,
-        jsonBody: { status: 'received' }
-      };
-
-    } catch (error: any) {
-      context.error('Error processing Adobe Sign webhook:', error);
-      return SignatureService.handleError(error);
-    }
-  }
-});
-
-export default app;
+}

@@ -5,6 +5,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { copyFileSync } from 'fs';
 
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ['@fluentui/react-icons']
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

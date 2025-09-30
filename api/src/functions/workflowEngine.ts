@@ -1,8 +1,8 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 import { getContainer } from '../shared/db/cosmos';
 import { createProtectedFunction, RBAC_CONFIGS } from '../shared/middleware/rbacMiddleware';
-// Teams integration would be implemented here
-// import { TeamsApiClient } from '../shared/teamsApiClient';
+import { auditMiddleware } from '../shared/audit/auditMiddleware';
+import { AuditActions } from '../../../src/shared/types/audit';
 import { z } from 'zod';
 
 // Workflow schemas
@@ -688,6 +688,183 @@ function getStepStatusFromAction(action: string): string {
     case 'skip': return 'skipped';
     default: return 'completed';
   }
+}
+
+// Protected DELETE /api/workflows/{workflowId} - Cancel workflow
+app.http('cancelWorkflow', {
+  methods: ['DELETE'],
+  authLevel: 'anonymous',
+  route: 'workflows/{workflowId}',
+  handler: createProtectedFunction(
+    { requiredPermissions: ['APPROVAL_MANAGE'] },
+    async (req: HttpRequest, ctx: InvocationContext, authResult) => {
+      try {
+        const workflowId = req.params.get('workflowId');
+        if (!workflowId) {
+          return {
+            status: 400,
+            body: JSON.stringify({ error: 'Workflow ID is required' })
+          };
+        }
+        
+        const user = authResult.user!;
+        const userRoles = authResult.roles!;
+        const now = new Date().toISOString();
+        
+        const workflowsContainer = getContainer('workflows');
+        const { resource: workflow } = await workflowsContainer.item(workflowId).read();
+        
+        if (!workflow) {
+          return {
+            status: 404,
+            body: JSON.stringify({ error: 'Workflow not found' })
+          };
+        }
+        
+        // Check permissions - only creator or admin can cancel
+        if (workflow.createdBy !== user.email && !userRoles.includes('Administrator')) {
+          return {
+            status: 403,
+            body: JSON.stringify({ 
+              error: 'Access denied',
+              message: 'Only workflow creator or administrator can cancel workflow'
+            })
+          };
+        }
+        
+        // Update workflow status
+        await workflowsContainer.item(workflowId).patch([
+          { op: 'replace', path: '/status', value: 'cancelled' },
+          { op: 'replace', path: '/completedAt', value: now },
+          { op: 'add', path: '/cancelledBy', value: user.email },
+          { op: 'add', path: '/cancelledAt', value: now }
+        ]);
+        
+        // Update document status
+        const documentsContainer = getContainer('documents');
+        await documentsContainer.item(workflow.documentId).patch([
+          { op: 'replace', path: '/status', value: 'draft' },
+          { op: 'remove', path: '/activeWorkflowId' },
+          { op: 'replace', path: '/metadata/modifiedAt', value: now }
+        ]);
+        
+        // Send cancellation notifications
+        await sendWorkflowNotifications(workflow, null, 'workflow-cancelled', ctx);
+        
+        ctx.log(`Workflow cancelled: ${workflowId} by ${user.displayName}`);
+        
+        return {
+          status: 200,
+          body: JSON.stringify({
+            success: true,
+            message: 'Workflow cancelled successfully'
+          })
+        };
+        
+      } catch (error: any) {
+        ctx.error('Cancel workflow error:', error);
+        return {
+          status: 500,
+          body: JSON.stringify({
+            error: 'Internal server error',
+            message: 'Failed to cancel workflow'
+          })
+        };
+      }
+    }
+  )
+});
+
+// Protected GET /api/workflows/statistics - Get workflow statistics
+app.http('getWorkflowStatistics', {
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  route: 'workflows/statistics',
+  handler: createProtectedFunction(
+    { requiredPermissions: ['DOCUMENTS_READ'] },
+    async (req: HttpRequest, ctx: InvocationContext, authResult) => {
+      try {
+        const user = authResult.user!;
+        
+        const workflowsContainer = getContainer('workflows');
+        const query = {
+          query: 'SELECT * FROM c WHERE c.partitionKey = @tenantId',
+          parameters: [{ name: '@tenantId', value: user.tenantId }]
+        };
+        
+        const { resources: workflows } = await workflowsContainer.items.query(query).fetchAll();
+        
+        // Calculate statistics
+        const stats = {
+          total: workflows.length,
+          pending: workflows.filter(w => w.status === 'pending').length,
+          inProgress: workflows.filter(w => w.status === 'in-progress').length,
+          completed: workflows.filter(w => w.status === 'completed').length,
+          cancelled: workflows.filter(w => w.status === 'cancelled').length,
+          overdue: workflows.filter(w => 
+            w.dueDate && new Date(w.dueDate) < new Date() && 
+            !['completed', 'cancelled'].includes(w.status)
+          ).length,
+          assignedToMe: workflows.filter(w => {
+            const currentStep = w.steps[w.currentStep];
+            return currentStep && (
+              currentStep.assigneeEmail === user.email || 
+              currentStep.assigneeId === user.objectId
+            );
+          }).length,
+          createdByMe: workflows.filter(w => w.createdBy === user.email).length,
+          averageCompletionTime: calculateAverageCompletionTime(workflows),
+          workflowsByType: getWorkflowsByType(workflows),
+          recentActivity: workflows
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 5)
+        };
+        
+        return {
+          status: 200,
+          body: JSON.stringify({
+            success: true,
+            data: stats
+          })
+        };
+        
+      } catch (error: any) {
+        ctx.error('Get workflow statistics error:', error);
+        return {
+          status: 500,
+          body: JSON.stringify({
+            error: 'Internal server error',
+            message: 'Failed to retrieve workflow statistics'
+          })
+        };
+      }
+    }
+  )
+});
+
+// Helper functions
+function calculateAverageCompletionTime(workflows: WorkflowInstance[]): number {
+  const completedWorkflows = workflows.filter(w => w.status === 'completed' && w.completedAt);
+  
+  if (completedWorkflows.length === 0) return 0;
+  
+  const totalTime = completedWorkflows.reduce((sum, w) => {
+    const start = new Date(w.createdAt).getTime();
+    const end = new Date(w.completedAt!).getTime();
+    return sum + (end - start);
+  }, 0);
+  
+  return Math.round(totalTime / completedWorkflows.length / (1000 * 60 * 60)); // in hours
+}
+
+function getWorkflowsByType(workflows: WorkflowInstance[]): Record<string, number> {
+  const types: Record<string, number> = {};
+  
+  workflows.forEach(w => {
+    types[w.type] = (types[w.type] || 0) + 1;
+  });
+  
+  return types;
 }
 
 async function sendWorkflowNotifications(

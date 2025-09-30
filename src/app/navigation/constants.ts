@@ -88,6 +88,13 @@ export const NAV_LINKS: NavLink[] = [
     icon: 'CheckmarkCircle'
   },
   {
+    name: 'Signature',
+    url: '#',
+    key: 'signature',
+    linkName: '/settings/signature',
+    icon: 'Signature'
+  },
+  {
     name: 'Leads',
     url: '#',
     key: 'leads',
@@ -115,6 +122,13 @@ export const NAV_LINKS: NavLink[] = [
     linkName: '/workflow',
     icon: 'WorkFlow'
   },
+  {
+    name: 'Audit',
+    url: '#',
+    key: 'audit',
+    linkName: '/audit',
+    icon: 'Shield'
+  },
 ];
 
 // Navigation groups following Teams design patterns
@@ -124,7 +138,7 @@ export const NAV_GROUPS: NavGroup[] = [
     links: [
       NAV_LINKS[0], // Client Side
       NAV_LINKS[1], // Firm Side
-      NAV_LINKS[2], // Firm Side 2
+      NAV_LINKS[2], // Firm Side 2 
       NAV_LINKS[3], // Favorites
       NAV_LINKS[8], // Leads
     ]
@@ -136,7 +150,8 @@ export const NAV_GROUPS: NavGroup[] = [
       NAV_LINKS[5], // Storage
       NAV_LINKS[6], // Validation
       NAV_LINKS[7], // Approval
-      NAV_LINKS[9], // Users
+      NAV_LINKS[8], // Signature
+      NAV_LINKS[10], // Users
     ]
   }
 ];
