@@ -142,6 +142,9 @@ export { e2eeService, E2EEService } from './e2eeService';
 // MFA Service
 export { mfaService, MFAService } from './mfaService';
 
+// Escalation Service
+export { escalationService } from './escalationService';
+
 // Export notification control functions for debugging
 export { 
   disableErrorNotifications, 

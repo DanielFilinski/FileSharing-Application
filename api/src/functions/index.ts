@@ -31,5 +31,6 @@ import "./auditTrail";
 import "./chat";
 import "./e2ee-keys";
 import "./mfa";
+import "./escalation";
 
 
