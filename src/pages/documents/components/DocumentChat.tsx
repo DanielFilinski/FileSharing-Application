@@ -5,7 +5,7 @@ import {
   tokens,
   makeStyles
 } from '@fluentui/react-components';
-import { ChatRegular, DismissRegular } from '@fluentui/react-icons';
+import { Chat20Regular, Dismiss20Regular } from '@fluentui/react-icons';
 import { ChatWidget } from '../../../components/Chat/ChatWidget';
 import { DocumentFragment } from '../../../shared/types/chat';
 
@@ -50,7 +50,7 @@ export const DocumentChat: React.FC<DocumentChatProps> = ({
         <Button
           appearance="primary"
           onClick={handleOpenChat}
-          icon={<ChatRegular />}
+          icon={<Chat20Regular />}
           className={styles.toggleButton}
           size="large"
         >

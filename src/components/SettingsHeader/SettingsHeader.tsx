@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Title2, tokens } from '@fluentui/react-components';
-import { SaveRegular } from '@fluentui/react-icons';
+import { Save20Regular } from '@fluentui/react-icons';
 import { HeaderContainer } from '@/app/styles/layouts';
 import styled from 'styled-components';
 
@@ -17,7 +17,7 @@ export const SettingsHeader: React.FC<SettingsHeaderProps> = ({
   icon,
   buttonText = "Save changes",
   onButtonClick = () => {},
-  buttonIcon = <SaveRegular />,
+  buttonIcon = <Save20Regular />,
 }) => {
   return (
     <Header>

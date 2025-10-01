@@ -1,6 +1,6 @@
 import React from 'react';
 import { RadioGroup, Radio, Text, Subtitle2, Body1, Caption1 } from '@fluentui/react-components';
-import { FlashRegular } from '@fluentui/react-icons';
+import { Flash20Regular } from '@fluentui/react-icons';
 
 import { CardContainer, RowCardItemContainer, TextRowsContainer } from '@/app/styles/layouts';
 import styled from 'styled-components';
@@ -27,7 +27,7 @@ export const ApprovalFlowCard: React.FC<ApprovalFlowCardProps> = ({
   return (
     <Container>
       <CardHeader
-        icon={<FlashRegular />}
+        icon={<Flash20Regular />}
         text="Approval Flow"
         subtitle="Choose how approvals flow between departments"
       />

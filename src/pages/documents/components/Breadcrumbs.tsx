@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, tokens, Breadcrumb, BreadcrumbItem, Text } from '@fluentui/react-components';
-import { ChevronRightRegular } from '@fluentui/react-icons';
+import { ChevronRight20Regular } from '@fluentui/react-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles({
@@ -92,7 +92,7 @@ export const Breadcrumbs: React.FC = () => {
                 </Text>
               </BreadcrumbItem>
               {index < breadcrumbItems.length - 1 && (
-                <ChevronRightRegular fontSize={16} />
+                <ChevronRight20Regular fontSize={16} />
               )}
             </React.Fragment>
           );

@@ -3,6 +3,8 @@
  * Types and interfaces for document chat system
  */
 
+import type { EncryptedMessage } from '../lib/encryption';
+
 // ==========================================
 // Core Chat Types
 // ==========================================
@@ -53,6 +55,12 @@ export interface ChatMessage {
   isEdited: boolean;
   isDeleted: boolean;
   isPinned: boolean;
+  
+  // End-to-End Encryption
+  isEncrypted?: boolean;
+  encryptedContent?: EncryptedMessage;
+  isDecrypted?: boolean;
+  encryptionKeyId?: string;
   
   // Reactions and interactions
   reactions?: MessageReaction[];
@@ -217,6 +225,12 @@ export interface ChatThreadSettings {
   autoDeleteEnabled: boolean;
   complianceMode: boolean;
   encryptionEnabled: boolean;
+  
+  // End-to-End Encryption settings
+  e2eeEnabled?: boolean;
+  e2eeKeyRotationDays?: number;
+  e2eeSessionKeyId?: string;
+  e2eeStatus?: 'active' | 'pending' | 'disabled' | 'error';
   
   // UI preferences
   theme: 'light' | 'dark' | 'auto';

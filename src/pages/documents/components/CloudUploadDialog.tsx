@@ -14,7 +14,7 @@ import {
   makeStyles,
   tokens
 } from '@fluentui/react-components';
-import { DismissRegular, CloudRegular } from '@fluentui/react-icons';
+import { Dismiss20Regular, Cloud20Regular } from '@fluentui/react-icons';
 import { DocumentMetadata } from './UploadForm';
 
 const useStyles = makeStyles({
@@ -160,7 +160,7 @@ export const CloudUploadDialog: React.FC<CloudUploadDialogProps> = ({
             <Button
               appearance="subtle"
               aria-label="Close"
-              icon={<DismissRegular />}
+              icon={<Dismiss20Regular />}
               onClick={onClose}
             />
           }>
@@ -174,7 +174,7 @@ export const CloudUploadDialog: React.FC<CloudUploadDialogProps> = ({
                 <div className={styles.filesList}>
                   {selectedFiles.map((file: any, index: number) => (
                     <div key={index} className={styles.fileItem}>
-                      <CloudRegular />
+                      <Cloud20Regular />
                       <Text>{file.name}</Text>
                     </div>
                   ))}

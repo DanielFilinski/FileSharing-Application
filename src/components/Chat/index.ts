@@ -19,3 +19,6 @@ export type { ChatParticipantsProps } from './ChatParticipants';
 
 export { ChatSettings } from './ChatSettings';
 export type { ChatSettingsProps } from './ChatSettings';
+
+export { E2EEStatus } from './E2EEStatus';
+export type { E2EEStatusProps } from './E2EEStatus';

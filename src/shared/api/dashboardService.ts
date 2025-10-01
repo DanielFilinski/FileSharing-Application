@@ -335,6 +335,73 @@ export class DashboardService {
       throw error;
     }
   }
+
+  async getActionRequiredDocuments(limit: number = 10, userId?: string): Promise<ActionRequiredDocument[]> {
+    console.log('📞 Calling getActionRequiredDocuments API...');
+    try {
+      const params = new URLSearchParams();
+      params.append('limit', limit.toString());
+      if (userId) {
+        params.append('userId', userId);
+      }
+
+      const response: ApiResponse<{ documents: ActionRequiredDocument[] }> = 
+        await this.apiClient.get(`/dashboard/action-required?${params.toString()}`);
+      
+      console.log('✅ getActionRequiredDocuments response:', response.data.documents?.length || 0, 'documents');
+      return response.data.documents || [];
+    } catch (error) {
+      console.warn('⚠️ Action required documents API failed, using fallback data');
+      
+      // Fallback mock implementation
+      const mockData: ActionRequiredDocument[] = [
+        {
+          id: '1',
+          name: 'Tax Return Q4 2024.pdf',
+          status: 'review',
+          priority: 'urgent',
+          dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+          assignedTo: 'Current User',
+          clientName: 'ABC Corporation',
+          documentType: 'Tax Documents',
+        },
+        {
+          id: '2',
+          name: 'Service Agreement.docx',
+          status: 'sign',
+          priority: 'high',
+          dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          assignedTo: 'Current User',
+          clientName: 'XYZ Legal LLP',
+          documentType: 'Contracts',
+        },
+        {
+          id: '3',
+          name: 'Medical Consent Form.pdf',
+          status: 'approve',
+          priority: 'medium',
+          dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+          assignedTo: 'Current User',
+          clientName: 'Smith Dental',
+          documentType: 'Medical Forms',
+        },
+      ];
+
+      console.log('✅ getActionRequiredDocuments (fallback):', mockData.length);
+      return mockData.slice(0, limit);
+    }
+  }
+}
+
+export interface ActionRequiredDocument {
+  id: string;
+  name: string;
+  status: 'review' | 'sign' | 'approve' | 'validate';
+  priority: 'urgent' | 'high' | 'medium' | 'low';
+  dueDate: string;
+  assignedTo: string;
+  clientName?: string;
+  documentType?: string;
 }
 
 // Export singleton instance

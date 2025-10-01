@@ -15,6 +15,7 @@ import "./endUsers";
 import "./dashboard-stats";
 import "./activities-recent";
 import "./deadlines-upcoming";
+import "./dashboard-action-required";
 import "./sharePointBasic";
 import "./sharePointProvisioning";
 import "./sharePointDocuments";
@@ -28,5 +29,7 @@ import "./documentVersions";
 import "./digitalSignature";
 import "./auditTrail";
 import "./chat";
+import "./e2ee-keys";
+import "./mfa";
 
 

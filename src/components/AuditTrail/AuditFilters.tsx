@@ -15,9 +15,9 @@ import {
   tokens
 } from '@fluentui/react-components';
 import {
-  CalendarRegular,
-  SearchRegular,
-  DismissRegular
+  Calendar20Regular,
+  Search20Regular,
+  Dismiss20Regular
 } from '@fluentui/react-icons';
 
 import { 
@@ -227,7 +227,7 @@ export const AuditFilters: React.FC<AuditFiltersProps> = ({
             value={searchText}
             onChange={(_, data) => setSearchText(data.value)}
             placeholder="Поиск в описании, именах ресурсов..."
-            contentBefore={<SearchRegular />}
+            contentBefore={<Search20Regular />}
           />
         </Field>
       </div>
@@ -304,7 +304,7 @@ export const AuditFilters: React.FC<AuditFiltersProps> = ({
         <div style={{ display: 'flex', gap: tokens.spacingHorizontalS }}>
           <Button
             appearance="subtle"
-            icon={<DismissRegular />}
+            icon={<Dismiss20Regular />}
             onClick={handleReset}
           >
             Сбросить фильтры

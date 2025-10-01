@@ -122,18 +122,25 @@ export { ApiClient };
 
 // Dashboard Service
 export { 
-  dashboardService,
-  type DashboardClient,
+  dashboardService, 
+  type DashboardClient, 
   type DashboardDocument, 
   type UserProfile,
   type DashboardStats,
   type ActivityItem,
-  type DeadlineItem
+  type DeadlineItem,
+  type ActionRequiredDocument
 } from './dashboardService';
 
 // Legacy services
 export { documentsService } from './documentsService';
 export { oneDriveService } from './oneDriveService';
+
+// E2EE Service
+export { e2eeService, E2EEService } from './e2eeService';
+
+// MFA Service
+export { mfaService, MFAService } from './mfaService';
 
 // Export notification control functions for debugging
 export { 

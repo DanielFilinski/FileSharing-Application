@@ -21,16 +21,16 @@ import {
   CardPreview
 } from '@fluentui/react-components';
 import {
-  DismissRegular,
-  PersonRegular,
-  CalendarRegular,
-  GlobeRegular,
-  DevicesRegular,
-  InfoRegular,
-  DocumentRegular,
-  WarningRegular,
-  CheckmarkCircleRegular,
-  DismissCircleRegular
+  Dismiss20Regular,
+  Person20Regular,
+  Calendar20Regular,
+  Globe20Regular,
+  Desktop20Regular,
+  Info20Regular,
+  Document20Regular,
+  Warning20Regular,
+  CheckmarkCircle20Regular,
+  DismissCircle20Regular
 } from '@fluentui/react-icons';
 
 import { AuditEvent } from '../../shared/types/audit';
@@ -183,7 +183,7 @@ export const AuditEventDetails: React.FC<AuditEventDetailsProps> = ({
     return (
       <div className={styles.section}>
         <div className={styles.sectionTitle}>
-          <InfoRegular fontSize={16} />
+          <Info20Regular fontSize={16} />
           <Text size={300} weight="semibold">Дополнительная информация</Text>
         </div>
         <div className={styles.metadataContainer}>
@@ -210,7 +210,7 @@ export const AuditEventDetails: React.FC<AuditEventDetailsProps> = ({
     return (
       <div className={styles.section}>
         <div className={styles.sectionTitle}>
-          <DocumentRegular fontSize={16} />
+          <Document20Regular fontSize={16} />
           <Text size={300} weight="semibold">Изменения</Text>
         </div>
         <div className={styles.changesContainer}>
@@ -283,7 +283,7 @@ export const AuditEventDetails: React.FC<AuditEventDetailsProps> = ({
             {/* User Information */}
             <div className={styles.section}>
               <div className={styles.sectionTitle}>
-                <PersonRegular fontSize={16} />
+                <Person20Regular fontSize={16} />
                 <Text size={300} weight="semibold">Пользователь</Text>
               </div>
               <div>
@@ -313,7 +313,7 @@ export const AuditEventDetails: React.FC<AuditEventDetailsProps> = ({
             {/* Resource Information */}
             <div className={styles.section}>
               <div className={styles.sectionTitle}>
-                <DocumentRegular fontSize={16} />
+                <Document20Regular fontSize={16} />
                 <Text size={300} weight="semibold">Ресурс</Text>
               </div>
               <div>
@@ -339,7 +339,7 @@ export const AuditEventDetails: React.FC<AuditEventDetailsProps> = ({
             {/* Technical Information */}
             <div className={styles.section}>
               <div className={styles.sectionTitle}>
-                <DevicesRegular fontSize={16} />
+                <Desktop20Regular fontSize={16} />
                 <Text size={300} weight="semibold">Техническая информация</Text>
               </div>
               <div>
@@ -388,7 +388,7 @@ export const AuditEventDetails: React.FC<AuditEventDetailsProps> = ({
                 <Divider />
                 <div className={styles.section}>
                   <div className={styles.sectionTitle}>
-                    <WarningRegular fontSize={16} color={tokens.colorPaletteRedForeground1} />
+                    <Warning20Regular fontSize={16} color={tokens.colorPaletteRedForeground1} />
                     <Text size={300} weight="semibold" style={{ color: tokens.colorPaletteRedForeground1 }}>
                       Информация об ошибке
                     </Text>
