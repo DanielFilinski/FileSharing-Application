@@ -145,6 +145,25 @@ export { mfaService, MFAService } from './mfaService';
 // Escalation Service
 export { escalationService } from './escalationService';
 
+// SharePoint Sync Service
+export { sharePointSyncService } from './sharepointSyncService';
+
+// User Management Service
+export { 
+  UserManagementService, 
+  userManagementService,
+  type Employee,
+  type Client,
+  type Department,
+  type CreateEmployeeRequest,
+  type CreateClientRequest,
+  type CreateDepartmentRequest,
+  type BulkUpdateRequest,
+  type ExcelImportRequest,
+  type ApiResponse,
+  type BulkOperationResult
+} from './userManagementService';
+
 // Export notification control functions for debugging
 export { 
   disableErrorNotifications, 

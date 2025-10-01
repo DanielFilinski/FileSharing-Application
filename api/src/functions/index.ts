@@ -32,5 +32,7 @@ import "./chat";
 import "./e2ee-keys";
 import "./mfa";
 import "./escalation";
+import "./sharepoint-sync";
+import "./userManagementEnhanced";
 
 
