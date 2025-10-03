@@ -2106,4 +2106,7 @@ For developers integrating with the signature system, see [API Documentation](./
 
 **🎉 ГОТОВО К РЕАЛИЗАЦИИ!**
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> docs
