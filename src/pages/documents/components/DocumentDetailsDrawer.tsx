@@ -14,6 +14,10 @@ import { Person20Regular, Mail20Regular } from '@fluentui/react-icons';
 import { Document } from '../ui/BaseDocumentsPage';
 import { DocumentChat } from './DocumentChat';
 
+// Import signature components
+import { SignatureButtons } from '@/features/signatures/components/SignatureButtons';
+import { DocumentStatus } from '@/shared/types/signature';
+
 // Функция для получения цвета статуса
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -74,6 +78,32 @@ export const DocumentDetailsDrawer: React.FC<DocumentDetailsDrawerProps> = ({
       <DrawerBody>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 24 }}>            
           <Divider />
+          
+          {/* Signature Section - Only show if document requires signature */}
+          {selectedDoc?.status === 'Awaiting Signing' && (
+            <>
+              <div>
+                <Subtitle2 style={{ marginBottom: 12 }}>Document Signature</Subtitle2>
+                <SignatureButtons
+                  document={{
+                    id: selectedDoc.key,
+                    name: selectedDoc.name,
+                    status: selectedDoc.status as DocumentStatus,
+                    signatureRequired: true,
+                    organizationId: 'default-org', // TODO: Get from context
+                    awaitingSignatureSince: new Date().toISOString() // TODO: Get from document data
+                  }}
+                  onSignatureComplete={(signature) => {
+                    console.log('Signature completed:', signature);
+                    // TODO: Refresh document data
+                    onClose();
+                  }}
+                />
+              </div>
+              <Divider />
+            </>
+          )}
+          
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div>
               <Subtitle2>Created:</Subtitle2>
