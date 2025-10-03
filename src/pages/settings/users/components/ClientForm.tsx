@@ -593,3 +593,4 @@ export const ClientForm: React.FC<ClientFormProps> = ({
     </Dialog>
   );
 };
+
